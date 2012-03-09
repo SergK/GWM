@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gwm_Contents</title>
+  <meta name="keywords" content="gwm_Contents">
+  <meta name="description" content="THE Grid Workload Modelling tool :">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html GridWM -->
+<h1>gwm_Contents
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>THE Grid Workload Modelling tool :</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> THE Grid Workload Modelling tool :
+ 
+ /external_utils   - Additional tools from Other authors
+    /histogram - folder contains different tools for working with histogram construction
+    abic.m
+    howmany.m
+    insertrows.m
+    maxnd.m
+
+   /gwm_utils        - different helpers
+     gwm_nplot.m       - new figure plot with legend
+     gwm_plot_acf.m    - plot autocorr function for two sequences
+     gwm_plot_rows.m   - makes different plots
+     gwm_purge.m       - workspace clear utility
+     gwm_splitData     - splits data for [Training, Validation, Testing]
+           
+ main folder utils
+     gwm_abic.m                    - calculates AIC, BIC, AICc values for models
+     gwm_createStochasticMatrix.m  - creates different types of stochastic matrices
+     gwm_maxmin.m                  - searches max or min N values in matrix
+     gwm_replaceValues             - replaces/removes VALUES in Matrix: default [-1]
+     gwm_selectBestmodels          - selects best models on some criteria (AIC, AICc, BIC, LL)
+     gwm_prepareSequence           - prepares sequence for HMM learning (groupping, cellwrapping, etc)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% THE Grid Workload Modelling tool :</span>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% /external_utils   - Additional tools from Other authors</span>
+0004 <span class="comment">%    /histogram - folder contains different tools for working with histogram construction</span>
+0005 <span class="comment">%    abic.m</span>
+0006 <span class="comment">%    howmany.m</span>
+0007 <span class="comment">%    insertrows.m</span>
+0008 <span class="comment">%    maxnd.m</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   /gwm_utils        - different helpers</span>
+0011 <span class="comment">%     gwm_nplot.m       - new figure plot with legend</span>
+0012 <span class="comment">%     gwm_plot_acf.m    - plot autocorr function for two sequences</span>
+0013 <span class="comment">%     gwm_plot_rows.m   - makes different plots</span>
+0014 <span class="comment">%     gwm_purge.m       - workspace clear utility</span>
+0015 <span class="comment">%     gwm_splitData     - splits data for [Training, Validation, Testing]</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% main folder utils</span>
+0018 <span class="comment">%     gwm_abic.m                    - calculates AIC, BIC, AICc values for models</span>
+0019 <span class="comment">%     gwm_createStochasticMatrix.m  - creates different types of stochastic matrices</span>
+0020 <span class="comment">%     gwm_maxmin.m                  - searches max or min N values in matrix</span>
+0021 <span class="comment">%     gwm_replaceValues             - replaces/removes VALUES in Matrix: default [-1]</span>
+0022 <span class="comment">%     gwm_selectBestmodels          - selects best models on some criteria (AIC, AICc, BIC, LL)</span>
+0023 <span class="comment">%     gwm_prepareSequence           - prepares sequence for HMM learning (groupping, cellwrapping, etc)</span>
+0024</pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

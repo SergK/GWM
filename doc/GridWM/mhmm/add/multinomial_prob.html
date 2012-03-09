@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of multinomial_prob</title>
+  <meta name="keywords" content="multinomial_prob">
+  <meta name="description" content="EVAL_PDF_COND_MULTINOMIAL Evaluate pdf of conditional multinomial">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GridWM --><!-- ../menu.html mhmm --><!-- menu.html add -->
+<h1>multinomial_prob
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>EVAL_PDF_COND_MULTINOMIAL Evaluate pdf of conditional multinomial</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function B = eval_pdf_cond_multinomial(data, obsmat) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> EVAL_PDF_COND_MULTINOMIAL Evaluate pdf of conditional multinomial 
+ function B = eval_pdf_cond_multinomial(data, obsmat)
+
+ Notation: Y = observation (O values), Q = conditioning variable (K values)
+
+ Inputs:
+ data(t) = t'th observation - must be an integer in {1,2,...,K}: cannot be 0!
+ obsmat(i,o) = Pr(Y(t)=o | Q(t)=i)
+
+ Output:
+ B(i,t) = Pr(y(t) | Q(t)=i)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function B = eval_pdf_cond_multinomial(data, obsmat)</a>
+0002 <span class="comment">% EVAL_PDF_COND_MULTINOMIAL Evaluate pdf of conditional multinomial</span>
+0003 <span class="comment">% function B = eval_pdf_cond_multinomial(data, obsmat)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Notation: Y = observation (O values), Q = conditioning variable (K values)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% Inputs:</span>
+0008 <span class="comment">% data(t) = t'th observation - must be an integer in {1,2,...,K}: cannot be 0!</span>
+0009 <span class="comment">% obsmat(i,o) = Pr(Y(t)=o | Q(t)=i)</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Output:</span>
+0012 <span class="comment">% B(i,t) = Pr(y(t) | Q(t)=i)</span>
+0013 
+0014 [Q O] = size(obsmat);
+0015 T = prod(size(data)); <span class="comment">% length(data);</span>
+0016 B = zeros(Q,T);
+0017 
+0018 <span class="keyword">for</span> t=1:T
+0019   B(:,t) = obsmat(:, data(t));
+0020 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

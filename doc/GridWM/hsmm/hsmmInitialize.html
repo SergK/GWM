@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of hsmmInitialize</title>
+  <meta name="keywords" content="hsmmInitialize">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html hsmm -->
+<h1>hsmmInitialize
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [A,B,P,PAI,Vk,O,K]=hsmmInitialize(O,M,D,K) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> 
+ Author: Shun-Zheng Yu
+ Available: http://sist.sysu.edu.cn/~syu/Publications/hsmmInitialize.m
+ 
+ To initialize the matrixes of A,B,P,PAI for hsmm_new.m, to get 
+ the observable values and to transform the observations O
+ from values to their indexes.
+
+ Usage: [A,B,P,PAI,Vk,O,K]=hsmmInitialize(O,M,D,K)
+ 
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version
+  2 of the License, or (at your option) any later version.
+  http://www.gnu.org/licenses/gpl.txt</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A,B,P,PAI,Vk,O,K]=hsmmInitialize(O,M,D,K)</a>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% Author: Shun-Zheng Yu</span>
+0004 <span class="comment">% Available: http://sist.sysu.edu.cn/~syu/Publications/hsmmInitialize.m</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% To initialize the matrixes of A,B,P,PAI for hsmm_new.m, to get</span>
+0007 <span class="comment">% the observable values and to transform the observations O</span>
+0008 <span class="comment">% from values to their indexes.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Usage: [A,B,P,PAI,Vk,O,K]=hsmmInitialize(O,M,D,K)</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%  This program is free software; you can redistribute it and/or</span>
+0013 <span class="comment">%  modify it under the terms of the GNU General Public License</span>
+0014 <span class="comment">%  as published by the Free Software Foundation; either version</span>
+0015 <span class="comment">%  2 of the License, or (at your option) any later version.</span>
+0016 <span class="comment">%  http://www.gnu.org/licenses/gpl.txt</span>
+0017 <span class="comment">%</span>
+0018     [x,I]=sort(O);
+0019     tmp=([1;diff(x)]~=0);
+0020     Vk=x(tmp);                  <span class="comment">%observable values</span>
+0021     Num=diff(find([tmp;1]==1));
+0022     <span class="keyword">if</span> length(Vk)&lt;K
+0023         K=length(Vk);
+0024     <span class="keyword">end</span>
+0025     <span class="keyword">while</span> length(Vk)&gt;K
+0026         [y,J]=min(diff(Vk));
+0027         Vk(J+1)=(Vk(J)*Num(J)+Vk(J+1)*Num(J+1))/(Num(J)+Num(J+1));
+0028         Vk(J)=[];
+0029         Num(J+1)=Num(J+1)+Num(J);
+0030         Num(J)=[];
+0031     <span class="keyword">end</span>
+0032     Num=cumsum(Num);
+0033     tmp(:)=0;
+0034     tmp([1;Num(1:end-1)+1])=1;
+0035     O(I)=cumsum(tmp);           <span class="comment">%indexes of observable values</span>
+0036 
+0037 <span class="comment">%    PAI=rand(M,1)+1;</span>
+0038     PAI=ones(M,1);
+0039     PAI=PAI./sum(PAI);           <span class="comment">%the initial probability</span>
+0040 
+0041     A=ones(M);
+0042 <span class="comment">%   A=rand(M)+1;</span>
+0043 <span class="comment">%    for i=1:M</span>
+0044 <span class="comment">%       A(i,i)=0;</span>
+0045 <span class="comment">%    end</span>
+0046     A=A./(sum(A')'*ones(1,M));      <span class="comment">%The Transition Probability Matrix of active states</span>
+0047     
+0048 <span class="comment">%   P=0.99.*exp(log(ones(M,1).*0.01)*(0:D-1));</span>
+0049 <span class="comment">%   P=rand(M,D)+1;</span>
+0050 <span class="comment">%    P=ones(M,D);</span>
+0051     P=repmat((1:D).^2,M,1);
+0052     P=P./(sum(P')'*ones(1,D));
+0053     
+0054     lambda=(max(O)-min(O))/M;
+0055     lambda=(min(O)+lambda/2):lambda:max(O);
+0056     <span class="keyword">for</span> i=1:K
+0057         ss(i)=sum(log(1:i));
+0058     <span class="keyword">end</span>
+0059     B=exp(log(lambda')*(1:K)-ones(M,1)*ss-lambda'*ones(1,K));
+0060     B=B+(max(B')'.*0.01)*ones(1,K);
+0061     B=B./(sum(B')'*ones(1,K));      <span class="comment">%The observation symbol probability distribution</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

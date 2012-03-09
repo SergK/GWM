@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of dhmm_em_online</title>
+  <meta name="keywords" content="dhmm_em_online">
+  <meta name="description" content="ONLINE_EM Adjust the parameters using a weighted combination of the old and new expected statistics">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>dhmm_em_online
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>ONLINE_EM Adjust the parameters using a weighted combination of the old and new expected statistics</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [transmat, obsmat, exp_num_trans, exp_num_emit, gamma, ll] = dhmm_em_online(prior, transmat, obsmat, exp_num_trans, exp_num_emit, decay, data,act, adj_trans, adj_obs, dirichlet, filter_only) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> ONLINE_EM Adjust the parameters using a weighted combination of the old and new expected statistics
+
+ [transmat, obsmat, exp_num_trans, exp_num_emit, gamma, ll] = online_em(...
+    prior, transmat, obsmat, exp_num_trans, exp_num_emit, decay, data, act, ...
+    adj_trans, adj_obs, dirichlet, filter_only)
+ 
+ 0 &lt; decay &lt; 1, with smaller values meaning the past is forgotten more quickly.
+ (We need to decay the old ess, since they were based on out-of-date parameters.)
+ The other params are as in learn_hmm.
+ We do a single forwards-backwards pass on the provided data, initializing with the specified prior.
+ (If filter_only = 1, we only do a forwards pass.)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="dhmm_em_online_demo.html" class="code" title="">dhmm_em_online_demo</a>	Example of online EM applied to a simple POMDP with fixed action seq</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [transmat, obsmat, exp_num_trans, exp_num_emit, gamma, ll] = dhmm_em_online(</a><span class="keyword">...</span>
+0002     prior, transmat, obsmat, exp_num_trans, exp_num_emit, decay, data, <span class="keyword">...</span>
+0003     act, adj_trans, adj_obs, dirichlet, filter_only)
+0004 <span class="comment">% ONLINE_EM Adjust the parameters using a weighted combination of the old and new expected statistics</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% [transmat, obsmat, exp_num_trans, exp_num_emit, gamma, ll] = online_em(...</span>
+0007 <span class="comment">%    prior, transmat, obsmat, exp_num_trans, exp_num_emit, decay, data, act, ...</span>
+0008 <span class="comment">%    adj_trans, adj_obs, dirichlet, filter_only)</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% 0 &lt; decay &lt; 1, with smaller values meaning the past is forgotten more quickly.</span>
+0011 <span class="comment">% (We need to decay the old ess, since they were based on out-of-date parameters.)</span>
+0012 <span class="comment">% The other params are as in learn_hmm.</span>
+0013 <span class="comment">% We do a single forwards-backwards pass on the provided data, initializing with the specified prior.</span>
+0014 <span class="comment">% (If filter_only = 1, we only do a forwards pass.)</span>
+0015 
+0016 <span class="keyword">if</span> ~exist(<span class="string">'act'</span>), act = []; <span class="keyword">end</span>
+0017 <span class="keyword">if</span> ~exist(<span class="string">'adj_trans'</span>), adj_trans = 1; <span class="keyword">end</span>
+0018 <span class="keyword">if</span> ~exist(<span class="string">'adj_obs'</span>), adj_obs = 1; <span class="keyword">end</span>
+0019 <span class="keyword">if</span> exist(<span class="string">'dirichlet'</span>), dirichlet = 0; <span class="keyword">end</span>
+0020 <span class="keyword">if</span> ~exist(<span class="string">'filter_only'</span>), filter_only = 0; <span class="keyword">end</span>
+0021 
+0022 <span class="comment">% E step</span>
+0023 <span class="comment">%olikseq = multinomial_prob(data, obsmat);</span>
+0024 <span class="comment">%%My edition</span>
+0025     olikseq = obsmat(:, data);
+0026 <span class="comment">%</span>
+0027 <span class="keyword">if</span> isempty(act)
+0028   [alpha, beta, gamma, ll, xi] = fwdback(prior, transmat, olikseq, <span class="string">'fwd_only'</span>, filter_only);
+0029 <span class="keyword">else</span>
+0030   [alpha, beta, gamma, ll, xi] = fwdback(prior, transmat, olikseq, <span class="string">'fwd_only'</span>, filter_only, <span class="keyword">...</span>
+0031                      <span class="string">'act'</span>, act);
+0032 <span class="keyword">end</span>
+0033 
+0034 <span class="comment">% Increment ESS</span>
+0035 [S O] = size(obsmat);
+0036 <span class="keyword">if</span> adj_obs
+0037   exp_num_emit = decay*exp_num_emit + dirichlet*ones(S,O);
+0038   T = length(data);
+0039   <span class="keyword">if</span> T &lt; O
+0040     <span class="keyword">for</span> t=1:T
+0041       o = data(t);
+0042       exp_num_emit(:,o) = exp_num_emit(:,o) + gamma(:,t);
+0043     <span class="keyword">end</span>
+0044   <span class="keyword">else</span>
+0045     <span class="keyword">for</span> o=1:O
+0046       ndx = find(data==o);
+0047       <span class="keyword">if</span> ~isempty(ndx)
+0048     exp_num_emit(:,o) = exp_num_emit(:,o) + sum(gamma(:, ndx), 2);
+0049       <span class="keyword">end</span>
+0050     <span class="keyword">end</span>
+0051   <span class="keyword">end</span>
+0052 <span class="keyword">end</span>
+0053 
+0054 <span class="keyword">if</span> adj_trans &amp; (T &gt; 1)
+0055   <span class="keyword">if</span> isempty(act)
+0056     exp_num_trans = decay*exp_num_trans + sum(xi,3);
+0057   <span class="keyword">else</span>
+0058     <span class="comment">% act(2) determines Q(2), xi(:,:,1) holds P(Q(1), Q(2))</span>
+0059     A = length(transmat);
+0060     <span class="keyword">for</span> a=1:A
+0061       ndx = find(act(2:end)==a);
+0062       <span class="keyword">if</span> ~isempty(ndx)
+0063     exp_num_trans{a} = decay*exp_num_trans{a} + sum(xi(:,:,ndx), 3);
+0064       <span class="keyword">end</span>
+0065     <span class="keyword">end</span>
+0066   <span class="keyword">end</span>
+0067 <span class="keyword">end</span>
+0068 
+0069 
+0070 <span class="comment">% M step</span>
+0071 
+0072 <span class="keyword">if</span> adj_obs
+0073   obsmat = mk_stochastic(exp_num_emit);
+0074 <span class="keyword">end</span>
+0075 <span class="keyword">if</span> adj_trans &amp; (T&gt;1)
+0076   <span class="keyword">if</span> isempty(act)
+0077     transmat = mk_stochastic(exp_num_trans);
+0078   <span class="keyword">else</span>
+0079     <span class="keyword">for</span> a=1:A
+0080       transmat{a} = mk_stochastic(exp_num_trans{a});
+0081     <span class="keyword">end</span>
+0082   <span class="keyword">end</span>
+0083 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

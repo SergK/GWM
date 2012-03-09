@@ -1,0 +1,248 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of insertrows</title>
+  <meta name="keywords" content="insertrows">
+  <meta name="description" content="INSERTROWS - Insert rows into a matrix at specific locations">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html external_utils -->
+<h1>insertrows
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>INSERTROWS - Insert rows into a matrix at specific locations</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [C,RA,RB] = insertrows(A,B,ind) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> INSERTROWS - Insert rows into a matrix at specific locations
+   C = INSERTROWS(A,B,IND) inserts the rows of matrix B into the matrix A at
+   the positions IND. Row k of matrix B will be inserted after position IND(k)
+   in the matrix A. If A is a N-by-X matrix and B is a M-by-X matrix, C will
+   be a (N+M)-by-X matrix. IND can contain non-integers.
+
+   If B is a 1-by-N matrix, B will be inserted for each insertion position
+   specified by IND. If IND is a single value, the whole matrix B will be
+   inserted at that position. If B is a single value, B is expanded to a row
+   vector. In all other cases, the number of elements in IND should be equal to
+   the number of rows in B, and the number of columns, planes etc should be the
+   same for both matrices A and B. 
+
+   Values of IND smaller than one will cause the corresponding rows to be
+   inserted in front of A. C = INSERTROWS(A,B) will simply append B to A.
+
+   If any of the inputs are empty, C will return A. If A is sparse, C will
+   be sparse as well. 
+
+   [C, RA, RB] = INSERTROWS(...) will return the row indices RA and RB for
+   which C corresponds to the rows of either A and B.
+
+   Examples:
+     % the size of A,B, and IND all match
+        C = insertrows(rand(5,2),zeros(2,2),[1.5 3]) 
+     % the row vector B is inserted twice
+        C = insertrows(ones(4,3),1:3,[1 Inf]) 
+     % matrix B is expanded to a row vector and inserted twice (as in 2)
+        C = insertrows(ones(5,3),999,[2 4])
+     % the whole matrix B is inserted once
+        C = insertrows(ones(5,3),zeros(2,3),2)
+     % additional output arguments
+        [c,ra,rb] = insertrows([1:4].',99,[0 3]) 
+        c.'     % -&gt; [99 1 2 3 99 4] 
+        c(ra).' % -&gt; [1 2 3 4] 
+        c(rb).' % -&gt; [99 99] 
+
+   Using permute (or transpose) INSERTROWS can easily function to insert
+   columns, planes, etc:
+
+     % inserting columns, by using the transpose operator:
+        A = zeros(2,3) ; B = ones(2,4) ;
+        c = insertrows(A.', B.',[0 2 3 3]).'  % insert columns
+     % inserting other dimensions, by using permute:
+        A = ones(4,3,3) ; B = zeros(4,3,1) ; 
+        % set the dimension on which to operate in front
+        C = insertrows(permute(A,[3 1 2]), permute(B,[3 1 2]),1) ;
+        C = ipermute(C,[3 1 2]) 
+
+  See also HORZCAT, RESHAPE, CAT</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [C,RA,RB] = insertrows(A,B,ind)</a>
+0002 <span class="comment">% INSERTROWS - Insert rows into a matrix at specific locations</span>
+0003 <span class="comment">%   C = INSERTROWS(A,B,IND) inserts the rows of matrix B into the matrix A at</span>
+0004 <span class="comment">%   the positions IND. Row k of matrix B will be inserted after position IND(k)</span>
+0005 <span class="comment">%   in the matrix A. If A is a N-by-X matrix and B is a M-by-X matrix, C will</span>
+0006 <span class="comment">%   be a (N+M)-by-X matrix. IND can contain non-integers.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">%   If B is a 1-by-N matrix, B will be inserted for each insertion position</span>
+0009 <span class="comment">%   specified by IND. If IND is a single value, the whole matrix B will be</span>
+0010 <span class="comment">%   inserted at that position. If B is a single value, B is expanded to a row</span>
+0011 <span class="comment">%   vector. In all other cases, the number of elements in IND should be equal to</span>
+0012 <span class="comment">%   the number of rows in B, and the number of columns, planes etc should be the</span>
+0013 <span class="comment">%   same for both matrices A and B.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%   Values of IND smaller than one will cause the corresponding rows to be</span>
+0016 <span class="comment">%   inserted in front of A. C = INSERTROWS(A,B) will simply append B to A.</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%   If any of the inputs are empty, C will return A. If A is sparse, C will</span>
+0019 <span class="comment">%   be sparse as well.</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">%   [C, RA, RB] = INSERTROWS(...) will return the row indices RA and RB for</span>
+0022 <span class="comment">%   which C corresponds to the rows of either A and B.</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">%   Examples:</span>
+0025 <span class="comment">%     % the size of A,B, and IND all match</span>
+0026 <span class="comment">%        C = insertrows(rand(5,2),zeros(2,2),[1.5 3])</span>
+0027 <span class="comment">%     % the row vector B is inserted twice</span>
+0028 <span class="comment">%        C = insertrows(ones(4,3),1:3,[1 Inf])</span>
+0029 <span class="comment">%     % matrix B is expanded to a row vector and inserted twice (as in 2)</span>
+0030 <span class="comment">%        C = insertrows(ones(5,3),999,[2 4])</span>
+0031 <span class="comment">%     % the whole matrix B is inserted once</span>
+0032 <span class="comment">%        C = insertrows(ones(5,3),zeros(2,3),2)</span>
+0033 <span class="comment">%     % additional output arguments</span>
+0034 <span class="comment">%        [c,ra,rb] = insertrows([1:4].',99,[0 3])</span>
+0035 <span class="comment">%        c.'     % -&gt; [99 1 2 3 99 4]</span>
+0036 <span class="comment">%        c(ra).' % -&gt; [1 2 3 4]</span>
+0037 <span class="comment">%        c(rb).' % -&gt; [99 99]</span>
+0038 <span class="comment">%</span>
+0039 <span class="comment">%   Using permute (or transpose) INSERTROWS can easily function to insert</span>
+0040 <span class="comment">%   columns, planes, etc:</span>
+0041 <span class="comment">%</span>
+0042 <span class="comment">%     % inserting columns, by using the transpose operator:</span>
+0043 <span class="comment">%        A = zeros(2,3) ; B = ones(2,4) ;</span>
+0044 <span class="comment">%        c = insertrows(A.', B.',[0 2 3 3]).'  % insert columns</span>
+0045 <span class="comment">%     % inserting other dimensions, by using permute:</span>
+0046 <span class="comment">%        A = ones(4,3,3) ; B = zeros(4,3,1) ;</span>
+0047 <span class="comment">%        % set the dimension on which to operate in front</span>
+0048 <span class="comment">%        C = insertrows(permute(A,[3 1 2]), permute(B,[3 1 2]),1) ;</span>
+0049 <span class="comment">%        C = ipermute(C,[3 1 2])</span>
+0050 <span class="comment">%</span>
+0051 <span class="comment">%  See also HORZCAT, RESHAPE, CAT</span>
+0052 
+0053 <span class="comment">% for Matlab R13</span>
+0054 <span class="comment">% version 2.0 (may 2008)</span>
+0055 <span class="comment">% (c) Jos van der Geest</span>
+0056 <span class="comment">% email: jos@jasen.nl</span>
+0057 
+0058 <span class="comment">% History:</span>
+0059 <span class="comment">% 1.0, feb 2006 - created</span>
+0060 <span class="comment">% 2.0, may 2008 - incorporated some improvements after being selected as</span>
+0061 <span class="comment">% &quot;Pick of the Week&quot; by Jiro Doke, and reviews by Tim Davis &amp; Brett:</span>
+0062 <span class="comment">%  - horizontal concatenation when two arguments are provided</span>
+0063 <span class="comment">%  - added example of how to insert columns</span>
+0064 <span class="comment">%  - mention behavior of sparse inputs</span>
+0065 <span class="comment">%  - changed &quot;if nargout&quot; to &quot;if nargout&gt;1&quot; so that additional outputs are</span>
+0066 <span class="comment">%    only calculated when requested for</span>
+0067 
+0068 error(nargchk(2,3,nargin)) ;
+0069 
+0070 <span class="keyword">if</span> nargin==2,
+0071     <span class="comment">% just horizontal concatenation, suggested by Tim Davis</span>
+0072     ind = size(A,1) ;
+0073 <span class="keyword">end</span>
+0074 
+0075 <span class="comment">% shortcut when any of the inputs are empty</span>
+0076 <span class="keyword">if</span> isempty(B) || isempty(ind),    
+0077     C = A ;     
+0078     <span class="keyword">if</span> nargout &gt; 1,
+0079         RA = 1:size(A,1) ;
+0080         RB = [] ;
+0081     <span class="keyword">end</span>
+0082     <span class="keyword">return</span>
+0083 <span class="keyword">end</span>
+0084 
+0085 sa = size(A) ;
+0086 
+0087 <span class="comment">% match the sizes of A, B</span>
+0088 <span class="keyword">if</span> numel(B)==1,
+0089     <span class="comment">% B has a single argument, expand to match A</span>
+0090     sb = [1 sa(2:end)] ;
+0091     B = repmat(B,sb) ;
+0092 <span class="keyword">else</span>
+0093     <span class="comment">% otherwise check for dimension errors</span>
+0094     <span class="keyword">if</span> ndims(A) ~= ndims(B),
+0095         error(<span class="string">'insertrows:DimensionMismatch'</span>, <span class="keyword">...</span>
+0096             <span class="string">'Both input matrices should have the same number of dimensions.'</span>) ;
+0097     <span class="keyword">end</span>
+0098     sb = size(B) ;
+0099     <span class="keyword">if</span> ~all(sa(2:end) == sb(2:end)),
+0100         error(<span class="string">'insertrows:DimensionMismatch'</span>, <span class="keyword">...</span>
+0101             <span class="string">'Both input matrices should have the same number of columns (and planes, etc).'</span>) ;
+0102     <span class="keyword">end</span>
+0103 <span class="keyword">end</span>
+0104 
+0105 ind = ind(:) ; <span class="comment">% make as row vector</span>
+0106 ni = length(ind) ;
+0107 
+0108 <span class="comment">% match the sizes of B and IND</span>
+0109 <span class="keyword">if</span> ni ~= sb(1),
+0110     <span class="keyword">if</span> ni==1 &amp;&amp; sb(1) &gt; 1,
+0111         <span class="comment">% expand IND</span>
+0112         ind = repmat(ind,sb(1),1) ;
+0113     <span class="keyword">elseif</span> (ni &gt; 1) &amp;&amp; (sb(1)==1),
+0114         <span class="comment">% expand B</span>
+0115         B = repmat(B,ni,1) ;
+0116     <span class="keyword">else</span>
+0117         error(<span class="string">'insertrows:InputMismatch'</span>,<span class="keyword">...</span>
+0118             <span class="string">'The number of rows to insert should equal the number of insertion positions.'</span>) ;
+0119     <span class="keyword">end</span>
+0120 <span class="keyword">end</span>
+0121 
+0122 sb = size(B) ;
+0123 
+0124 <span class="comment">% the actual work</span>
+0125 <span class="comment">% 1. concatenate matrices</span>
+0126 C = [A ; B] ;
+0127 <span class="comment">% 2. sort the respective indices, the first output of sort is ignored (by</span>
+0128 <span class="comment">% giving it the same name as the second output, one avoids an extra</span>
+0129 <span class="comment">% large variable in memory)</span>
+0130 [abi,abi] = sort([[1:sa(1)].' ; ind(:)]) ;
+0131 <span class="comment">% 3. reshuffle the large matrix</span>
+0132 C = C(abi,:) ;
+0133 <span class="comment">% 4. reshape as A for nd matrices (nd&gt;2)</span>
+0134 <span class="keyword">if</span> ndims(A) &gt; 2,
+0135     sc = sa ;
+0136     sc(1) = sc(1)+sb(1) ;
+0137     C = reshape(C,sc) ;
+0138 <span class="keyword">end</span>
+0139 
+0140 <span class="keyword">if</span> nargout &gt; 1,
+0141     <span class="comment">% additional outputs required</span>
+0142     R = [zeros(sa(1),1) ; ones(sb(1),1)] ;
+0143     R = R(abi) ;
+0144     RA = find(R==0) ;
+0145     RB = find(R==1) ;
+0146 <span class="keyword">end</span>
+0147 
+0148 
+0149 
+0150 
+0151 
+0152 
+0153</pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

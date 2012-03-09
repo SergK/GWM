@@ -1,0 +1,17 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  condgaussTrainObserved -> mixgauss_Mstep;
+  mixgauss_em -> mixgauss_Mstep;
+  mixgauss_em -> mixgauss_init;
+  mixgauss_em -> mixgauss_prob;
+  mixgauss_prob -> gaussian_prob;
+
+  condgaussTrainObserved [URL="condgaussTrainObserved.html"];
+  gaussian_prob [URL="gaussian_prob.html"];
+  mixgauss_Mstep [URL="mixgauss_Mstep.html"];
+  mixgauss_em [URL="mixgauss_em.html"];
+  mixgauss_init [URL="mixgauss_init.html"];
+  mixgauss_prob [URL="mixgauss_prob.html"];
+  mixgauss_sample [URL="mixgauss_sample.html"];
+  multinomial_prob [URL="multinomial_prob.html"];
+}

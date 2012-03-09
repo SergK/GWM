@@ -1,0 +1,342 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of calcnbins</title>
+  <meta name="keywords" content="calcnbins">
+  <meta name="description" content="Calculate the &quot;ideal&quot; number of bins to use in a histogram, using a">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GridWM --><!-- ../menu.html external_utils --><!-- menu.html histogram -->
+<h1>calcnbins
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>Calculate the &quot;ideal&quot; number of bins to use in a histogram, using a</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function nbins = calcnbins(x, method, minimum, maximum) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Calculate the &quot;ideal&quot; number of bins to use in a histogram, using a
+ choice of methods.
+ 
+ NBINS = CALCNBINS(X, METHOD) calculates the &quot;ideal&quot; number of bins to use
+ in a histogram, using a choice of methods.  The type of return value
+ depends upon the method chosen.  Possible values for METHOD are:
+ 'fd': A single integer is returned, and CALCNBINS uses the
+ Freedman-Diaconis method,
+ based upon the inter-quartile range and number of data.
+ See Freedman, David; Diaconis, P. (1981). &quot;On the histogram as a density
+ estimator: L2 theory&quot;. Zeitschrift für Wahrscheinlichkeitstheorie und
+ verwandte Gebiete 57 (4): 453-476.
+
+ 'scott': A single integer is returned, and CALCNBINS uses Scott's method,
+ based upon the sample standard deviation and number of data.
+ See Scott, David W. (1979). &quot;On optimal and data-based histograms&quot;.
+ Biometrika 66 (3): 605-610.
+ 
+ 'sturges': A single integer is returned, and CALCNBINS uses Sturges'
+ method, based upon the number of data.
+ See Sturges, H. A. (1926). &quot;The choice of a class interval&quot;. J. American
+ Statistical Association: 65-66.
+ 
+ 'middle': A single integer is returned.  CALCNBINS uses all three
+ methods, then picks the middle (median) value.
+ 
+ 'all': A structure is returned with fields 'fd', 'scott' and 'sturges',
+ each containing the calculation from the respective method.
+ 
+ NBINS = CALCNBINS(X) works as NBINS = CALCNBINS(X, 'MIDDLE').
+ 
+ NBINS = CALCNBINS(X, [], MINIMUM), where MINIMUM is a numeric scalar,
+ defines the smallest acceptable number of bins.
+ 
+ NBINS = CALCNBINS(X, [], MAXIMUM), where MAXIMUM is a numeric scalar,
+ defines the largest acceptable number of bins.
+ 
+ Notes: 
+ 1. If X is complex, any imaginary components will be ignored, with a
+ warning.
+ 
+ 2. If X is an matrix or multidimensional array, it will be coerced to a
+ vector, with a warning.
+ 
+ 3. Partial name matching is used on the method name, so 'st' matches
+ sturges, etc.
+ 
+ 4. This function is inspired by code from the free software package R
+ (http://www.r-project.org).  See 'Modern Applied Statistics with S' by
+ Venables &amp; Ripley (Springer, 2002, p112) for more information.
+ 
+ 5. The &quot;ideal&quot; number of depends on what you want to show, and none of
+ the methods included are as good as the human eye.  It is recommended
+ that you use this function as a starting point rather than a definitive
+ guide.
+ 
+ 6. The wikipedia page on histograms currently gives a reasonable
+ description of the algorithms used.
+ See http://en.wikipedia.org/w/index.php?title=Histogram&amp;oldid=232222820
+ 
+ Examples:     
+ y = randn(10000,1);
+ nb = calcnbins(y, 'all')
+    nb = 
+             fd: 66
+          scott: 51
+        sturges: 15
+ calcnbins(y)
+    ans =
+        51
+ subplot(3, 1, 1); hist(y, nb.fd);
+ subplot(3, 1, 2); hist(y, nb.scott);
+ subplot(3, 1, 3); hist(y, nb.sturges);
+ y2 = rand(100,1);
+ nb2 = calcnbins(y2, 'all')
+    nb2 = 
+             fd: 5
+          scott: 5
+        sturges: 8
+ hist(y2, calcnbins(y2))
+ 
+ See also: HIST, <a href="histx.html" class="code" title="function [n, xout] = histx(varargin)">HISTX</a>
+
+ $ Author: Richard Cotton $        $ Date: 2008/10/24 $    $ Version 1.5 $</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="histx.html" class="code" title="function [n, xout] = histx(varargin)">histx</a>	A wrapper for hist that picks the "ideal" number of bins to use if</li><li><a href="my_calcnbins.html" class="code" title="">my_calcnbins</a>	</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function nbins = calcfd(x)</a></li><li><a href="#_sub2" class="code">function nbins = calcscott(x)</a></li><li><a href="#_sub3" class="code">function nbins = calcsturges(x)</a></li><li><a href="#_sub4" class="code">function y = confine2range(x, lower, upper)</a></li><li><a href="#_sub5" class="code">function y = prctile0(x, prc)</a></li><li><a href="#_sub6" class="code">function foo = makecolumnvector(foo)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function nbins = calcnbins(x, method, minimum, maximum)</a>
+0002 <span class="comment">% Calculate the &quot;ideal&quot; number of bins to use in a histogram, using a</span>
+0003 <span class="comment">% choice of methods.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% NBINS = CALCNBINS(X, METHOD) calculates the &quot;ideal&quot; number of bins to use</span>
+0006 <span class="comment">% in a histogram, using a choice of methods.  The type of return value</span>
+0007 <span class="comment">% depends upon the method chosen.  Possible values for METHOD are:</span>
+0008 <span class="comment">% 'fd': A single integer is returned, and CALCNBINS uses the</span>
+0009 <span class="comment">% Freedman-Diaconis method,</span>
+0010 <span class="comment">% based upon the inter-quartile range and number of data.</span>
+0011 <span class="comment">% See Freedman, David; Diaconis, P. (1981). &quot;On the histogram as a density</span>
+0012 <span class="comment">% estimator: L2 theory&quot;. Zeitschrift für Wahrscheinlichkeitstheorie und</span>
+0013 <span class="comment">% verwandte Gebiete 57 (4): 453-476.</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% 'scott': A single integer is returned, and CALCNBINS uses Scott's method,</span>
+0016 <span class="comment">% based upon the sample standard deviation and number of data.</span>
+0017 <span class="comment">% See Scott, David W. (1979). &quot;On optimal and data-based histograms&quot;.</span>
+0018 <span class="comment">% Biometrika 66 (3): 605-610.</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% 'sturges': A single integer is returned, and CALCNBINS uses Sturges'</span>
+0021 <span class="comment">% method, based upon the number of data.</span>
+0022 <span class="comment">% See Sturges, H. A. (1926). &quot;The choice of a class interval&quot;. J. American</span>
+0023 <span class="comment">% Statistical Association: 65-66.</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% 'middle': A single integer is returned.  CALCNBINS uses all three</span>
+0026 <span class="comment">% methods, then picks the middle (median) value.</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% 'all': A structure is returned with fields 'fd', 'scott' and 'sturges',</span>
+0029 <span class="comment">% each containing the calculation from the respective method.</span>
+0030 <span class="comment">%</span>
+0031 <span class="comment">% NBINS = CALCNBINS(X) works as NBINS = CALCNBINS(X, 'MIDDLE').</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">% NBINS = CALCNBINS(X, [], MINIMUM), where MINIMUM is a numeric scalar,</span>
+0034 <span class="comment">% defines the smallest acceptable number of bins.</span>
+0035 <span class="comment">%</span>
+0036 <span class="comment">% NBINS = CALCNBINS(X, [], MAXIMUM), where MAXIMUM is a numeric scalar,</span>
+0037 <span class="comment">% defines the largest acceptable number of bins.</span>
+0038 <span class="comment">%</span>
+0039 <span class="comment">% Notes:</span>
+0040 <span class="comment">% 1. If X is complex, any imaginary components will be ignored, with a</span>
+0041 <span class="comment">% warning.</span>
+0042 <span class="comment">%</span>
+0043 <span class="comment">% 2. If X is an matrix or multidimensional array, it will be coerced to a</span>
+0044 <span class="comment">% vector, with a warning.</span>
+0045 <span class="comment">%</span>
+0046 <span class="comment">% 3. Partial name matching is used on the method name, so 'st' matches</span>
+0047 <span class="comment">% sturges, etc.</span>
+0048 <span class="comment">%</span>
+0049 <span class="comment">% 4. This function is inspired by code from the free software package R</span>
+0050 <span class="comment">% (http://www.r-project.org).  See 'Modern Applied Statistics with S' by</span>
+0051 <span class="comment">% Venables &amp; Ripley (Springer, 2002, p112) for more information.</span>
+0052 <span class="comment">%</span>
+0053 <span class="comment">% 5. The &quot;ideal&quot; number of depends on what you want to show, and none of</span>
+0054 <span class="comment">% the methods included are as good as the human eye.  It is recommended</span>
+0055 <span class="comment">% that you use this function as a starting point rather than a definitive</span>
+0056 <span class="comment">% guide.</span>
+0057 <span class="comment">%</span>
+0058 <span class="comment">% 6. The wikipedia page on histograms currently gives a reasonable</span>
+0059 <span class="comment">% description of the algorithms used.</span>
+0060 <span class="comment">% See http://en.wikipedia.org/w/index.php?title=Histogram&amp;oldid=232222820</span>
+0061 <span class="comment">%</span>
+0062 <span class="comment">% Examples:</span>
+0063 <span class="comment">% y = randn(10000,1);</span>
+0064 <span class="comment">% nb = calcnbins(y, 'all')</span>
+0065 <span class="comment">%    nb =</span>
+0066 <span class="comment">%             fd: 66</span>
+0067 <span class="comment">%          scott: 51</span>
+0068 <span class="comment">%        sturges: 15</span>
+0069 <span class="comment">% calcnbins(y)</span>
+0070 <span class="comment">%    ans =</span>
+0071 <span class="comment">%        51</span>
+0072 <span class="comment">% subplot(3, 1, 1); hist(y, nb.fd);</span>
+0073 <span class="comment">% subplot(3, 1, 2); hist(y, nb.scott);</span>
+0074 <span class="comment">% subplot(3, 1, 3); hist(y, nb.sturges);</span>
+0075 <span class="comment">% y2 = rand(100,1);</span>
+0076 <span class="comment">% nb2 = calcnbins(y2, 'all')</span>
+0077 <span class="comment">%    nb2 =</span>
+0078 <span class="comment">%             fd: 5</span>
+0079 <span class="comment">%          scott: 5</span>
+0080 <span class="comment">%        sturges: 8</span>
+0081 <span class="comment">% hist(y2, calcnbins(y2))</span>
+0082 <span class="comment">%</span>
+0083 <span class="comment">% See also: HIST, HISTX</span>
+0084 <span class="comment">%</span>
+0085 <span class="comment">% $ Author: Richard Cotton $        $ Date: 2008/10/24 $    $ Version 1.5 $</span>
+0086 
+0087 <span class="comment">% Input checking</span>
+0088 error(nargchk(1, 4, nargin));
+0089 
+0090 <span class="keyword">if</span> ~isnumeric(x) &amp;&amp; ~islogical(x)
+0091     error(<span class="string">'calcnbins:invalidX'</span>, <span class="string">'The X argument must be numeric or logical.'</span>)
+0092 <span class="keyword">end</span>
+0093 
+0094 <span class="keyword">if</span> ~isreal(x)
+0095    x = real(x);
+0096    warning(<span class="string">'calcnbins:complexX'</span>, <span class="string">'Imaginary parts of X will be ignored.'</span>);
+0097 <span class="keyword">end</span>
+0098 
+0099 <span class="comment">% Ignore dimensions of x.</span>
+0100 <span class="keyword">if</span> ~isvector(x)
+0101    x = x(:);
+0102    warning(<span class="string">'calcnbins:nonvectorX'</span>, <span class="string">'X will be coerced to a vector.'</span>);
+0103 <span class="keyword">end</span>
+0104 
+0105 nanx = isnan(x);
+0106 <span class="keyword">if</span> any(nanx)
+0107    x = x(~nanx);
+0108    warning(<span class="string">'calcnbins:nanX'</span>, <span class="string">'Values of X equal to NaN will be ignored.'</span>);
+0109 <span class="keyword">end</span>
+0110 
+0111 <span class="keyword">if</span> nargin &lt; 2 || isempty(method)
+0112    method = <span class="string">'middle'</span>;
+0113 <span class="keyword">end</span>
+0114 
+0115 <span class="keyword">if</span> ~ischar(method)
+0116    error(<span class="string">'calcnbins:invalidMethod'</span>, <span class="string">'The method argument must be a char array.'</span>);
+0117 <span class="keyword">end</span>
+0118 
+0119 validmethods = {<span class="string">'fd'</span>; <span class="string">'scott'</span>; <span class="string">'sturges'</span>; <span class="string">'all'</span>; <span class="string">'middle'</span>};
+0120 methodmatches = strmatch(lower(method), validmethods);
+0121 nmatches = length(methodmatches);
+0122 <span class="keyword">if</span> nmatches~=1
+0123    error(<span class="string">'calnbins:unknownMethod'</span>, <span class="string">'The method specified is unknown or ambiguous.'</span>);
+0124 <span class="keyword">end</span>
+0125 method = validmethods{methodmatches};
+0126 
+0127 <span class="keyword">if</span> nargin &lt; 3 || isempty(minimum)
+0128    minimum = 1;
+0129 <span class="keyword">end</span>
+0130 
+0131 <span class="keyword">if</span> nargin &lt; 4 || isempty(maximum)
+0132    maximum = Inf;
+0133 <span class="keyword">end</span>
+0134    
+0135 <span class="comment">% Perform the calculation</span>
+0136 <span class="keyword">switch</span>(method)
+0137    <span class="keyword">case</span> <span class="string">'fd'</span>
+0138       nbins = <a href="#_sub1" class="code" title="subfunction nbins = calcfd(x)">calcfd</a>(x);
+0139    <span class="keyword">case</span> <span class="string">'scott'</span>
+0140       nbins = <a href="#_sub2" class="code" title="subfunction nbins = calcscott(x)">calcscott</a>(x);
+0141     <span class="keyword">case</span> <span class="string">'sturges'</span>
+0142       nbins = <a href="#_sub3" class="code" title="subfunction nbins = calcsturges(x)">calcsturges</a>(x);
+0143    <span class="keyword">case</span> <span class="string">'all'</span>
+0144       nbins.fd = <a href="#_sub1" class="code" title="subfunction nbins = calcfd(x)">calcfd</a>(x);    
+0145       nbins.scott = <a href="#_sub2" class="code" title="subfunction nbins = calcscott(x)">calcscott</a>(x);
+0146       nbins.sturges = <a href="#_sub3" class="code" title="subfunction nbins = calcsturges(x)">calcsturges</a>(x);
+0147    <span class="keyword">case</span> <span class="string">'middle'</span>
+0148       nbins = median([<a href="#_sub1" class="code" title="subfunction nbins = calcfd(x)">calcfd</a>(x) <a href="#_sub2" class="code" title="subfunction nbins = calcscott(x)">calcscott</a>(x) <a href="#_sub3" class="code" title="subfunction nbins = calcsturges(x)">calcsturges</a>(x)]);
+0149 <span class="keyword">end</span>
+0150 
+0151 <span class="comment">% Calculation details</span>
+0152    <a name="_sub1" href="#_subfunctions" class="code">function nbins = calcfd(x)</a>
+0153       h = diff(<a href="#_sub5" class="code" title="subfunction y = prctile0(x, prc)">prctile0</a>(x, [25; 75])); <span class="comment">%inter-quartile range</span>
+0154       <span class="keyword">if</span> h == 0
+0155          h = 2*median(abs(x-median(x))); <span class="comment">%twice median absolute deviation</span>
+0156       <span class="keyword">end</span>
+0157       <span class="keyword">if</span> h &gt; 0
+0158          nbins = ceil((max(x)-min(x))/(2*h*length(x)^(-1/3)));
+0159       <span class="keyword">else</span>
+0160          nbins = 1;
+0161       <span class="keyword">end</span>
+0162       nbins = <a href="#_sub4" class="code" title="subfunction y = confine2range(x, lower, upper)">confine2range</a>(nbins, minimum, maximum);
+0163    <span class="keyword">end</span>
+0164 
+0165    <a name="_sub2" href="#_subfunctions" class="code">function nbins = calcscott(x)</a>
+0166       h = 3.5*std(x)*length(x)^(-1/3);
+0167       <span class="keyword">if</span> h &gt; 0 
+0168          nbins = ceil((max(x)-min(x))/h);
+0169       <span class="keyword">else</span> 
+0170          nbins = 1;
+0171       <span class="keyword">end</span>
+0172       nbins = <a href="#_sub4" class="code" title="subfunction y = confine2range(x, lower, upper)">confine2range</a>(nbins, minimum, maximum);
+0173    <span class="keyword">end</span>
+0174 
+0175    <a name="_sub3" href="#_subfunctions" class="code">function nbins = calcsturges(x)</a>
+0176       nbins = ceil(log2(length(x)) + 1);
+0177       nbins = <a href="#_sub4" class="code" title="subfunction y = confine2range(x, lower, upper)">confine2range</a>(nbins, minimum, maximum);
+0178    <span class="keyword">end</span>
+0179 
+0180    <a name="_sub4" href="#_subfunctions" class="code">function y = confine2range(x, lower, upper)</a>
+0181       y = ceil(max(x, lower));
+0182       y = floor(min(y, upper));
+0183    <span class="keyword">end</span>
+0184 
+0185    <a name="_sub5" href="#_subfunctions" class="code">function y = prctile0(x, prc)</a>
+0186       <span class="comment">% Simple version of prctile that only operates on vectors, and skips</span>
+0187       <span class="comment">% the input checking (In particluar, NaN values are now assumed to</span>
+0188       <span class="comment">% have been removed.)</span>
+0189       lenx = length(x);
+0190       <span class="keyword">if</span> lenx == 0
+0191          y = [];
+0192          <span class="keyword">return</span>
+0193       <span class="keyword">end</span>
+0194       <span class="keyword">if</span> lenx == 1
+0195          y = x;
+0196          <span class="keyword">return</span>
+0197       <span class="keyword">end</span>
+0198       
+0199       <a name="_sub6" href="#_subfunctions" class="code">function foo = makecolumnvector(foo)</a>
+0200          <span class="keyword">if</span> size(foo, 2) &gt; 1 
+0201             foo = foo';
+0202          <span class="keyword">end</span>
+0203       <span class="keyword">end</span>
+0204          
+0205       sortx = <a href="#_sub6" class="code" title="subfunction foo = makecolumnvector(foo)">makecolumnvector</a>(sort(x));
+0206       posn = prc.*lenx/100 + 0.5;
+0207       posn = <a href="#_sub6" class="code" title="subfunction foo = makecolumnvector(foo)">makecolumnvector</a>(posn);
+0208       posn = <a href="#_sub4" class="code" title="subfunction y = confine2range(x, lower, upper)">confine2range</a>(posn, 1, lenx);
+0209       y = interp1q((1:lenx)', sortx, posn);
+0210    <span class="keyword">end</span>
+0211 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mixgauss_em</title>
+  <meta name="keywords" content="mixgauss_em">
+  <meta name="description" content="MIXGAUSS_EM Fit the parameters of a mixture of Gaussians using EM">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GridWM --><!-- ../menu.html mhmm --><!-- menu.html add -->
+<h1>mixgauss_em
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>MIXGAUSS_EM Fit the parameters of a mixture of Gaussians using EM</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [mu, Sigma, prior] = mixgauss_em(Y, nc, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> MIXGAUSS_EM Fit the parameters of a mixture of Gaussians using EM
+ function [mu, Sigma, prior] = mixgauss_em(data, nc, varargin)
+
+ data(:, t) is the t'th data point
+ nc is the number of clusters</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="mixgauss_Mstep.html" class="code" title="function [mu, Sigma] = mixgauss_Mstep(w, Y, YY, YTY, varargin)">mixgauss_Mstep</a>	MSTEP_COND_GAUSS Compute MLEs for mixture of Gaussians given expected sufficient statistics</li><li><a href="mixgauss_init.html" class="code" title="function [mu, Sigma, weights, mix] = mixgauss_init(M, data, cov_type, method)">mixgauss_init</a>	MIXGAUSS_INIT Initial parameter estimates for a mixture of Gaussians</li><li><a href="mixgauss_prob.html" class="code" title="function [B, B2] = mixgauss_prob(data, mu, Sigma, mixmat, unit_norm)">mixgauss_prob</a>	EVAL_PDF_COND_MOG Evaluate the pdf of a conditional mixture of Gaussians</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [mu, Sigma, prior] = mixgauss_em(Y, nc, varargin)</a>
+0002 <span class="comment">% MIXGAUSS_EM Fit the parameters of a mixture of Gaussians using EM</span>
+0003 <span class="comment">% function [mu, Sigma, prior] = mixgauss_em(data, nc, varargin)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% data(:, t) is the t'th data point</span>
+0006 <span class="comment">% nc is the number of clusters</span>
+0007 
+0008 <span class="comment">% Kevin Murphy, 13 May 2003</span>
+0009 
+0010 [max_iter, thresh, cov_type, mu, Sigma, method, <span class="keyword">...</span>
+0011  cov_prior, verbose, prune_thresh] = process_options(<span class="keyword">...</span>
+0012     varargin, <span class="string">'max_iter'</span>, 50, <span class="string">'thresh'</span>, 1e-3, <span class="string">'cov_type'</span>, <span class="string">'full'</span>, <span class="keyword">...</span>
+0013     <span class="string">'mu'</span>, [], <span class="string">'Sigma'</span>, [],  <span class="string">'method'</span>, <span class="string">'kmeans'</span>, <span class="keyword">...</span>
+0014     <span class="string">'cov_prior'</span>, [], <span class="string">'verbose'</span>, 0, <span class="string">'prune_thresh'</span>, 0);
+0015 
+0016 [ny T] = size(Y);
+0017 
+0018 <span class="keyword">if</span> nc==1
+0019   <span class="comment">% No latent variable, so there is a closed-form solution</span>
+0020   mu = mean(Y')';
+0021   Sigma = cov(Y');
+0022   <span class="keyword">if</span> strcmp(cov_type, <span class="string">'diag'</span>)
+0023     Sigma = diag(diag(Sigma));
+0024   <span class="keyword">end</span>
+0025   prior = 1;
+0026   <span class="keyword">return</span>;
+0027 <span class="keyword">end</span>
+0028 
+0029 <span class="keyword">if</span> isempty(mu)
+0030   [mu, Sigma, prior] = <a href="mixgauss_init.html" class="code" title="function [mu, Sigma, weights, mix] = mixgauss_init(M, data, cov_type, method)">mixgauss_init</a>(nc, Y, cov_type, method);
+0031 <span class="keyword">end</span>
+0032 
+0033 previous_loglik = -inf;
+0034 num_iter = 1;
+0035 converged = 0;
+0036 
+0037 <span class="comment">%if verbose, fprintf('starting em\n'); end</span>
+0038 
+0039 <span class="keyword">while</span> (num_iter &lt;= max_iter) &amp; ~converged
+0040   <span class="comment">% E step</span>
+0041   probY = <a href="mixgauss_prob.html" class="code" title="function [B, B2] = mixgauss_prob(data, mu, Sigma, mixmat, unit_norm)">mixgauss_prob</a>(Y, mu, Sigma, prior); <span class="comment">% probY(q,t)</span>
+0042   [post, lik] = normalize(probY .* repmat(prior, 1, T), 1); <span class="comment">% post(q,t)</span>
+0043   loglik = log(sum(lik));
+0044  
+0045   <span class="comment">% extract expected sufficient statistics</span>
+0046   w = sum(post,2);  <span class="comment">% w(c) = sum_t post(c,t)</span>
+0047   WYY = zeros(ny, ny, nc);  <span class="comment">% WYY(:,:,c) = sum_t post(c,t) Y(:,t) Y(:,t)'</span>
+0048   WY = zeros(ny, nc);  <span class="comment">% WY(:,c) = sum_t post(c,t) Y(:,t)</span>
+0049   WYTY = zeros(nc,1); <span class="comment">% WYTY(c) = sum_t post(c,t) Y(:,t)' Y(:,t)</span>
+0050   <span class="keyword">for</span> c=1:nc
+0051     weights = repmat(post(c,:), ny, 1); <span class="comment">% weights(:,t) = post(c,t)</span>
+0052     WYbig = Y .* weights; <span class="comment">% WYbig(:,t) = post(c,t) * Y(:,t)</span>
+0053     WYY(:,:,c) = WYbig * Y';
+0054     WY(:,c) = sum(WYbig, 2); 
+0055     WYTY(c) = sum(diag(WYbig' * Y)); 
+0056   <span class="keyword">end</span>
+0057   
+0058   <span class="comment">% M step</span>
+0059   prior = normalize(w);
+0060   [mu, Sigma] = <a href="mixgauss_Mstep.html" class="code" title="function [mu, Sigma] = mixgauss_Mstep(w, Y, YY, YTY, varargin)">mixgauss_Mstep</a>(w, WY, WYY, WYTY, <span class="string">'cov_type'</span>, cov_type, <span class="string">'cov_prior'</span>, cov_prior);
+0061   
+0062   <span class="keyword">if</span> verbose, fprintf(1, <span class="string">'iteration %d, loglik = %f\n'</span>, num_iter, loglik); <span class="keyword">end</span>
+0063   num_iter =  num_iter + 1;
+0064   converged = convergenceTest(loglik, previous_loglik, thresh,true);
+0065   <span class="comment">%converged = em_converged(loglik, previous_loglik, thresh);</span>
+0066   previous_loglik = loglik;
+0067   
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="keyword">if</span> prune_thresh &gt; 0
+0071   ndx = find(prior &lt; prune_thresh);
+0072   mu(:,ndx) = [];
+0073   Sigma(:,:,ndx) = [];
+0074   prior(ndx) = [];
+0075 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

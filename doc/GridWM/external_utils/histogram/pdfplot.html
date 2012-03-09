@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of pdfplot</title>
+  <meta name="keywords" content="pdfplot">
+  <meta name="description" content="function [p,w,bins] = pdfplot(c,color,flag);">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GridWM --><!-- ../menu.html external_utils --><!-- menu.html histogram -->
+<h1>pdfplot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [p,w,bins] = pdfplot(c,color,flag);</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [p,w,bins] = pdfplot(c,color,flag); </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> function [p,w,bins] = pdfplot(c,color,flag);
+ Plot the pdf of distribution c using Scott's rule to choose bin width.
+ If 'flag' argument is given then the matlab 'plot' command is used instead of 'bars'</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [p,w,bins] = pdfplot(c,color,flag);</a>
+0002 <span class="comment">% function [p,w,bins] = pdfplot(c,color,flag);</span>
+0003 <span class="comment">% Plot the pdf of distribution c using Scott's rule to choose bin width.</span>
+0004 <span class="comment">% If 'flag' argument is given then the matlab 'plot' command is used instead of 'bars'</span>
+0005 
+0006 <span class="comment">% Copyright (c) 2004-2006 Alessio Botta, Alberto Dainotti, Antonio Pescapè</span>
+0007 <span class="comment">% Email: {a.botta , alberto , pescape }@unina.it</span>
+0008 <span class="comment">% DIS - Dipartimento di Informatica e Sistemistica</span>
+0009 <span class="comment">% University of Napoli Federico II, ITALY</span>
+0010 <span class="comment">% All rights reserved.</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Redistribution and use in source and binary forms, with or without</span>
+0013 <span class="comment">% modification, are permitted provided that the following conditions</span>
+0014 <span class="comment">% are met:</span>
+0015 <span class="comment">% 1. Redistributions of source code must retain the above copyright</span>
+0016 <span class="comment">%    notice, this list of conditions and the following disclaimer.</span>
+0017 <span class="comment">% 2. Redistributions in binary form must reproduce the above copyright</span>
+0018 <span class="comment">%    notice, this list of conditions and the following disclaimer in the</span>
+0019 <span class="comment">%    documentation and/or other materials provided with the distribution.</span>
+0020 <span class="comment">% 3. Redistributions of source code or in binary form must clearly reproduce</span>
+0021 <span class="comment">%    the reference to the web site from which they were downloaded.</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND</span>
+0024 <span class="comment">% ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE</span>
+0025 <span class="comment">% IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE</span>
+0026 <span class="comment">% ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE</span>
+0027 <span class="comment">% FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL</span>
+0028 <span class="comment">% DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS</span>
+0029 <span class="comment">% OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)</span>
+0030 <span class="comment">% HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT</span>
+0031 <span class="comment">% LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY</span>
+0032 <span class="comment">% OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF</span>
+0033 <span class="comment">% SUCH DAMAGE.</span>
+0034 
+0035 <span class="comment">% Compute bins width by Scott's rule</span>
+0036 w=3.49*std(c) * length(c)^(-1/3);
+0037 <span class="comment">% establish bins vector</span>
+0038 bins=(min(c)+w/2):w:max(c);
+0039 <span class="comment">% use hist to compute absolute frequencies</span>
+0040 freq=hist(c,bins);
+0041 <span class="comment">% return relative frequencies</span>
+0042 p=freq/(length(c)*w);
+0043 <span class="comment">%p=freq/(length(c));</span>
+0044 
+0045 <span class="comment">%plot</span>
+0046 <span class="keyword">if</span> nargin &gt; 2
+0047     plot(bins,p,color);
+0048     grid minor;
+0049 <span class="keyword">else</span>
+0050     <span class="keyword">if</span> nargin &gt; 1
+0051         bar(bins,p,color);
+0052         grid minor;
+0053     <span class="keyword">end</span>
+0054 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of hsmmCreate</title>
+  <meta name="keywords" content="hsmmCreate">
+  <meta name="description" content="function [A,B,P,PAI,Vk,O,K]=hsmmCreate(O,M,D,K,varargin)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html hsmm -->
+<h1>hsmmCreate
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [A,B,P,PAI,Vk,O,K]=hsmmCreate(O,M,D,K,varargin)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [model]=hsmmCreate(O,M,D,K,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">function [A,B,P,PAI,Vk,O,K]=hsmmCreate(O,M,D,K,varargin)
+ Creates model WITHOUT EM-iteration
+ 
+   Usage: [A,B,P,PAI,Vk,O,K]=hsmmInitialize(O,M,D,K,init_type)
+
+   O - observation
+   M - Number of States
+   D - Duration
+   K - Max value of Observation
+   init_type (Transition matrix):
+       - 'uniform'         &lt;-default
+       - 'rand' 
+       - 'rand-zero-diag'  &lt;-random with zero diag
+       - 'left-right'      &lt;-Bakis (full jump example)
+                     A =
+                         0.2025    0.1221    0.6754
+                              0    0.6427    0.3573
+                              0         0    1.0000
+       - 'unif-zero-diag'       &lt;-uniform with zero diag</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="hsmmFit.html" class="code" title="function [model,ll]=hsmmFit(data,M,D,K,varargin)">hsmmFit</a>	function model=hsmmFit(data,M,D,K,varargin)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [model]=hsmmCreate(O,M,D,K,varargin)</a>
+0002 <span class="comment">%function [A,B,P,PAI,Vk,O,K]=hsmmCreate(O,M,D,K,varargin)</span>
+0003 <span class="comment">% Creates model WITHOUT EM-iteration</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%   Usage: [A,B,P,PAI,Vk,O,K]=hsmmInitialize(O,M,D,K,init_type)</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   O - observation</span>
+0008 <span class="comment">%   M - Number of States</span>
+0009 <span class="comment">%   D - Duration</span>
+0010 <span class="comment">%   K - Max value of Observation</span>
+0011 <span class="comment">%   init_type (Transition matrix):</span>
+0012 <span class="comment">%       - 'uniform'         &lt;-default</span>
+0013 <span class="comment">%       - 'rand'</span>
+0014 <span class="comment">%       - 'rand-zero-diag'  &lt;-random with zero diag</span>
+0015 <span class="comment">%       - 'left-right'      &lt;-Bakis (full jump example)</span>
+0016 <span class="comment">%                     A =</span>
+0017 <span class="comment">%                         0.2025    0.1221    0.6754</span>
+0018 <span class="comment">%                              0    0.6427    0.3573</span>
+0019 <span class="comment">%                              0         0    1.0000</span>
+0020 <span class="comment">%       - 'unif-zero-diag'       &lt;-uniform with zero diag</span>
+0021 <span class="comment">%</span>
+0022 
+0023     <span class="comment">%%</span>
+0024 [   init_type,          <span class="keyword">...</span>
+0025     jump_step     ] <span class="keyword">...</span>
+0026     = process_options(varargin  , <span class="keyword">...</span>
+0027     <span class="string">'init_type'</span>                 , <span class="string">'uniform'</span>,    <span class="keyword">...</span><span class="comment">     %using uniform init by default</span>
+0028     <span class="string">'jump_step'</span>                 , M-1             <span class="keyword">...</span><span class="comment">     % 0 - full jump (default)</span>
+0029     );                   
+0030 
+0031 <span class="comment">%Data check and convert it to column form</span>
+0032 <span class="keyword">if</span> isrowvec(O)
+0033     O=O';
+0034 <span class="keyword">end</span>
+0035 
+0036 
+0037 
+0038     <span class="keyword">switch</span> lower(init_type)
+0039         <span class="keyword">case</span> <span class="string">'uniform'</span>
+0040             PAI=ones(M,1);
+0041             PAI=PAI./sum(PAI);           <span class="comment">%the initial probability</span>
+0042  
+0043             A=ones(M);
+0044             A=A./(sum(A,2)*ones(1,M));      <span class="comment">%The Transition Probability Matrix of active states</span>
+0045             
+0046             P=repmat((1:D).^2,M,1);
+0047             <span class="comment">% My edition</span>
+0048             <span class="comment">%    P=repmat((D:-1:1).^2,M,1);</span>
+0049             P=P./(sum(P,2)*ones(1,D));
+0050             <span class="comment">%%</span>
+0051         <span class="keyword">case</span> <span class="string">'rand'</span>
+0052             PAI=mkStochastic(rand(M,1));
+0053             A=mkStochastic(rand(M,M));
+0054             P=mkStochastic(rand(M,D));
+0055             <span class="comment">%%</span>
+0056         <span class="keyword">case</span> <span class="string">'rand-zero-diag'</span>
+0057             PAI = rand(M,1);
+0058             PAI(1) = 0;         <span class="comment">% we cannot start from this place because of zero diag</span>
+0059             PAI=mkStochastic(PAI);
+0060             A=mk_stochastic_diag(rand(M,M));
+0061             P=mkStochastic(rand(M,D));
+0062         <span class="keyword">case</span> <span class="string">'left-right'</span>
+0063             <span class="keyword">if</span> jump_step &gt; (M-1)
+0064                 warning(<span class="string">'Jump step could not be greater than NStates-1. Converting jump_step to NStates-1'</span>);
+0065                 jump_step = M-1;
+0066             <span class="keyword">elseif</span> jump_step &lt; 1
+0067                 warning(<span class="string">'Jump step could not be less than 1. Converting jump_step to 1'</span>);
+0068                 jump_step = 1;
+0069             <span class="keyword">end</span>
+0070             PAI = zeros(M,1);
+0071             PAI(1) = 1;
+0072             A=mkStochastic(tril(triu(rand(M,M),0),jump_step));
+0073             P=mkStochastic(rand(M,D));
+0074         <span class="keyword">case</span> <span class="string">'unif-zero-diag'</span>
+0075             PAI=ones(M,1);
+0076             PAI(1)=0;           <span class="comment">% we cannot start from this place because of zero diag</span>
+0077             PAI=PAI./sum(PAI);
+0078             A=ones(M);
+0079             A(eye(size(A))==1)=0;
+0080             A=A./(sum(A,2)*ones(1,M));      <span class="comment">%The Transition Probability Matrix of active states</span>
+0081             P=repmat((1:D).^2,M,1);
+0082             P=P./(sum(P,2)*ones(1,D));
+0083         <span class="keyword">otherwise</span>
+0084             <span class="comment">%%we use uniform distribution init by deafault</span>
+0085             PAI=ones(M,1);
+0086             PAI=PAI./sum(PAI);           <span class="comment">%the initial probability</span>
+0087             A=ones(M);
+0088             A=A./(sum(A,2)*ones(1,M));      <span class="comment">%The Transition Probability Matrix of active states</span>
+0089             P=repmat((1:D).^2,M,1);
+0090             P=P./(sum(P,2)*ones(1,D));
+0091             init_type = <span class="string">'uniform'</span>;
+0092     <span class="keyword">end</span>
+0093     <span class="comment">%[O1,Vk1]=canonizeLabels(O);</span>
+0094     [x,I]=sort(O);
+0095     tmp=([1;diff(x)]~=0);
+0096     Vk=x(tmp);                  <span class="comment">%observable values</span>
+0097     Num=diff(find([tmp;1]==1));
+0098     <span class="keyword">if</span> length(Vk)&lt;K             <span class="comment">%if after canonization we have max smaller</span>
+0099         K=length(Vk);
+0100     <span class="keyword">end</span>
+0101     <span class="keyword">while</span> length(Vk)&gt;K
+0102         [y,J]=min(diff(Vk));
+0103         Vk(J+1)=(Vk(J)*Num(J)+Vk(J+1)*Num(J+1))/(Num(J)+Num(J+1));
+0104         Vk(J)=[];
+0105         Num(J+1)=Num(J+1)+Num(J);
+0106         Num(J)=[];
+0107     <span class="keyword">end</span>
+0108     Num=cumsum(Num);
+0109     tmp(:)=0;
+0110     tmp([1;Num(1:end-1)+1])=1;
+0111     O(I)=cumsum(tmp);           <span class="comment">%indexes of observable values</span>
+0112 <span class="comment">%%</span>
+0113 <span class="comment">%%Poisson?</span>
+0114     lambda=(max(O)-min(O))/M;
+0115     lambda=(min(O)+lambda/2):lambda:max(O);
+0116     <span class="keyword">for</span> i=1:K
+0117         ss(i)=sum(log(1:i));
+0118     <span class="keyword">end</span>
+0119     B=exp(log(lambda')*(1:K)-ones(M,1)*ss-lambda'*ones(1,K));
+0120     B=B+(max(B')'.*0.01)*ones(1,K);
+0121     B=B./(sum(B,2)*ones(1,K));      <span class="comment">%The observation symbol probability distribution</span>
+0122 
+0123     <span class="comment">%%</span>
+0124     <span class="comment">%function [A,B,P,PAI,Vk,O,K]=hsmmCreate(O,M,D,K,varargin)</span>
+0125     model.PAI=PAI;
+0126     model.A=A;
+0127     model.B=B;
+0128     model.P=P;
+0129     model.Qest=[];              <span class="comment">% not yet initialized</span>
+0130     model.lkh=[];               <span class="comment">% not yet initialized</span>
+0131     model.ll=[];                <span class="comment">% not yet initialized</span>
+0132     model.Vk=Vk;
+0133     model.O=O;
+0134     model.K=K;
+0135     model.init_type = init_type;
+0136     model.type = <span class="string">'hsmm'</span>;
+0137     model.nstates = M;
+0138 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

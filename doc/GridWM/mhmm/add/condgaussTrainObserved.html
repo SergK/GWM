@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of condgaussTrainObserved</title>
+  <meta name="keywords" content="condgaussTrainObserved">
+  <meta name="description" content="mixgaussTrainObserved Max likelihood estimates of conditional Gaussian from raw data">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GridWM --><!-- ../menu.html mhmm --><!-- menu.html add -->
+<h1>condgaussTrainObserved
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>mixgaussTrainObserved Max likelihood estimates of conditional Gaussian from raw data</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [mu, Sigma] = condgaussTrainObserved(obsData, hiddenData, nstates, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> mixgaussTrainObserved Max likelihood estimates of conditional Gaussian from raw data
+ function [mu, Sigma] = mixgaussTrainObserved(obsData, hiddenData, nstates, ...);
+
+ Input:
+ obsData(:,i)
+ hiddenData(i)  - this is the mixture component label for example i
+ Optional arguments - same as mixgauss_Mstep
+
+ Output:
+ mu(:,q)
+ Sigma(:,:,q) - same as mixgauss_Mstep</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="mixgauss_Mstep.html" class="code" title="function [mu, Sigma] = mixgauss_Mstep(w, Y, YY, YTY, varargin)">mixgauss_Mstep</a>	MSTEP_COND_GAUSS Compute MLEs for mixture of Gaussians given expected sufficient statistics</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [mu, Sigma] = condgaussTrainObserved(obsData, hiddenData, nstates, varargin)</a>
+0002 <span class="comment">% mixgaussTrainObserved Max likelihood estimates of conditional Gaussian from raw data</span>
+0003 <span class="comment">% function [mu, Sigma] = mixgaussTrainObserved(obsData, hiddenData, nstates, ...);</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Input:</span>
+0006 <span class="comment">% obsData(:,i)</span>
+0007 <span class="comment">% hiddenData(i)  - this is the mixture component label for example i</span>
+0008 <span class="comment">% Optional arguments - same as mixgauss_Mstep</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Output:</span>
+0011 <span class="comment">% mu(:,q)</span>
+0012 <span class="comment">% Sigma(:,:,q) - same as mixgauss_Mstep</span>
+0013 
+0014 [D numex] = size(obsData);
+0015 Y = zeros(D, nstates);
+0016 YY = zeros(D,D,nstates);
+0017 YTY = zeros(nstates,1);
+0018 w = zeros(nstates, 1);
+0019 <span class="keyword">for</span> q=1:nstates
+0020   ndx = find(hiddenData==q);
+0021   w(q) = length(ndx); <span class="comment">% each data point has probability 1 of being in this cluster</span>
+0022   data = obsData(:,ndx);
+0023   Y(:,q) = sum(data,2);
+0024   YY(:,:,q) = data*data';
+0025   YTY(q) = sum(diag(data'*data));
+0026 <span class="keyword">end</span>
+0027 [mu, Sigma] = <a href="mixgauss_Mstep.html" class="code" title="function [mu, Sigma] = mixgauss_Mstep(w, Y, YY, YTY, varargin)">mixgauss_Mstep</a>(w, Y, YY, YTY, varargin{:});
+0028 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

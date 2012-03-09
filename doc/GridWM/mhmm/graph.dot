@@ -1,0 +1,55 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  dhmm_em_demo -> dhmm_em;
+  dhmm_em_demo -> dhmm_logprob;
+  dhmm_em_demo -> dhmm_sample;
+  dhmm_em_online_demo -> dhmm_em;
+  dhmm_em_online_demo -> dhmm_em_online;
+  dhmm_em_online_demo -> pomdp_sample;
+  dhmm_sample_endstate -> mc_sample_endstate;
+  fixed_lag_smoother_demo -> fixed_lag_smoother;
+  gausshmm_train_observed -> transmat_train_observed;
+  mhmmFit -> mhmm_em;
+  mhmmParzen_train_observed -> transmat_train_observed;
+  mhmm_em -> fwdbackGamma2;
+  mhmm_em_demo -> mhmm_em;
+  mhmm_em_demo -> mhmm_logprob;
+  mhmm_em_demo_orig -> mhmm_em;
+  mhmm_em_demo_orig -> mhmm_logprob;
+  pomdp_sample -> mdp_sample;
+  testHMM -> dhmm_em_demo;
+  testHMM -> dhmm_em_online_demo;
+  testHMM -> fixed_lag_smoother_demo;
+  testHMM -> mhmm_em_demo;
+
+  dhmm_em [URL="dhmm_em.html"];
+  dhmm_em_demo [URL="dhmm_em_demo.html"];
+  dhmm_em_online [URL="dhmm_em_online.html"];
+  dhmm_em_online_demo [URL="dhmm_em_online_demo.html"];
+  dhmm_logprob [URL="dhmm_logprob.html"];
+  dhmm_logprob_brute_force [URL="dhmm_logprob_brute_force.html"];
+  dhmm_logprob_path [URL="dhmm_logprob_path.html"];
+  dhmm_sample [URL="dhmm_sample.html"];
+  dhmm_sample_endstate [URL="dhmm_sample_endstate.html"];
+  fixed_lag_smoother [URL="fixed_lag_smoother.html"];
+  fixed_lag_smoother_demo [URL="fixed_lag_smoother_demo.html"];
+  fwdbackGamma2 [URL="fwdbackGamma2.html"];
+  fwdprop_backsample [URL="fwdprop_backsample.html"];
+  gausshmm_train_observed [URL="gausshmm_train_observed.html"];
+  mc_sample_endstate [URL="mc_sample_endstate.html"];
+  mdp_sample [URL="mdp_sample.html"];
+  mhmmFit [URL="mhmmFit.html"];
+  mhmmLogprob [URL="mhmmLogprob.html"];
+  mhmmParzen_train_observed [URL="mhmmParzen_train_observed.html"];
+  mhmmSample [URL="mhmmSample.html"];
+  mhmm_em [URL="mhmm_em.html"];
+  mhmm_em_demo [URL="mhmm_em_demo.html"];
+  mhmm_em_demo_orig [URL="mhmm_em_demo_orig.html"];
+  mhmm_logprob [URL="mhmm_logprob.html"];
+  mhmm_sample [URL="mhmm_sample.html"];
+  mk_leftright_transmat [URL="mk_leftright_transmat.html"];
+  mk_rightleft_transmat [URL="mk_rightleft_transmat.html"];
+  pomdp_sample [URL="pomdp_sample.html"];
+  testHMM [URL="testHMM.html"];
+  transmat_train_observed [URL="transmat_train_observed.html"];
+}

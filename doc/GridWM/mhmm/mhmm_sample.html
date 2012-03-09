@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mhmm_sample</title>
+  <meta name="keywords" content="mhmm_sample">
+  <meta name="description" content="SAMPLE_MHMM Generate random sequences from an HMM with (mixtures of) Gaussian output.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>mhmm_sample
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SAMPLE_MHMM Generate random sequences from an HMM with (mixtures of) Gaussian output.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [obs, hidden] = mhmm_sample(T, numex, initial_prob, transmat, mu, Sigma, mixmat) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SAMPLE_MHMM Generate random sequences from an HMM with (mixtures of) Gaussian output.
+ [obs, hidden] = sample_mhmm(T, numex, initial_prob, transmat, mu, Sigma, mixmat)
+
+ INPUTS:
+ T - length of each sequence
+ numex - num. sequences
+ init_state_prob(i) = Pr(Q(1) = i)
+ transmat(i,j) = Pr(Q(t+1)=j | Q(t)=i)
+ mu(:,j,k) = mean of Y(t) given Q(t)=j, M(t)=k
+ Sigma(:,:,j,k) = cov. of Y(t) given Q(t)=j, M(t)=k
+ mixmat(j,k) = Pr(M(t)=k | Q(t)=j) : set to ones(Q,1) or omit if single mixture
+
+ OUTPUT:
+ obs(:,t,l) = observation vector at time t for sequence l
+ hidden(t,l) = the hidden state at time t for sequence l</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [obs, hidden] = mhmm_sample(T, numex, initial_prob, transmat, mu, Sigma, mixmat)</a>
+0002 <span class="comment">% SAMPLE_MHMM Generate random sequences from an HMM with (mixtures of) Gaussian output.</span>
+0003 <span class="comment">% [obs, hidden] = sample_mhmm(T, numex, initial_prob, transmat, mu, Sigma, mixmat)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% INPUTS:</span>
+0006 <span class="comment">% T - length of each sequence</span>
+0007 <span class="comment">% numex - num. sequences</span>
+0008 <span class="comment">% init_state_prob(i) = Pr(Q(1) = i)</span>
+0009 <span class="comment">% transmat(i,j) = Pr(Q(t+1)=j | Q(t)=i)</span>
+0010 <span class="comment">% mu(:,j,k) = mean of Y(t) given Q(t)=j, M(t)=k</span>
+0011 <span class="comment">% Sigma(:,:,j,k) = cov. of Y(t) given Q(t)=j, M(t)=k</span>
+0012 <span class="comment">% mixmat(j,k) = Pr(M(t)=k | Q(t)=j) : set to ones(Q,1) or omit if single mixture</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% OUTPUT:</span>
+0015 <span class="comment">% obs(:,t,l) = observation vector at time t for sequence l</span>
+0016 <span class="comment">% hidden(t,l) = the hidden state at time t for sequence l</span>
+0017 
+0018 Q = length(initial_prob);
+0019 <span class="keyword">if</span> nargin &lt; 7, mixmat = ones(Q,1); <span class="keyword">end</span>
+0020 O = size(mu,1);
+0021 hidden = zeros(T, numex);
+0022 obs = zeros(O, T, numex);
+0023 
+0024 hidden = mc_sample(initial_prob, transmat, T, numex)';
+0025 <span class="keyword">for</span> i=1:numex
+0026     <span class="keyword">for</span> t=1:T
+0027         q = hidden(t,i);
+0028         m = sampleDiscrete(mixmat(q,:), 1, 1);
+0029         obs(:,t,i) =  gaussSample(mu(:,q,m), Sigma(:,:,q,m), 1);
+0030     <span class="keyword">end</span>
+0031 <span class="keyword">end</span>
+0032 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

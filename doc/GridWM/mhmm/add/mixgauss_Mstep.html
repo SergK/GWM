@@ -1,0 +1,179 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mixgauss_Mstep</title>
+  <meta name="keywords" content="mixgauss_Mstep">
+  <meta name="description" content="MSTEP_COND_GAUSS Compute MLEs for mixture of Gaussians given expected sufficient statistics">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GridWM --><!-- ../menu.html mhmm --><!-- menu.html add -->
+<h1>mixgauss_Mstep
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>MSTEP_COND_GAUSS Compute MLEs for mixture of Gaussians given expected sufficient statistics</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [mu, Sigma] = mixgauss_Mstep(w, Y, YY, YTY, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> MSTEP_COND_GAUSS Compute MLEs for mixture of Gaussians given expected sufficient statistics
+ function [mu, Sigma] = Mstep_cond_gauss(w, Y, YY, YTY, varargin)
+
+ We assume P(Y|Q=i) = N(Y; mu_i, Sigma_i)
+ and w(i,t) = p(Q(t)=i|y(t)) = posterior responsibility
+ See www.ai.mit.edu/~murphyk/Papers/learncg.pdf.
+
+ INPUTS:
+ w(i) = sum_t w(i,t) = responsibilities for each mixture component
+  If there is only one mixture component (i.e., Q does not exist),
+  then w(i) = N = nsamples,  and 
+  all references to i can be replaced by 1.
+ YY(:,:,i) = sum_t w(i,t) y(:,t) y(:,t)' = weighted outer product
+ Y(:,i) = sum_t w(i,t) y(:,t) = weighted observations
+ YTY(i) = sum_t w(i,t) y(:,t)' y(:,t) = weighted inner product
+   You only need to pass in YTY if Sigma is to be estimated as spherical.
+
+ Optional parameters may be passed as 'param_name', param_value pairs.
+ Parameter names are shown below; default values in [] - if none, argument is mandatory.
+
+ 'cov_type' - 'full', 'diag' or 'spherical' ['full']
+ 'tied_cov' - 1 (Sigma) or 0 (Sigma_i) [0]
+ 'clamped_cov' - pass in clamped value, or [] if unclamped [ [] ]
+ 'clamped_mean' - pass in clamped value, or [] if unclamped [ [] ]
+ 'cov_prior' - Lambda_i, added to YY(:,:,i) [0.01*eye(d,d,Q)]
+
+ If covariance is tied, Sigma has size d*d.
+ But diagonal and spherical covariances are represented in full size.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="condgaussTrainObserved.html" class="code" title="function [mu, Sigma] = condgaussTrainObserved(obsData, hiddenData, nstates, varargin)">condgaussTrainObserved</a>	mixgaussTrainObserved Max likelihood estimates of conditional Gaussian from raw data</li><li><a href="mixgauss_em.html" class="code" title="function [mu, Sigma, prior] = mixgauss_em(Y, nc, varargin)">mixgauss_em</a>	MIXGAUSS_EM Fit the parameters of a mixture of Gaussians using EM</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [mu, Sigma] = mixgauss_Mstep(w, Y, YY, YTY, varargin)</a>
+0002 <span class="comment">% MSTEP_COND_GAUSS Compute MLEs for mixture of Gaussians given expected sufficient statistics</span>
+0003 <span class="comment">% function [mu, Sigma] = Mstep_cond_gauss(w, Y, YY, YTY, varargin)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% We assume P(Y|Q=i) = N(Y; mu_i, Sigma_i)</span>
+0006 <span class="comment">% and w(i,t) = p(Q(t)=i|y(t)) = posterior responsibility</span>
+0007 <span class="comment">% See www.ai.mit.edu/~murphyk/Papers/learncg.pdf.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% INPUTS:</span>
+0010 <span class="comment">% w(i) = sum_t w(i,t) = responsibilities for each mixture component</span>
+0011 <span class="comment">%  If there is only one mixture component (i.e., Q does not exist),</span>
+0012 <span class="comment">%  then w(i) = N = nsamples,  and</span>
+0013 <span class="comment">%  all references to i can be replaced by 1.</span>
+0014 <span class="comment">% YY(:,:,i) = sum_t w(i,t) y(:,t) y(:,t)' = weighted outer product</span>
+0015 <span class="comment">% Y(:,i) = sum_t w(i,t) y(:,t) = weighted observations</span>
+0016 <span class="comment">% YTY(i) = sum_t w(i,t) y(:,t)' y(:,t) = weighted inner product</span>
+0017 <span class="comment">%   You only need to pass in YTY if Sigma is to be estimated as spherical.</span>
+0018 <span class="comment">%</span>
+0019 <span class="comment">% Optional parameters may be passed as 'param_name', param_value pairs.</span>
+0020 <span class="comment">% Parameter names are shown below; default values in [] - if none, argument is mandatory.</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% 'cov_type' - 'full', 'diag' or 'spherical' ['full']</span>
+0023 <span class="comment">% 'tied_cov' - 1 (Sigma) or 0 (Sigma_i) [0]</span>
+0024 <span class="comment">% 'clamped_cov' - pass in clamped value, or [] if unclamped [ [] ]</span>
+0025 <span class="comment">% 'clamped_mean' - pass in clamped value, or [] if unclamped [ [] ]</span>
+0026 <span class="comment">% 'cov_prior' - Lambda_i, added to YY(:,:,i) [0.01*eye(d,d,Q)]</span>
+0027 <span class="comment">%</span>
+0028 <span class="comment">% If covariance is tied, Sigma has size d*d.</span>
+0029 <span class="comment">% But diagonal and spherical covariances are represented in full size.</span>
+0030 
+0031 [cov_type, tied_cov,  clamped_cov, clamped_mean, cov_prior, other] = <span class="keyword">...</span>
+0032     process_options(varargin,<span class="keyword">...</span>
+0033             <span class="string">'cov_type'</span>, <span class="string">'full'</span>, <span class="string">'tied_cov'</span>, 0,  <span class="string">'clamped_cov'</span>, [], <span class="string">'clamped_mean'</span>, [], <span class="keyword">...</span>
+0034             <span class="string">'cov_prior'</span>, []);
+0035 
+0036 [Ysz Q] = size(Y);
+0037 N = sum(w);
+0038 <span class="keyword">if</span> isempty(cov_prior)
+0039   <span class="comment">%cov_prior = zeros(Ysz, Ysz, Q);</span>
+0040   <span class="comment">%for q=1:Q</span>
+0041   <span class="comment">%  cov_prior(:,:,q) = 0.01*cov(Y(:,q)');</span>
+0042   <span class="comment">%end</span>
+0043   cov_prior = repmat(0.01*eye(Ysz,Ysz), [1 1 Q]);
+0044 <span class="keyword">end</span>
+0045 <span class="comment">%YY = reshape(YY, [Ysz Ysz Q]) + cov_prior; % regularize the scatter matrix</span>
+0046 YY = reshape(YY, [Ysz Ysz Q]);
+0047 
+0048 <span class="comment">% Set any zero weights to one before dividing</span>
+0049 <span class="comment">% This is valid because w(i)=0 =&gt; Y(:,i)=0, etc</span>
+0050 w = w + (w==0);
+0051             
+0052 <span class="keyword">if</span> ~isempty(clamped_mean)
+0053   mu = clamped_mean;
+0054 <span class="keyword">else</span>
+0055   <span class="comment">% eqn 6</span>
+0056   <span class="comment">%mu = Y ./ repmat(w(:)', [Ysz 1]);% Y may have a funny size</span>
+0057   mu = zeros(Ysz, Q);
+0058   <span class="keyword">for</span> i=1:Q
+0059     mu(:,i) = Y(:,i) / w(i);
+0060   <span class="keyword">end</span>
+0061 <span class="keyword">end</span>
+0062 
+0063 <span class="keyword">if</span> ~isempty(clamped_cov)
+0064   Sigma = clamped_cov;
+0065   <span class="keyword">return</span>;
+0066 <span class="keyword">end</span>
+0067 
+0068 <span class="keyword">if</span> ~tied_cov
+0069   Sigma = zeros(Ysz,Ysz,Q);
+0070   <span class="keyword">for</span> i=1:Q
+0071     <span class="keyword">if</span> cov_type(1) == <span class="string">'s'</span>
+0072       <span class="comment">% eqn 17</span>
+0073       s2 = (1/Ysz)*( (YTY(i)/w(i)) - mu(:,i)'*mu(:,i) );
+0074       Sigma(:,:,i) = s2 * eye(Ysz);
+0075     <span class="keyword">else</span>
+0076       <span class="comment">% eqn 12</span>
+0077       SS = YY(:,:,i)/w(i)  - mu(:,i)*mu(:,i)';
+0078       <span class="keyword">if</span> cov_type(1)==<span class="string">'d'</span>
+0079     SS = diag(diag(SS));
+0080       <span class="keyword">end</span>
+0081       Sigma(:,:,i) = SS;
+0082     <span class="keyword">end</span>
+0083   <span class="keyword">end</span>
+0084 <span class="keyword">else</span> <span class="comment">% tied cov</span>
+0085   <span class="keyword">if</span> cov_type(1) == <span class="string">'s'</span>
+0086     <span class="comment">% eqn 19</span>
+0087     s2 = (1/(N*Ysz))*(sum(YTY,2) + sum(diag(mu'*mu) .* w));
+0088     Sigma = s2*eye(Ysz);
+0089   <span class="keyword">else</span>
+0090     SS = zeros(Ysz, Ysz);
+0091     <span class="comment">% eqn 15</span>
+0092     <span class="keyword">for</span> i=1:Q <span class="comment">% probably could vectorize this...</span>
+0093       SS = SS + YY(:,:,i)/N - mu(:,i)*mu(:,i)';
+0094     <span class="keyword">end</span>
+0095     <span class="keyword">if</span> cov_type(1) == <span class="string">'d'</span>
+0096       Sigma = diag(diag(SS));
+0097     <span class="keyword">else</span>
+0098       Sigma = SS;
+0099     <span class="keyword">end</span>
+0100   <span class="keyword">end</span>
+0101 <span class="keyword">end</span>
+0102 
+0103 <span class="keyword">if</span> tied_cov
+0104   Sigma =  repmat(Sigma, [1 1 Q]);
+0105 <span class="keyword">end</span>
+0106 Sigma = Sigma + cov_prior;</pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

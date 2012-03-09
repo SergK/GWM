@@ -1,0 +1,160 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gwm_mplot</title>
+  <meta name="keywords" content="gwm_mplot">
+  <meta name="description" content="function gwm_mplot(cell_to_plot,style,multiple)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html gwm_utils -->
+<h1>gwm_mplot
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function gwm_mplot(cell_to_plot,style,multiple)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function h = gwm_mplot(cell_to_plot, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">function gwm_mplot(cell_to_plot,style,multiple)
+ OUTPUT:
+   h               - the list of plot objects
+   h{i}            - returns in case of cell_to_plot is used with group options
+
+ INPUT:
+   cell_to_plot    -     array {i,:}(plotting by rows)
+                   1) {[1......N]
+                       [1......N]}
+                         or ({a,b,c,d,...}) cell for plotting
+                   2) {[1...N],[1..N],[1......N]}
+                   3) {[group1],[group2]...[groupN]}, group has the same format as 1),2)
+                      you have to place 'plot_type' as 'group'
+                               Examples:   {[ll ll1],[ll2]}
+                                           {[ll] [ll1] [ll2] [ll3]}
+   'plot_type':    - 'foreach'  - ALL plot for ALL figures with ONE color (default);
+                   - 'single'   - ALL plot on ONE figure with ONE color
+                   - 'mult'     - ALL plot on ONE figure with MANY colors;
+                   - 'group'    - plot like 'mult' but each group with the same color;
+   'style':        - 'b-' the same styles as for plot
+   'showLegend'    - true       - Show the legend; false (default)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="gwm_mplot.html" class="code" title="function h = gwm_mplot(cell_to_plot, varargin)">gwm_mplot</a>	function gwm_mplot(cell_to_plot,style,multiple)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="gwm_mplot.html" class="code" title="function h = gwm_mplot(cell_to_plot, varargin)">gwm_mplot</a>	function gwm_mplot(cell_to_plot,style,multiple)</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function h = nplot(data,style)</a></li><li><a href="#_sub2" class="code">function s = prepareStyles(cell_to_plot)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function h = gwm_mplot(cell_to_plot, varargin)</a>
+0002 <span class="comment">%function gwm_mplot(cell_to_plot,style,multiple)</span>
+0003 <span class="comment">% OUTPUT:</span>
+0004 <span class="comment">%   h               - the list of plot objects</span>
+0005 <span class="comment">%   h{i}            - returns in case of cell_to_plot is used with group options</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">% INPUT:</span>
+0008 <span class="comment">%   cell_to_plot    -     array {i,:}(plotting by rows)</span>
+0009 <span class="comment">%                   1) {[1......N]</span>
+0010 <span class="comment">%                       [1......N]}</span>
+0011 <span class="comment">%                         or ({a,b,c,d,...}) cell for plotting</span>
+0012 <span class="comment">%                   2) {[1...N],[1..N],[1......N]}</span>
+0013 <span class="comment">%                   3) {[group1],[group2]...[groupN]}, group has the same format as 1),2)</span>
+0014 <span class="comment">%                      you have to place 'plot_type' as 'group'</span>
+0015 <span class="comment">%                               Examples:   {[ll ll1],[ll2]}</span>
+0016 <span class="comment">%                                           {[ll] [ll1] [ll2] [ll3]}</span>
+0017 <span class="comment">%   'plot_type':    - 'foreach'  - ALL plot for ALL figures with ONE color (default);</span>
+0018 <span class="comment">%                   - 'single'   - ALL plot on ONE figure with ONE color</span>
+0019 <span class="comment">%                   - 'mult'     - ALL plot on ONE figure with MANY colors;</span>
+0020 <span class="comment">%                   - 'group'    - plot like 'mult' but each group with the same color;</span>
+0021 <span class="comment">%   'style':        - 'b-' the same styles as for plot</span>
+0022 <span class="comment">%   'showLegend'    - true       - Show the legend; false (default)</span>
+0023 
+0024 <span class="comment">%%</span>
+0025 [   plot_type                    , <span class="keyword">...</span>
+0026     showLegend                   , <span class="keyword">...</span>
+0027     style                       ] <span class="keyword">...</span>
+0028     = process_options(varargin  , <span class="keyword">...</span>
+0029     <span class="string">'plot_type'</span>                 , <span class="string">'single'</span>                        , <span class="keyword">...</span>
+0030     <span class="string">'showLegend'</span>                , false                           , <span class="keyword">...</span>
+0031     <span class="string">'style'</span>                     , <span class="string">'b-'</span>);
+0032 
+0033 <span class="keyword">if</span> ~iscell(cell_to_plot)
+0034     <span class="keyword">if</span> isvector(cell_to_plot)
+0035         cell_to_plot = {rowvec(cell_to_plot)};
+0036     <span class="keyword">else</span> <span class="comment">% we have matrix, than plot by rows</span>
+0037         cell_to_plot = mat2cellRows(cell_to_plot);
+0038     <span class="keyword">end</span>
+0039 <span class="keyword">end</span>
+0040 
+0041 <span class="keyword">if</span> cellDepth(cell_to_plot)&gt;1
+0042     plot_type = <span class="string">'group'</span>;
+0043 <span class="keyword">end</span>
+0044 <span class="comment">%%</span>
+0045 <span class="keyword">switch</span> lower(plot_type)
+0046     <span class="keyword">case</span> <span class="string">'mult'</span>
+0047         s = <a href="#_sub2" class="code" title="subfunction s = prepareStyles(cell_to_plot)">prepareStyles</a>(cell_to_plot);
+0048         figure;hold on;
+0049         h = cellfun(@(data,line_style) plot(data,line_style), cell_to_plot, s);
+0050         hold off;
+0051     <span class="keyword">case</span> <span class="string">'single'</span>
+0052         hold on;
+0053         h = cellfun(@(data)plot(data,style),cell_to_plot);
+0054         hold off;
+0055     <span class="keyword">case</span> <span class="string">'foreach'</span>
+0056         h = cellfun(@(data)<a href="#_sub1" class="code" title="subfunction h = nplot(data,style)">nplot</a>(data,style),cell_to_plot);
+0057         hold off;
+0058     <span class="keyword">case</span> <span class="string">'group'</span>
+0059         <span class="comment">% we have the following format {{}{}{}{}}</span>
+0060         style_for_groups = <a href="#_sub2" class="code" title="subfunction s = prepareStyles(cell_to_plot)">prepareStyles</a>(cell_to_plot);    <span class="comment">% make each style for group</span>
+0061         h = cell(1,numel(cell_to_plot));
+0062         figure;hold on;
+0063         <span class="keyword">for</span> i=1:numel(cell_to_plot)
+0064             h{i} = <a href="gwm_mplot.html" class="code" title="function h = gwm_mplot(cell_to_plot, varargin)">gwm_mplot</a>(cell_to_plot{i},<span class="string">'plot_type'</span>,<span class="string">'single'</span>,<span class="string">'style'</span>,style_for_groups{i});
+0065         <span class="keyword">end</span>;
+0066         hold off;
+0067         h_group = cellfun(@(x) x(1), h(:), <span class="string">'Uniform'</span>, 1)';
+0068         legend_txt = arrayfun(@(x)sprintf(<span class="string">'%s%d'</span>,<span class="string">'group'</span>,x),[1:numel(h_group)],<span class="string">'unif'</span>,0);
+0069         legend(h_group,legend_txt);
+0070     <span class="keyword">case</span> <span class="string">'groupiscol'</span>
+0071         h = <a href="gwm_mplot.html" class="code" title="function h = gwm_mplot(cell_to_plot, varargin)">gwm_mplot</a>(mat2cellRows(cell_to_plot'),<span class="string">'plot_type'</span>,<span class="string">'group'</span>);
+0072     <span class="keyword">otherwise</span>           , error(<span class="string">'%s is not a valid plot_style'</span>,plot_type);
+0073 <span class="keyword">end</span> <span class="comment">% switch</span>
+0074 <span class="keyword">if</span> showLegend
+0075     legend(<span class="string">'toggle'</span>);
+0076 <span class="keyword">end</span>
+0077 <span class="keyword">end</span>
+0078 
+0079 <span class="comment">%% helper for plotting multiple figures per plot</span>
+0080 <a name="_sub1" href="#_subfunctions" class="code">function h = nplot(data,style)</a>
+0081 figure;
+0082 h = plot(data,style);
+0083 <span class="keyword">end</span>
+0084 
+0085 <span class="comment">%% helper for plotting with different styles</span>
+0086 <a name="_sub2" href="#_subfunctions" class="code">function s = prepareStyles(cell_to_plot)</a>
+0087 [~, ~, ~, str] =  gwm_plotStyles();
+0088 <span class="comment">%% if  we have mor then 15 rows to plot we have to repmat str styles</span>
+0089 num_of_rows = numel(cell_to_plot);
+0090 s = str(1:num_of_rows)';
+0091 s = s(1:num_of_rows)';
+0092 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

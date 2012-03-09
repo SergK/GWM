@@ -1,0 +1,139 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of dhmm_em_online_demo</title>
+  <meta name="keywords" content="dhmm_em_online_demo">
+  <meta name="description" content="Example of online EM applied to a simple POMDP with fixed action seq">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>dhmm_em_online_demo
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Example of online EM applied to a simple POMDP with fixed action seq</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Example of online EM applied to a simple POMDP with fixed action seq</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="dhmm_em.html" class="code" title="function [LL, prior, transmat, obsmat, nrIterations] =dhmm_em(data, prior, transmat, obsmat, varargin)">dhmm_em</a>	LEARN_DHMM Find the ML/MAP parameters of an HMM with discrete outputs using EM.</li><li><a href="dhmm_em_online.html" class="code" title="function [transmat, obsmat, exp_num_trans, exp_num_emit, gamma, ll] = dhmm_em_online(prior, transmat, obsmat, exp_num_trans, exp_num_emit, decay, data,act, adj_trans, adj_obs, dirichlet, filter_only)">dhmm_em_online</a>	ONLINE_EM Adjust the parameters using a weighted combination of the old and new expected statistics</li><li><a href="pomdp_sample.html" class="code" title="function [obs, hidden] = pomdp_sample(initial_prob, transmat, obsmat, act)">pomdp_sample</a>	SAMPLE_POMDP Generate a random sequence from a Partially Observed Markov Decision Process.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="testHMM.html" class="code" title="">testHMM</a>	Run all the demos, to check everything is "syntactically correct"</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Example of online EM applied to a simple POMDP with fixed action seq</span>
+0002 
+0003 clear all
+0004 
+0005 <span class="comment">% Create a really easy model to learn</span>
+0006 rand(<span class="string">'state'</span>, 1);
+0007 O = 2;
+0008 S = 2;
+0009 A = 2;
+0010 prior0 = [1 0]';
+0011 transmat0 = cell(1,A);
+0012 transmat0{1} = [0.9 0.1; 0.1 0.9]; <span class="comment">% long runs of 1s and 2s</span>
+0013 transmat0{2} = [0.1 0.9; 0.9 0.1]; <span class="comment">% short runs</span>
+0014 obsmat0 = eye(2);
+0015        
+0016 <span class="comment">%prior0 = normalize(rand(S,1));</span>
+0017 <span class="comment">%transmat0 = mk_stochastic(rand(S,S));</span>
+0018 <span class="comment">%obsmat0 = mk_stochastic(rand(S,O));</span>
+0019 
+0020 T = 100;
+0021 act = [1*ones(1,25) 2*ones(1,25) 1*ones(1,25) 2*ones(1,25)];
+0022 data = <a href="pomdp_sample.html" class="code" title="function [obs, hidden] = pomdp_sample(initial_prob, transmat, obsmat, act)">pomdp_sample</a>(prior0, transmat0, obsmat0, act);
+0023 <span class="comment">%data = sample_dhmm(prior0, transmat0, obsmat0, T, 1);</span>
+0024 
+0025 <span class="comment">% Initial guess of params</span>
+0026 rand(<span class="string">'state'</span>, 2); <span class="comment">% different seed!</span>
+0027 transmat1 = cell(1,A);
+0028 <span class="keyword">for</span> a=1:A
+0029   transmat1{a} = mk_stochastic(rand(S,S));
+0030 <span class="keyword">end</span>
+0031 obsmat1 = mk_stochastic(rand(S,O));
+0032 prior1 = prior0; <span class="comment">% so it labels states the same way</span>
+0033 
+0034 <span class="comment">% Uniformative Dirichlet prior (expected sufficient statistics / pseudo counts)</span>
+0035 e = 0.001;
+0036 ess_trans = cell(1,A);
+0037 <span class="keyword">for</span> a=1:A
+0038   ess_trans{a} = repmat(e, S, S);
+0039 <span class="keyword">end</span>
+0040 ess_emit = repmat(e, S, O);
+0041 
+0042 <span class="comment">% Params</span>
+0043 w = 2;
+0044 decay_sched = [0.1:0.1:0.9];
+0045 
+0046 <span class="comment">% Initialize</span>
+0047 LL1 = zeros(1,T);
+0048 t = 1;
+0049 y = data(t);
+0050 data_win = y;
+0051 act_win = [1]; <span class="comment">% arbitrary initial value</span>
+0052 [prior1, LL1(1)] = normaliseC(prior1 .* obsmat1(:,y));
+0053 
+0054 <span class="comment">% Iterate</span>
+0055 <span class="keyword">for</span> t=2:T
+0056   y = data(t);
+0057   a = act(t);
+0058   <span class="keyword">if</span> t &lt;= w
+0059     data_win = [data_win y];
+0060     act_win = [act_win a];
+0061   <span class="keyword">else</span>
+0062     data_win = [data_win(2:end) y];
+0063     act_win = [act_win(2:end) a];
+0064     prior1 = gamma(:, 2);
+0065   <span class="keyword">end</span>
+0066   d = decay_sched(min(t, length(decay_sched)));
+0067   [transmat1, obsmat1, ess_trans, ess_emit, gamma, ll] = <a href="dhmm_em_online.html" class="code" title="function [transmat, obsmat, exp_num_trans, exp_num_emit, gamma, ll] = dhmm_em_online(prior, transmat, obsmat, exp_num_trans, exp_num_emit, decay, data,act, adj_trans, adj_obs, dirichlet, filter_only)">dhmm_em_online</a>(<span class="keyword">...</span>
+0068       prior1, transmat1, obsmat1, ess_trans, ess_emit, d, data_win, act_win);
+0069   bel = gamma(:, end);
+0070   LL1(t) = ll/length(data_win);
+0071   <span class="comment">%fprintf('t=%d, ll=%f\n', t, ll);</span>
+0072 <span class="keyword">end</span>
+0073 
+0074 LL1(1) = LL1(2); <span class="comment">% since initial likelihood is for 1 slice</span>
+0075 plot(1:T, LL1, <span class="string">'rx-'</span>);
+0076 
+0077 
+0078 <span class="comment">% compare with offline learning</span>
+0079 
+0080 <span class="keyword">if</span> 1
+0081 rand(<span class="string">'state'</span>, 2); <span class="comment">% same seed as online learner</span>
+0082 transmat2 = cell(1,A);
+0083 <span class="keyword">for</span> a=1:A
+0084   transmat2{a} = mk_stochastic(rand(S,S));
+0085 <span class="keyword">end</span>
+0086 obsmat2 = mk_stochastic(rand(S,O));
+0087 prior2 = prior0;
+0088 [LL2, prior2, transmat2, obsmat2] = <a href="dhmm_em.html" class="code" title="function [LL, prior, transmat, obsmat, nrIterations] =dhmm_em(data, prior, transmat, obsmat, varargin)">dhmm_em</a>(data, prior2, transmat2, obsmat2, <span class="keyword">...</span><span class="comment">.</span>
+0089                            <span class="string">'max_iter'</span>, 10, <span class="string">'thresh'</span>, 1e-3, <span class="string">'verbose'</span>, 1);
+0090 
+0091 LL2 = LL2 / T
+0092 
+0093 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

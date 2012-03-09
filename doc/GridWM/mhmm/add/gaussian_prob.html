@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gaussian_prob</title>
+  <meta name="keywords" content="gaussian_prob">
+  <meta name="description" content="GAUSSIAN_PROB Evaluate a multivariate Gaussian density.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GridWM --><!-- ../menu.html mhmm --><!-- menu.html add -->
+<h1>gaussian_prob
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>GAUSSIAN_PROB Evaluate a multivariate Gaussian density.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function p = gaussian_prob(x, m, C, use_log) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> GAUSSIAN_PROB Evaluate a multivariate Gaussian density.
+ p = gaussian_prob(X, m, C)
+ p(i) = N(X(:,i), m, C) where C = covariance matrix and each COLUMN of x is a datavector</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="mixgauss_prob.html" class="code" title="function [B, B2] = mixgauss_prob(data, mu, Sigma, mixmat, unit_norm)">mixgauss_prob</a>	EVAL_PDF_COND_MOG Evaluate the pdf of a conditional mixture of Gaussians</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function p = gaussian_prob(x, m, C, use_log)</a>
+0002 <span class="comment">% GAUSSIAN_PROB Evaluate a multivariate Gaussian density.</span>
+0003 <span class="comment">% p = gaussian_prob(X, m, C)</span>
+0004 <span class="comment">% p(i) = N(X(:,i), m, C) where C = covariance matrix and each COLUMN of x is a datavector</span>
+0005 
+0006 <span class="comment">% p = gaussian_prob(X, m, C, 1) returns log N(X(:,i), m, C) (to prevents underflow).</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% If X has size dxN, then p has size Nx1, where N = number of examples</span>
+0009 
+0010 <span class="keyword">if</span> nargin &lt; 4, use_log = 0; <span class="keyword">end</span>
+0011 
+0012 <span class="keyword">if</span> length(m)==1 <span class="comment">% scalar</span>
+0013   x = x(:)';
+0014 <span class="keyword">end</span>
+0015 [d N] = size(x);
+0016 <span class="comment">%assert(length(m)==d); % slow</span>
+0017 m = m(:);
+0018 M = m*ones(1,N); <span class="comment">% replicate the mean across columns</span>
+0019 denom = (2*pi)^(d/2)*sqrt(abs(det(C)));
+0020 <span class="comment">%mahal = sum(((x-M)'*inv(C)).*(x-M)',2);   % Chris Bregler's trick</span>
+0021 mahal = sum(((x-M)'/C).*(x-M)',2);   <span class="comment">% Chris Bregler's trick</span>
+0022 <span class="keyword">if</span> any(mahal&lt;0)
+0023   warning(<span class="string">'mahal &lt; 0 =&gt; C is not psd'</span>)
+0024 <span class="keyword">end</span>
+0025 <span class="keyword">if</span> use_log
+0026   p = -0.5*mahal - log(denom);
+0027 <span class="keyword">else</span>
+0028   p = exp(-0.5*mahal) / (denom+eps);
+0029 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

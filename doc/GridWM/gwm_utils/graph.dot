@@ -1,0 +1,12 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  gwm_mplot -> gwm_mplot;
+
+  gwm_mplot [URL="gwm_mplot.html"];
+  gwm_nplot [URL="gwm_nplot.html"];
+  gwm_plotTransMatrix [URL="gwm_plotTransMatrix.html"];
+  gwm_plot_acf [URL="gwm_plot_acf.html"];
+  gwm_plot_rows [URL="gwm_plot_rows.html"];
+  gwm_purge [URL="gwm_purge.html"];
+  gwm_splitData [URL="gwm_splitData.html"];
+}

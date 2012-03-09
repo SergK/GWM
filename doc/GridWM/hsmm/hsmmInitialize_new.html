@@ -1,0 +1,173 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of hsmmInitialize_new</title>
+  <meta name="keywords" content="hsmmInitialize_new">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html hsmm -->
+<h1>hsmmInitialize_new
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [A,B,P,PAI,Vk,O,K]=hsmmInitialize_new(O,M,D,K,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> 
+ Author: Shun-Zheng Yu
+ Available: http://sist.sysu.edu.cn/~syu/Publications/hsmmInitialize.m
+ 
+ To initialize the matrixes of A,B,P,PAI for hsmm_new.m, to get 
+ the observable values and to transform the observations O
+ from values to their indexes.
+
+ Usage: [A,B,P,PAI,Vk,O,K]=hsmmInitialize(O,M,D,K,init_type)
+
+   O - observation
+   M - Number of States
+   D - Duration
+   K - Max value
+   init_type - 'uniform' or 'random' initialization default value is UNIFORM
+
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version
+  2 of the License, or (at your option) any later version.
+  http://www.gnu.org/licenses/gpl.txt</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [A,B,P,PAI,Vk,O,K]=hsmmInitialize_new(O,M,D,K,varargin)</a>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% Author: Shun-Zheng Yu</span>
+0004 <span class="comment">% Available: http://sist.sysu.edu.cn/~syu/Publications/hsmmInitialize.m</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% To initialize the matrixes of A,B,P,PAI for hsmm_new.m, to get</span>
+0007 <span class="comment">% the observable values and to transform the observations O</span>
+0008 <span class="comment">% from values to their indexes.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Usage: [A,B,P,PAI,Vk,O,K]=hsmmInitialize(O,M,D,K,init_type)</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">%   O - observation</span>
+0013 <span class="comment">%   M - Number of States</span>
+0014 <span class="comment">%   D - Duration</span>
+0015 <span class="comment">%   K - Max value</span>
+0016 <span class="comment">%   init_type - 'uniform' or 'random' initialization default value is UNIFORM</span>
+0017 <span class="comment">%</span>
+0018 <span class="comment">%  This program is free software; you can redistribute it and/or</span>
+0019 <span class="comment">%  modify it under the terms of the GNU General Public License</span>
+0020 <span class="comment">%  as published by the Free Software Foundation; either version</span>
+0021 <span class="comment">%  2 of the License, or (at your option) any later version.</span>
+0022 <span class="comment">%  http://www.gnu.org/licenses/gpl.txt</span>
+0023 <span class="comment">%</span>
+0024 
+0025 <span class="comment">%     if (nargin&lt;5)</span>
+0026 <span class="comment">%         init_type='uniform';</span>
+0027 <span class="comment">%     else</span>
+0028 <span class="comment">%         init_type=varargin{1};</span>
+0029 <span class="comment">%     end</span>
+0030     <span class="comment">%%</span>
+0031 [   init_type ] <span class="keyword">...</span>
+0032     = process_options(varargin  , <span class="keyword">...</span>
+0033     <span class="string">'init_type'</span>                 , <span class="string">'uniform'</span>);      <span class="comment">%using uniform init by default</span>
+0034     
+0035     <span class="keyword">switch</span> lower(init_type)
+0036         <span class="keyword">case</span> <span class="string">'uniform'</span>
+0037             PAI=ones(M,1);
+0038             PAI=PAI./sum(PAI);           <span class="comment">%the initial probability</span>
+0039  
+0040             A=ones(M);
+0041             A=A./(sum(A,2)*ones(1,M));      <span class="comment">%The Transition Probability Matrix of active states</span>
+0042             
+0043             P=repmat((1:D).^2,M,1);
+0044             <span class="comment">% My edition</span>
+0045             <span class="comment">%    P=repmat((D:-1:1).^2,M,1);</span>
+0046             P=P./(sum(P,2)*ones(1,D));
+0047             <span class="comment">%%</span>
+0048         <span class="keyword">case</span> <span class="string">'rand'</span>
+0049             PAI=mkStochastic(rand(M,1));
+0050             A=mkStochastic(rand(M,M));
+0051             P=mkStochastic(rand(M,D));
+0052             <span class="comment">%%</span>
+0053         <span class="keyword">case</span> <span class="string">'diag'</span>
+0054             PAI=mkStochastic(rand(M,1));
+0055             A=mk_stochastic_diag(rand(M,M));
+0056             P=mkStochastic(rand(M,D));
+0057         <span class="keyword">case</span> <span class="string">'left-right'</span>
+0058             PAI=mkStochastic(rand(M,1));
+0059             A=mkStochastic(triu(rand(M,M),0));
+0060             P=mkStochastic(rand(M,D));
+0061         <span class="keyword">case</span> <span class="string">'zero-diag'</span>
+0062             PAI=ones(M,1);
+0063             PAI=PAI./sum(PAI);
+0064             A=ones(M);
+0065             A(eye(size(A))==1)=0;
+0066             A=A./(sum(A,2)*ones(1,M));      <span class="comment">%The Transition Probability Matrix of active states</span>
+0067             P=repmat((1:D).^2,M,1);
+0068             P=P./(sum(P,2)*ones(1,D));
+0069         <span class="keyword">otherwise</span>
+0070             <span class="comment">%%we use uniform distribution init by deafault</span>
+0071             
+0072             PAI=ones(M,1);
+0073             PAI=PAI./sum(PAI);           <span class="comment">%the initial probability</span>
+0074             A=ones(M);
+0075             A=A./(sum(A,2)*ones(1,M));      <span class="comment">%The Transition Probability Matrix of active states</span>
+0076             P=repmat((1:D).^2,M,1);
+0077             P=P./(sum(P,2)*ones(1,D));
+0078     <span class="keyword">end</span>
+0079     <span class="comment">%[O,Vk]=canonizeLabels(X);</span>
+0080     [x,I]=sort(O);
+0081     tmp=([1;diff(x)]~=0);
+0082     Vk=x(tmp);                  <span class="comment">%observable values</span>
+0083     Num=diff(find([tmp;1]==1));
+0084     <span class="keyword">if</span> length(Vk)&lt;K
+0085         K=length(Vk);
+0086     <span class="keyword">end</span>
+0087     <span class="keyword">while</span> length(Vk)&gt;K
+0088         [y,J]=min(diff(Vk));
+0089         Vk(J+1)=(Vk(J)*Num(J)+Vk(J+1)*Num(J+1))/(Num(J)+Num(J+1));
+0090         Vk(J)=[];
+0091         Num(J+1)=Num(J+1)+Num(J);
+0092         Num(J)=[];
+0093     <span class="keyword">end</span>
+0094     Num=cumsum(Num);
+0095     tmp(:)=0;
+0096     tmp([1;Num(1:end-1)+1])=1;
+0097     O(I)=cumsum(tmp);           <span class="comment">%indexes of observable values</span>
+0098 <span class="comment">%%</span>
+0099 <span class="comment">%%Poisson?</span>
+0100     lambda=(max(O)-min(O))/M;
+0101     lambda=(min(O)+lambda/2):lambda:max(O);
+0102     <span class="keyword">for</span> i=1:K
+0103         ss(i)=sum(log(1:i));
+0104     <span class="keyword">end</span>
+0105     B=exp(log(lambda')*(1:K)-ones(M,1)*ss-lambda'*ones(1,K));
+0106     B=B+(max(B')'.*0.01)*ones(1,K);
+0107     B=B./(sum(B,2)*ones(1,K));      <span class="comment">%The observation symbol probability distribution</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

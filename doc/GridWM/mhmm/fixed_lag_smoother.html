@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fixed_lag_smoother</title>
+  <meta name="keywords" content="fixed_lag_smoother">
+  <meta name="description" content="FIXED_LAG_SMOOTHER Computed smoothed posterior estimates within a window given previous filtered window.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>fixed_lag_smoother
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>FIXED_LAG_SMOOTHER Computed smoothed posterior estimates within a window given previous filtered window.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [alpha, obslik, gamma, xi] = fixed_lag_smoother(d, alpha, obslik, obsvec, transmat, act) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> FIXED_LAG_SMOOTHER Computed smoothed posterior estimates within a window given previous filtered window.
+ [alpha, obslik, gamma, xi] = fixed_lag_smoother(d, alpha, obslik, obsvec, transmat, act)
+
+ d &gt;= 2 is the desired window width.
+ Actually, we use d=min(d, t0), where t0 is the current time.
+
+ alpha(:, t0-d:t0-1) - length d window, excluding t0 (Columns indexed 1..d)
+ obslik(:, t0-d:t0-1) - length d window
+ obsvec              - likelihood vector for current observation
+ transmat            - transition matrix
+ If we specify the optional 'act' argument, transmat{a} should be a cell array, and
+ act(t0-d:t0)          - length d window, last column = current action
+
+ Output:
+ alpha(:, t0-d+1:t0)     - last column = new filtered estimate
+ obslik(:, t0-d+1:t0)    - last column = obsvec
+ xi(:, :, t0-d+1:t0-1)   - 2 slice smoothed window
+ gamma(:, t0-d+1:t0)     - smoothed window
+
+ As usual, we define (using T=d)
+ alpha(i,t) = Pr(Q(t)=i | Y(1:t))
+ gamma(i,t) = Pr(Q(t)=i | Y(1:T))
+ xi(i,j,t) = Pr(Q(t)=i, Q(t+1)=j | Y(1:T))
+
+ obslik(i,t) = Pr(Y(t) | Q(t)=i) 
+ transmat{a}(i,j) = Pr(Q(t)=j | Q(t-1)=i, A(t)=a)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="fixed_lag_smoother_demo.html" class="code" title="">fixed_lag_smoother_demo</a>	Example of fixed lag smoothing</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [alpha, obslik, gamma, xi] = fixed_lag_smoother(d, alpha, obslik, obsvec, transmat, act)</a>
+0002 <span class="comment">% FIXED_LAG_SMOOTHER Computed smoothed posterior estimates within a window given previous filtered window.</span>
+0003 <span class="comment">% [alpha, obslik, gamma, xi] = fixed_lag_smoother(d, alpha, obslik, obsvec, transmat, act)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% d &gt;= 2 is the desired window width.</span>
+0006 <span class="comment">% Actually, we use d=min(d, t0), where t0 is the current time.</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% alpha(:, t0-d:t0-1) - length d window, excluding t0 (Columns indexed 1..d)</span>
+0009 <span class="comment">% obslik(:, t0-d:t0-1) - length d window</span>
+0010 <span class="comment">% obsvec              - likelihood vector for current observation</span>
+0011 <span class="comment">% transmat            - transition matrix</span>
+0012 <span class="comment">% If we specify the optional 'act' argument, transmat{a} should be a cell array, and</span>
+0013 <span class="comment">% act(t0-d:t0)          - length d window, last column = current action</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Output:</span>
+0016 <span class="comment">% alpha(:, t0-d+1:t0)     - last column = new filtered estimate</span>
+0017 <span class="comment">% obslik(:, t0-d+1:t0)    - last column = obsvec</span>
+0018 <span class="comment">% xi(:, :, t0-d+1:t0-1)   - 2 slice smoothed window</span>
+0019 <span class="comment">% gamma(:, t0-d+1:t0)     - smoothed window</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% As usual, we define (using T=d)</span>
+0022 <span class="comment">% alpha(i,t) = Pr(Q(t)=i | Y(1:t))</span>
+0023 <span class="comment">% gamma(i,t) = Pr(Q(t)=i | Y(1:T))</span>
+0024 <span class="comment">% xi(i,j,t) = Pr(Q(t)=i, Q(t+1)=j | Y(1:T))</span>
+0025 <span class="comment">%</span>
+0026 <span class="comment">% obslik(i,t) = Pr(Y(t) | Q(t)=i)</span>
+0027 <span class="comment">% transmat{a}(i,j) = Pr(Q(t)=j | Q(t-1)=i, A(t)=a)</span>
+0028 
+0029 [S n] = size(alpha); 
+0030 d = min(d, n+1); 
+0031 <span class="keyword">if</span> d &lt; 2
+0032   error(<span class="string">'must keep a window of length at least 2'</span>);
+0033 <span class="keyword">end</span>
+0034 
+0035 <span class="keyword">if</span> ~exist(<span class="string">'act'</span>)
+0036   act = ones(1, n+1);
+0037   transmat = { transmat };
+0038 <span class="keyword">end</span>
+0039 
+0040 <span class="comment">% pluck out last d-1 components from the history</span>
+0041 alpha = alpha(:, n-d+2:n); 
+0042 obslik = obslik(:, n-d+2:n); 
+0043 
+0044 <span class="comment">% Extend window by 1</span>
+0045 t = d;
+0046 obslik(:,t) = obsvec;
+0047 xi = zeros(S, S, d-1);
+0048 xi(:,:,t-1) = normalize((alpha(:,t-1) * obslik(:,t)') .* transmat{act(t)});
+0049 alpha(:,t) = sum(xi(:,:,t-1), 1)';
+0050 
+0051 <span class="comment">% Now smooth backwards inside the window</span>
+0052 beta = ones(S, d);
+0053 T = d;
+0054 <span class="comment">%fprintf('smooth from %d to 1, i.e., %d to %d\n', d, t0, t0-d+1);</span>
+0055 gamma(:,T) = alpha(:,T);
+0056 <span class="keyword">for</span> t=T-1:-1:1
+0057   b = beta(:,t+1) .* obslik(:,t+1); 
+0058   beta(:,t) = normalize(transmat{act(t)} * b);
+0059   gamma(:,t) = normalize(alpha(:,t) .* beta(:,t));
+0060   xi(:,:,t) = normalize((transmat{act(t)} .* (alpha(:,t) * b')));
+0061 <span class="keyword">end</span>
+0062 
+0063 
+0064 
+0065</pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

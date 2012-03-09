@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of pomdp_sample</title>
+  <meta name="keywords" content="pomdp_sample">
+  <meta name="description" content="SAMPLE_POMDP Generate a random sequence from a Partially Observed Markov Decision Process.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>pomdp_sample
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SAMPLE_POMDP Generate a random sequence from a Partially Observed Markov Decision Process.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [obs, hidden] = pomdp_sample(initial_prob, transmat, obsmat, act) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SAMPLE_POMDP Generate a random sequence from a Partially Observed Markov Decision Process.
+ [obs, hidden] = sample_pomdp(prior, transmat, obsmat, act)
+
+ Inputs:
+ prior(i) = Pr(Q(1)=i)
+ transmat{a}(i,j) = Pr(Q(t)=j | Q(t-1)=i, A(t)=a)
+ obsmat(i,k) = Pr(Y(t)=k | Q(t)=i)
+ act(a) = A(t), so act(1) is ignored
+
+ Output:
+ obs and hidden are vectors of length T=length(act)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="mdp_sample.html" class="code" title="function state = mdp_sample(prior, trans, act)">mdp_sample</a>	SAMPLE_MDP Sample a sequence of states from a Markov Decision Process.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="dhmm_em_online_demo.html" class="code" title="">dhmm_em_online_demo</a>	Example of online EM applied to a simple POMDP with fixed action seq</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [obs, hidden] = pomdp_sample(initial_prob, transmat, obsmat, act)</a>
+0002 <span class="comment">% SAMPLE_POMDP Generate a random sequence from a Partially Observed Markov Decision Process.</span>
+0003 <span class="comment">% [obs, hidden] = sample_pomdp(prior, transmat, obsmat, act)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Inputs:</span>
+0006 <span class="comment">% prior(i) = Pr(Q(1)=i)</span>
+0007 <span class="comment">% transmat{a}(i,j) = Pr(Q(t)=j | Q(t-1)=i, A(t)=a)</span>
+0008 <span class="comment">% obsmat(i,k) = Pr(Y(t)=k | Q(t)=i)</span>
+0009 <span class="comment">% act(a) = A(t), so act(1) is ignored</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% Output:</span>
+0012 <span class="comment">% obs and hidden are vectors of length T=length(act)</span>
+0013 
+0014 
+0015 len = length(act);
+0016 hidden = <a href="mdp_sample.html" class="code" title="function state = mdp_sample(prior, trans, act)">mdp_sample</a>(initial_prob, transmat, act);
+0017 obs = zeros(1, len);
+0018 <span class="keyword">for</span> t=1:len
+0019   obs(t) = sampleDiscrete(obsmat(hidden(t),:));
+0020 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

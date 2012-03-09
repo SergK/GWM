@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gwm_selectBestModels</title>
+  <meta name="keywords" content="gwm_selectBestModels">
+  <meta name="description" content="function bestmodels=gwm_selectBestModels(models,varargin)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html GridWM -->
+<h1>gwm_selectBestModels
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function bestmodels=gwm_selectBestModels(models,varargin)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function bestmodels=gwm_selectBestModels(models,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">function bestmodels=gwm_selectBestModels(models,varargin)
+   Select best models with some 
+
+INPUT:
+           models -</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="gwm_maxminnd.html" class="code" title="function [val, idx] = gwm_maxminnd(x,n,criteria)">gwm_maxminnd</a>	function [val, idx] = gwm_maxminnd(x,n,criteria)</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function bestmodels=gwm_selectBestModels(models,varargin)</a>
+0002 <span class="comment">%function bestmodels=gwm_selectBestModels(models,varargin)</span>
+0003 <span class="comment">%   Select best models with some</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">%INPUT:</span>
+0006 <span class="comment">%           models -</span>
+0007 
+0008 <span class="comment">%%</span>
+0009 [   criteria                    , <span class="keyword">...</span>
+0010     nBestModels                 , <span class="keyword">...</span>
+0011     inGroups                    ] <span class="keyword">...</span>
+0012     = process_options(varargin  , <span class="keyword">...</span>
+0013     <span class="string">'criteria'</span>                  , <span class="string">'loglike'</span>                        , <span class="keyword">...</span>
+0014     <span class="string">'nBestModels'</span>               , 1                                , <span class="keyword">...</span>
+0015     <span class="string">'byGroups'</span>                  , true);
+0016 
+0017 [nRuns nModels] = size(models);
+0018 loglike = false;
+0019 
+0020 <span class="keyword">switch</span> lower(criteria)
+0021     <span class="keyword">case</span> <span class="string">'loglike'</span>
+0022         val = cellfun(@(x) x.loglike(end), models(:), <span class="string">'Uniform'</span>, 1);
+0023         loglike = true;
+0024     <span class="keyword">case</span> <span class="string">'aic'</span>
+0025         val = cellfun(@(x) x.AIC, models(:), <span class="string">'Uniform'</span>, 1);
+0026     <span class="keyword">case</span> <span class="string">'bic'</span>
+0027         val = cellfun(@(x) x.BIC, models(:), <span class="string">'Uniform'</span>, 1);
+0028     <span class="keyword">case</span> <span class="string">'aicc'</span>
+0029         val = cellfun(@(x) x.AICc, models(:), <span class="string">'Uniform'</span>, 1);
+0030         
+0031     <span class="keyword">otherwise</span>           , error(<span class="string">'%s is not a valid criteria type'</span>,criteria);
+0032 <span class="keyword">end</span> <span class="comment">% switch</span>
+0033 val = reshape(val,nRuns,nModels);
+0034 <span class="keyword">if</span> loglike      <span class="comment">% if we have LogLike than best model is MAX</span>
+0035     [~, best_models_idx] = <a href="gwm_maxminnd.html" class="code" title="function [val, idx] = gwm_maxminnd(x,n,criteria)">gwm_maxminnd</a>(val,nBestModels,<span class="string">'max'</span>);
+0036 <span class="keyword">else</span>
+0037     [~, best_models_idx] = <a href="gwm_maxminnd.html" class="code" title="function [val, idx] = gwm_maxminnd(x,n,criteria)">gwm_maxminnd</a>(val,nBestModels,<span class="string">'min'</span>);    <span class="comment">%best model is MIN (AIC, BIC or AICc)</span>
+0038 <span class="keyword">end</span>
+0039 
+0040 bestmodels = models(best_models_idx);
+0041 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

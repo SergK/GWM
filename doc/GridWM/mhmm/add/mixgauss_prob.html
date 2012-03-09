@@ -1,0 +1,218 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mixgauss_prob</title>
+  <meta name="keywords" content="mixgauss_prob">
+  <meta name="description" content="EVAL_PDF_COND_MOG Evaluate the pdf of a conditional mixture of Gaussians">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GridWM --><!-- ../menu.html mhmm --><!-- menu.html add -->
+<h1>mixgauss_prob
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>EVAL_PDF_COND_MOG Evaluate the pdf of a conditional mixture of Gaussians</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [B, B2] = mixgauss_prob(data, mu, Sigma, mixmat, unit_norm) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> EVAL_PDF_COND_MOG Evaluate the pdf of a conditional mixture of Gaussians
+ function [B, B2] = eval_pdf_cond_mog(data, mu, Sigma, mixmat, unit_norm)
+
+ Notation: Y is observation, M is mixture component, and both may be conditioned on Q.
+ If Q does not exist, ignore references to Q=j below.
+ Alternatively, you may ignore M if this is a conditional Gaussian.
+
+ INPUTS:
+ data(:,t) = t'th observation vector 
+
+ mu(:,k) = E[Y(t) | M(t)=k] 
+ or mu(:,j,k) = E[Y(t) | Q(t)=j, M(t)=k]
+
+ Sigma(:,:,j,k) = Cov[Y(t) | Q(t)=j, M(t)=k]
+ or there are various faster, special cases:
+   Sigma() - scalar, spherical covariance independent of M,Q.
+   Sigma(:,:) diag or full, tied params independent of M,Q. 
+   Sigma(:,:,j) tied params independent of M. 
+
+ mixmat(k) = Pr(M(t)=k) = prior
+ or mixmat(j,k) = Pr(M(t)=k | Q(t)=j) 
+ Not needed if M is not defined.
+
+ unit_norm - optional; if 1, means data(:,i) AND mu(:,i) each have unit norm (slightly faster)
+
+ OUTPUT:
+ B(t) = Pr(y(t)) 
+ or
+ B(i,t) = Pr(y(t) | Q(t)=i) 
+ B2(i,k,t) = Pr(y(t) | Q(t)=i, M(t)=k) 
+
+ If the number of mixture components differs depending on Q, just set the trailing
+ entries of mixmat to 0, e.g., 2 components if Q=1, 3 components if Q=2,
+ then set mixmat(1,3)=0. In this case, B2(1,3,:)=1.0.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="gaussian_prob.html" class="code" title="function p = gaussian_prob(x, m, C, use_log)">gaussian_prob</a>	GAUSSIAN_PROB Evaluate a multivariate Gaussian density.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="mixgauss_em.html" class="code" title="function [mu, Sigma, prior] = mixgauss_em(Y, nc, varargin)">mixgauss_em</a>	MIXGAUSS_EM Fit the parameters of a mixture of Gaussians using EM</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [B, B2] = mixgauss_prob(data, mu, Sigma, mixmat, unit_norm)</a>
+0002 <span class="comment">% EVAL_PDF_COND_MOG Evaluate the pdf of a conditional mixture of Gaussians</span>
+0003 <span class="comment">% function [B, B2] = eval_pdf_cond_mog(data, mu, Sigma, mixmat, unit_norm)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Notation: Y is observation, M is mixture component, and both may be conditioned on Q.</span>
+0006 <span class="comment">% If Q does not exist, ignore references to Q=j below.</span>
+0007 <span class="comment">% Alternatively, you may ignore M if this is a conditional Gaussian.</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% INPUTS:</span>
+0010 <span class="comment">% data(:,t) = t'th observation vector</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% mu(:,k) = E[Y(t) | M(t)=k]</span>
+0013 <span class="comment">% or mu(:,j,k) = E[Y(t) | Q(t)=j, M(t)=k]</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">% Sigma(:,:,j,k) = Cov[Y(t) | Q(t)=j, M(t)=k]</span>
+0016 <span class="comment">% or there are various faster, special cases:</span>
+0017 <span class="comment">%   Sigma() - scalar, spherical covariance independent of M,Q.</span>
+0018 <span class="comment">%   Sigma(:,:) diag or full, tied params independent of M,Q.</span>
+0019 <span class="comment">%   Sigma(:,:,j) tied params independent of M.</span>
+0020 <span class="comment">%</span>
+0021 <span class="comment">% mixmat(k) = Pr(M(t)=k) = prior</span>
+0022 <span class="comment">% or mixmat(j,k) = Pr(M(t)=k | Q(t)=j)</span>
+0023 <span class="comment">% Not needed if M is not defined.</span>
+0024 <span class="comment">%</span>
+0025 <span class="comment">% unit_norm - optional; if 1, means data(:,i) AND mu(:,i) each have unit norm (slightly faster)</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% OUTPUT:</span>
+0028 <span class="comment">% B(t) = Pr(y(t))</span>
+0029 <span class="comment">% or</span>
+0030 <span class="comment">% B(i,t) = Pr(y(t) | Q(t)=i)</span>
+0031 <span class="comment">% B2(i,k,t) = Pr(y(t) | Q(t)=i, M(t)=k)</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">% If the number of mixture components differs depending on Q, just set the trailing</span>
+0034 <span class="comment">% entries of mixmat to 0, e.g., 2 components if Q=1, 3 components if Q=2,</span>
+0035 <span class="comment">% then set mixmat(1,3)=0. In this case, B2(1,3,:)=1.0.</span>
+0036 
+0037 
+0038 
+0039 
+0040 <span class="keyword">if</span> isvector(mu) &amp; size(mu,2)==1
+0041   d = length(mu);
+0042   Q = 1; M = 1;
+0043 <span class="keyword">elseif</span> ndims(mu)==2
+0044   [d Q] = size(mu);
+0045   M = 1;
+0046 <span class="keyword">else</span>
+0047   [d Q M] = size(mu);
+0048 <span class="keyword">end</span>
+0049 [d T] = size(data);
+0050 
+0051 <span class="keyword">if</span> nargin &lt; 4, mixmat = ones(Q,1); <span class="keyword">end</span>
+0052 <span class="keyword">if</span> nargin &lt; 5, unit_norm = 0; <span class="keyword">end</span>
+0053 
+0054 <span class="comment">%B2 = zeros(Q,M,T); % ATB: not needed allways</span>
+0055 <span class="comment">%B = zeros(Q,T);</span>
+0056 
+0057 <span class="keyword">if</span> isscalar(Sigma)
+0058   mu = reshape(mu, [d Q*M]);
+0059   <span class="keyword">if</span> unit_norm <span class="comment">% (p-q)'(p-q) = p'p + q'q - 2p'q = n+m -2p'q since p(:,i)'p(:,i)=1</span>
+0060     <span class="comment">%avoid an expensive repmat</span>
+0061     disp(<span class="string">'unit norm'</span>)
+0062     <span class="comment">%tic; D = 2 -2*(data'*mu)'; toc</span>
+0063     D = 2 - 2*(mu'*data);
+0064     tic; D2 = sqdist(data, mu)'; toc
+0065     assert(approxeq(D,D2)) 
+0066   <span class="keyword">else</span>
+0067     D = sqdist(data, mu)';
+0068   <span class="keyword">end</span>
+0069   clear mu data <span class="comment">% ATB: clear big old data</span>
+0070   <span class="comment">% D(qm,t) = sq dist between data(:,t) and mu(:,qm)</span>
+0071   logB2 = -(d/2)*log(2*pi*Sigma) - (1/(2*Sigma))*D; <span class="comment">% det(sigma*I) = sigma^d</span>
+0072   B2 = reshape(exp(logB2), [Q M T]);
+0073   clear logB2 <span class="comment">% ATB: clear big old data</span>
+0074   
+0075 <span class="keyword">elseif</span> ndims(Sigma)==2 <span class="comment">% tied full</span>
+0076   mu = reshape(mu, [d Q*M]);
+0077   D = sqdist(data, mu, inv(Sigma))';
+0078   <span class="comment">% D(qm,t) = sq dist between data(:,t) and mu(:,qm)</span>
+0079   logB2 = -(d/2)*log(2*pi) - 0.5*logdet(Sigma) - 0.5*D;
+0080   <span class="comment">%denom = sqrt(det(2*pi*Sigma));</span>
+0081   <span class="comment">%numer = exp(-0.5 * D);</span>
+0082   <span class="comment">%B2 = numer/denom;</span>
+0083   B2 = reshape(exp(logB2), [Q M T]);
+0084   
+0085 <span class="keyword">elseif</span> ndims(Sigma)==3 <span class="comment">% tied across M</span>
+0086   B2 = zeros(Q,M,T);
+0087   <span class="keyword">for</span> j=1:Q
+0088     <span class="comment">% D(m,t) = sq dist between data(:,t) and mu(:,j,m)</span>
+0089     <span class="keyword">if</span> isposdef(Sigma(:,:,j))
+0090       D = sqdist(data, permute(mu(:,j,:), [1 3 2]), inv(Sigma(:,:,j)))';
+0091       logB2 = -(d/2)*log(2*pi) - 0.5*logdet(Sigma(:,:,j)) - 0.5*D;
+0092       B2(j,:,:) = exp(logB2);
+0093     <span class="keyword">else</span>
+0094       error(sprintf(<span class="string">'mixgauss_prob: Sigma(:,:,q=%d) not psd\n'</span>, j));
+0095     <span class="keyword">end</span>
+0096   <span class="keyword">end</span>
+0097   
+0098 <span class="keyword">else</span> <span class="comment">% general case</span>
+0099   B2 = zeros(Q,M,T);
+0100   <span class="keyword">for</span> j=1:Q
+0101     <span class="keyword">for</span> k=1:M
+0102       <span class="comment">%if mixmat(j,k) &gt; 0</span>
+0103       B2(j,k,:) = <a href="gaussian_prob.html" class="code" title="function p = gaussian_prob(x, m, C, use_log)">gaussian_prob</a>(data, mu(:,j,k), Sigma(:,:,j,k));
+0104       <span class="comment">%end</span>
+0105     <span class="keyword">end</span>
+0106   <span class="keyword">end</span>
+0107 <span class="keyword">end</span>
+0108 
+0109 <span class="comment">% B(j,t) = sum_k B2(j,k,t) * Pr(M(t)=k | Q(t)=j)</span>
+0110 
+0111 <span class="comment">% The repmat is actually slower than the for-loop, because it uses too much memory</span>
+0112 <span class="comment">% (this is true even for small T).</span>
+0113 
+0114 <span class="comment">% we have mex version of repmat so we use this</span>
+0115 B = squeeze(sum(B2 .* repmat(mixmat, [1 1 T]), 2));
+0116 B = reshape(B, [Q T]); <span class="comment">% undo effect of squeeze in case Q = 1</span>
+0117 <span class="keyword">end</span>
+0118 <span class="comment">%instead of the next solution with for</span>
+0119   
+0120 <span class="comment">%==============================this was default</span>
+0121 <span class="comment">% B = zeros(Q,T);</span>
+0122 <span class="comment">% if Q &lt; T</span>
+0123 <span class="comment">%   for q=1:Q</span>
+0124 <span class="comment">%     %B(q,:) = mixmat(q,:) * squeeze(B2(q,:,:)); % squeeze chnages order if M=1</span>
+0125 <span class="comment">%     B(q,:) = mixmat(q,:) * permute(B2(q,:,:), [2 3 1]); % vector * matrix sums over m</span>
+0126 <span class="comment">%   end</span>
+0127 <span class="comment">% else</span>
+0128 <span class="comment">%   for t=1:T</span>
+0129 <span class="comment">%     B(:,t) = sum(mixmat .* B2(:,:,t), 2); % sum over m</span>
+0130 <span class="comment">%   end</span>
+0131 <span class="comment">% end</span>
+0132 <span class="comment">%================================================================</span>
+0133 
+0134 <span class="comment">%t=toc;fprintf('%5.3f\n', t)</span>
+0135 
+0136 <span class="comment">%tic</span>
+0137 <span class="comment">%A = squeeze(sum(B2 .* repmat(mixmat, [1 1 T]), 2));</span>
+0138 <span class="comment">%t=toc;fprintf('%5.3f\n', t)</span>
+0139 <span class="comment">%assert(approxeq(A,B)) % may be false because of round off error</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of dhmm_sample_endstate</title>
+  <meta name="keywords" content="dhmm_sample_endstate">
+  <meta name="description" content="SAMPLE_DHMM Generate random sequences from an HMM with discrete outputs.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>dhmm_sample_endstate
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SAMPLE_DHMM Generate random sequences from an HMM with discrete outputs.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [obs, hidden] = dhmm_sample_endstate(startprob, transmat, obsmat, endprob, numex) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SAMPLE_DHMM Generate random sequences from an HMM with discrete outputs.
+ function [obs, hidden] = sample_dhmm_endstate(startprob, transmat, obsmat, endprob, numex)
+
+ We sample until we have have entered the end state
+ obs{m} and hidden{m} are the m'th sequence</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="mc_sample_endstate.html" class="code" title="function S = sample_mc_endstate(startprob, trans, endprob)">mc_sample_endstate</a>	SAMPLE_MC_ENDSTATE Generate a random sequence from a Markov chain until enter the endstate.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [obs, hidden] = dhmm_sample_endstate(startprob, transmat, obsmat, endprob, numex)</a>
+0002 <span class="comment">% SAMPLE_DHMM Generate random sequences from an HMM with discrete outputs.</span>
+0003 <span class="comment">% function [obs, hidden] = sample_dhmm_endstate(startprob, transmat, obsmat, endprob, numex)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% We sample until we have have entered the end state</span>
+0006 <span class="comment">% obs{m} and hidden{m} are the m'th sequence</span>
+0007 
+0008 hidden = cell(1,numex);
+0009 obs = cell(1,numex);
+0010 
+0011 <span class="keyword">for</span> m=1:numex
+0012   hidden{m} = <a href="mc_sample_endstate.html" class="code" title="function S = sample_mc_endstate(startprob, trans, endprob)">mc_sample_endstate</a>(startprob, transmat, endprob);
+0013   T = length(hidden{m});
+0014   obs{m} = zeros(1,T);
+0015   <span class="keyword">for</span> t=1:T
+0016     h = hidden{m}(t);
+0017     obs{m}(t) = sample_discrete(obsmat(h,:));
+0018   <span class="keyword">end</span>
+0019 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

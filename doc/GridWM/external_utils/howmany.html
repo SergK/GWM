@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of howmany</title>
+  <meta name="keywords" content="howmany">
+  <meta name="description" content="[val, num] = howmany(x)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html external_utils -->
+<h1>howmany
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>[val, num] = howmany(x)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [val, num, freq] = howmany(x) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> [val, num] = howmany(x)
+
+ counts the number of occurrences of finite values in x
+
+  in:  x    vector of nnumbers (array will be reshaped to a vector)
+
+ out: val   unique values in x, sorted
+      num   number of occurrences</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [val, num, freq] = howmany(x)</a>
+0002 
+0003 <span class="comment">% [val, num] = howmany(x)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% counts the number of occurrences of finite values in x</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%  in:  x    vector of nnumbers (array will be reshaped to a vector)</span>
+0008 <span class="comment">%</span>
+0009 <span class="comment">% out: val   unique values in x, sorted</span>
+0010 <span class="comment">%      num   number of occurrences</span>
+0011 
+0012 <span class="comment">% Pekka Kumpulainen 17.8.2005</span>
+0013 
+0014 x = x(:);
+0015 x = x(isfinite(x));
+0016 sx = sort(x);
+0017 
+0018 difsx = diff(sx);
+0019 fdx = [0;find(difsx&gt;0);length(sx)];
+0020 num = diff(fdx);
+0021 
+0022 ifx = find([1;difsx]);
+0023 val = sx(ifx);
+0024 
+0025 freq=num/length(x);
+0026 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

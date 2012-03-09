@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fwdprop_backsample</title>
+  <meta name="keywords" content="fwdprop_backsample">
+  <meta name="description" content="forwards propagation, backwards sampling">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>fwdprop_backsample
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>forwards propagation, backwards sampling</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function samples = fwdprop_backsample(init_state_distrib, transmat, obslik, nsamples) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> forwards propagation, backwards sampling
+
+ input
+ init_state_distrib(q)
+ transmat(q, q')
+ obslik(q, t)
+ nsamples
+
+ output
+ samples(t, s)  = sample s of discrete state at time  t</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function samples = fwdprop_backsample(init_state_distrib, transmat, obslik, nsamples)</a>
+0002 
+0003 <span class="comment">% forwards propagation, backwards sampling</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% input</span>
+0006 <span class="comment">% init_state_distrib(q)</span>
+0007 <span class="comment">% transmat(q, q')</span>
+0008 <span class="comment">% obslik(q, t)</span>
+0009 <span class="comment">% nsamples</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% output</span>
+0012 <span class="comment">% samples(t, s)  = sample s of discrete state at time  t</span>
+0013 
+0014 
+0015 [Q T] = size(obslik);
+0016 scale = ones(1,T);
+0017 loglik = 0;
+0018 alpha = zeros(Q,T, <span class="string">'single'</span>);
+0019 beta = zeros(Q,T,<span class="string">'single'</span>);
+0020 gamma = zeros(Q,T,<span class="string">'single'</span>);
+0021 trans = transmat;
+0022 
+0023 t = 1;
+0024 alpha(:,1) = init_state_distrib(:) .* obslik(:,t);
+0025 [alpha(:,t), scale(t)] = normalize(alpha(:,t));
+0026 <span class="keyword">for</span> t=2:T
+0027   m = trans' * alpha(:,t-1);
+0028   alpha(:,t) = m(:) .* obslik(:,t);
+0029   [alpha(:,t), scale(t)] = normalize(alpha(:,t));
+0030   assert(approxeq(sum(alpha(:,t)),1))
+0031 <span class="keyword">end</span>
+0032 loglik = sum(log(scale));
+0033 
+0034 
+0035 beta = zeros(Q,T);
+0036 t=T;
+0037 beta(:,T) = ones(Q,1);
+0038 gamma(:,T) = normalize(alpha(:,T) .* beta(:,T));
+0039 <span class="keyword">if</span> nsamples &gt; 0
+0040   samples(t,:) = sample(gamma(:,T), nsamples);
+0041 <span class="keyword">end</span>
+0042 <span class="keyword">for</span> t=T-1:-1:1
+0043  b = beta(:,t+1) .* obslik(:,t+1);
+0044  beta(:,t) = normalize(transmat * b);
+0045  gamma(:,t) = normalize(alpha(:,t) .* beta(:,t));
+0046  <span class="comment">%xi_summed = xi_summed + normalize((transmat .* (alpha(:,t) * b')));</span>
+0047  <span class="keyword">if</span> nsamples &gt; 0
+0048    <span class="comment">% compute xi_{t+1|t+1}(i,j)</span>
+0049    xi_filtered = normalize((alpha(:,t) * obslik(:,t+1)') .* transmat);
+0050    <span class="keyword">for</span> n=1:nsamples
+0051      dist = normalize(xi_filtered(:,samples(t+1,n)));
+0052      samples(t,n) = sample(dist);
+0053    <span class="keyword">end</span>
+0054  <span class="keyword">end</span>
+0055 <span class="keyword">end</span>
+0056 
+0057 
+0058 <span class="keyword">if</span> 0
+0059 beta(:,T) = ones(Q,1);
+0060 gamma(:,T) = normalize(alpha(:,T) .* beta(:,T));
+0061 t=T;
+0062 samples = zeros(T, nsamples);
+0063 samples(t,:) = sample_discrete(gamma(:,t), 1, nsamples);
+0064 <span class="keyword">for</span> s=1:nsamples
+0065   <span class="keyword">for</span> t=T-1:-1:1
+0066     L = samples(t+1,s);
+0067     obslikTmp = zeros(Q,1);
+0068     obslikTmp(L) = 1;
+0069     b = beta(:,t+1) .* obslikTmp;
+0070     beta(:,t) = normalize(trans * b);
+0071     gamma(:,t) = normalize(alpha(:,t) .* beta(:,t));
+0072     samples(t,s) = sample_discrete(gamma(:,t), 1, 1);
+0073   <span class="keyword">end</span>
+0074 <span class="keyword">end</span>
+0075 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

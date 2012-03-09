@@ -1,0 +1,203 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of hsmm</title>
+  <meta name="keywords" content="hsmm">
+  <meta name="description" content="Author: Shun-Zheng Yu">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html hsmm -->
+<h1>hsmm
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Author: Shun-Zheng Yu</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Author: Shun-Zheng Yu
+ Available: http://sist.sysu.edu.cn/~syu/Publications/hsmm_m.txt
+
+ HSMM solves three fundamental problems for Hidden Semi-Markov Model (or explicit duration hidden
+ Markov model) using a new Forward-Backward algorithm published in
+    IEEE Signal Processing Letters, Vol. 10, no. 1, pp. 11-14, January 2003: 
+   ¡°An Efficient Forward-Backward Algorithm for an Explicit Duration Hidden Markov Model,¡±  
+    by  S-Z. Yu and H. Kobayashi            
+ 
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version
+  2 of the License, or (at your option) any later version.
+  http://www.gnu.org/licenses/gpl.txt
+
+++++++++ The hidden semi-Markov model +++++++++++
+ M               The total number of states
+ T               The length of the observation sequence
+ O(1:T)          The observation sequence
+ D               The maximum duration of states
+ K               The total number of observation values
+ PAI(1:M,1:1)    the initial probability of states
+
+ A(1:M,1:M)      The state Transition Probability Matrix
+ for r=1:M
+     A(r,r)=0;
+ end
+
+ P(1:M,1:D);      The probability of state duration
+
+ B(1:M,1:K)       The observation probability distribution</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Author: Shun-Zheng Yu</span>
+0002 <span class="comment">% Available: http://sist.sysu.edu.cn/~syu/Publications/hsmm_m.txt</span>
+0003 <span class="comment">%</span>
+0004 <span class="comment">% HSMM solves three fundamental problems for Hidden Semi-Markov Model (or explicit duration hidden</span>
+0005 <span class="comment">% Markov model) using a new Forward-Backward algorithm published in</span>
+0006 <span class="comment">%    IEEE Signal Processing Letters, Vol. 10, no. 1, pp. 11-14, January 2003:</span>
+0007 <span class="comment">%   ¡°An Efficient Forward-Backward Algorithm for an Explicit Duration Hidden Markov Model,¡±</span>
+0008 <span class="comment">%    by  S-Z. Yu and H. Kobayashi</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%  This program is free software; you can redistribute it and/or</span>
+0011 <span class="comment">%  modify it under the terms of the GNU General Public License</span>
+0012 <span class="comment">%  as published by the Free Software Foundation; either version</span>
+0013 <span class="comment">%  2 of the License, or (at your option) any later version.</span>
+0014 <span class="comment">%  http://www.gnu.org/licenses/gpl.txt</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%++++++++ The hidden semi-Markov model +++++++++++</span>
+0017 <span class="comment">% M               The total number of states</span>
+0018 <span class="comment">% T               The length of the observation sequence</span>
+0019 <span class="comment">% O(1:T)          The observation sequence</span>
+0020 <span class="comment">% D               The maximum duration of states</span>
+0021 <span class="comment">% K               The total number of observation values</span>
+0022 <span class="comment">% PAI(1:M,1:1)    the initial probability of states</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% A(1:M,1:M)      The state Transition Probability Matrix</span>
+0025 <span class="comment">% for r=1:M</span>
+0026 <span class="comment">%     A(r,r)=0;</span>
+0027 <span class="comment">% end</span>
+0028 <span class="comment">%</span>
+0029 <span class="comment">% P(1:M,1:D);      The probability of state duration</span>
+0030 <span class="comment">%</span>
+0031 <span class="comment">% B(1:M,1:K)       The observation probability distribution</span>
+0032 <span class="comment">%</span>
+0033 <span class="keyword">for</span> ir=1:40      <span class="comment">% Number of iterations (here the maximum is 40)</span>
+0034 <span class="comment">%</span>
+0035 <span class="comment">%++++++++++++++++++     Forward     +++++++++++++++++</span>
+0036 <span class="comment">%---------------    Initialization    ---------------</span>
+0037 ALPHA=zeros(M,D+1);         <span class="comment">% the forward variable</span>
+0038 ALPHA(:,1:D)=repmat((PAI.*B(:,O(1))),1,D).*P;
+0039 <span class="comment">%    ALPHA(:,D+1)=0;</span>
+0040 c(1)=1/sum(sum(ALPHA));     <span class="comment">% scaling factor to avoid possible underflows</span>
+0041 ALPHA=ALPHA.*c(1);
+0042 ALPHAm1=zeros(M,T);
+0043 ALPHAm1(:,1)=ALPHA(:,1);
+0044 ALPHAm1Amn=zeros(M,T);
+0045 <span class="comment">%---------------    Induction    ---------------</span>
+0046 <span class="keyword">for</span> t=2:T
+0047     ALPHAm1Amn(:,t-1)=(ALPHA(:,1)'*A)';
+0048     EL=repmat((ALPHAm1Amn(:,t-1).*B(:,O(t))),1,D);
+0049     EL=EL.*P;
+0050     ALPHA(:,1:D)=ALPHA(:,2:D+1).*repmat(B(:,O(t)),1,D)+EL;
+0051     c(t)=1/sum(ALPHA(:));
+0052     ALPHA=ALPHA.*c(t);
+0053     ALPHAm1(:,t)=ALPHA(:,1);
+0054 <span class="keyword">end</span>
+0055 <span class="comment">%++++++++ To check if the likelihood is increased ++++++++</span>
+0056 lkh=-sum(log(c));       <span class="comment">% the log likelihood</span>
+0057 <span class="keyword">if</span> ir&gt;1
+0058     <span class="keyword">if</span> lkh&lt;=lkh1
+0059         <span class="keyword">break</span>
+0060     <span class="keyword">end</span>
+0061  <span class="keyword">end</span>
+0062 <span class="comment">%++++++++ Backward and Parameter Re-estimation ++++++++</span>
+0063 <span class="comment">%---------------    Initialization    ---------------</span>
+0064 BETA=ones(M,D);         <span class="comment">% the backward variable</span>
+0065 GAMMA0=sum(ALPHA,2);
+0066 GAMMAmn=zeros(M,1);
+0067 GAMMAnm=zeros(M,1);
+0068 A_est=zeros(M,M);
+0069 P_est=zeros(M,D);
+0070 B_est=zeros(M,K);
+0071 B_est(:,O(T))=B_est(:,O(T))+GAMMA0;
+0072 [X,S_est(T)]=max(GAMMA0);
+0073 <span class="comment">%---------------    Induction    ---------------</span>
+0074 <span class="keyword">for</span> t=(T-1):-1:1
+0075     bm=B(:,O(t+1)).*c(t+1);
+0076     EB=sum((P.*BETA),2);
+0077     EB=bm.*EB;
+0078     <span class="comment">%% for estimate of A</span>
+0079     ROU=(ALPHAm1(:,t)*EB').*A;
+0080     A_est=A_est+ROU;
+0081     <span class="comment">%% for estimate of P</span>
+0082     P_est=P_est+repmat((ALPHAm1Amn(:,t).*bm),1,D).*P.*BETA;
+0083     <span class="comment">%% for estimate of state at time t</span>
+0084     GAMMAmn=GAMMAmn+sum(ROU,2);
+0085     GAMMAnm=GAMMAnm+sum(ROU',2);
+0086     GAMMA=GAMMA0+GAMMAmn-GAMMAnm;
+0087     I=find(GAMMA&lt;0);
+0088     GAMMA(I)=0;
+0089     clear I;
+0090     GAMMA=GAMMA./sum(GAMMA);
+0091     [X,S_est(t)]=max(GAMMA);
+0092     <span class="comment">%% for estimate of B</span>
+0093     B_est(:,O(t))=B_est(:,O(t))+GAMMA;
+0094     <span class="comment">%% for update of backward variable</span>
+0095     BETA(:,2:D)=repmat(bm,1,D-1).*BETA(:,1:D-1);
+0096     BETA(:,1)=A*EB;
+0097 <span class="keyword">end</span>
+0098 bm=B(:,O(1)).*c(1);
+0099 P_est=P_est+repmat((ALPHAm1Amn(:,1).*bm),1,D).*P.*BETA;
+0100 A0=A;
+0101 B0=B;
+0102 P0=P;
+0103 PAI0=PAI;
+0104 S_est0=S_est;
+0105 lkh0=lkh;
+0106 PAI=GAMMA./sum(GAMMA);
+0107 A=A_est./repmat(sum(A_est,2),1,M);
+0108 B=B_est./repmat(sum(B_est,2),1,K);
+0109 P=P_est./repmat(sum(P_est,2),1,D);
+0110 <span class="comment">%++++++++ To check if the model is improved ++++++++</span>
+0111 <span class="keyword">if</span> ir&gt;1
+0112     <span class="keyword">if</span> (lkh-lkh1)&lt;0.5
+0113         <span class="keyword">break</span>
+0114     <span class="keyword">end</span>
+0115 <span class="comment">%    if sum(sum(abs(A-A0)))/M&lt;=0.001</span>
+0116 <span class="comment">%        break</span>
+0117 <span class="comment">%    end</span>
+0118  <span class="keyword">end</span>
+0119 <span class="comment">%++++++++++++++++++++++++++++++++++++++++++++++++++++</span>
+0120 lkh1=lkh;
+0121 <span class="keyword">end</span>
+0122 Stateseq=S_est0;
+0123 Loglikelihood=lkh0;
+0124 A=A0;
+0125 B=B0;
+0126 P=P0;
+0127 PAI=PAI0;</pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

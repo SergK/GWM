@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gwm_abic</title>
+  <meta name="keywords" content="gwm_abic">
+  <meta name="description" content="% function [AIC,BIC,AICc,nParam] = gwm_abic(model, nbdata, logLike)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html GridWM -->
+<h1>gwm_abic
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>% function [AIC,BIC,AICc,nParam] = gwm_abic(model, nbdata, logLike)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [AIC,BIC,AICc,nParam] = gwm_abic(model, nbdata, logLike) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">% function [AIC,BIC,AICc,nParam] = gwm_abic(model, nbdata, logLike)
+ INPUT:
+       model or (Number of params): model to evaluate number of parameters
+       nbdata : number of data
+       logLike : log-Likelihood (if omitted than we get in from model.loglike)
+ OUTPUT:
+       AIC : Akaike Information Criterion
+       BIC : Bayesian Information Criterion
+       AICc : Akaike Information Criterion with correction
+       nParam : Number of parameters</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [AIC,BIC,AICc,nParam] = gwm_abic(model, nbdata, logLike)</a>
+0002 <span class="comment">%% function [AIC,BIC,AICc,nParam] = gwm_abic(model, nbdata, logLike)</span>
+0003 <span class="comment">% INPUT:</span>
+0004 <span class="comment">%       model or (Number of params): model to evaluate number of parameters</span>
+0005 <span class="comment">%       nbdata : number of data</span>
+0006 <span class="comment">%       logLike : log-Likelihood (if omitted than we get in from model.loglike)</span>
+0007 <span class="comment">% OUTPUT:</span>
+0008 <span class="comment">%       AIC : Akaike Information Criterion</span>
+0009 <span class="comment">%       BIC : Bayesian Information Criterion</span>
+0010 <span class="comment">%       AICc : Akaike Information Criterion with correction</span>
+0011 <span class="comment">%       nParam : Number of parameters</span>
+0012 
+0013 <span class="comment">%% if the first parameter will be the simple number</span>
+0014 <span class="keyword">if</span> isnumeric(model)
+0015     [AIC,BIC,AICc] = abic (logLike, model, nbdata);
+0016     <span class="keyword">return</span>;
+0017 <span class="keyword">end</span>;<span class="comment">%if</span>
+0018 <span class="keyword">if</span> nargin&lt;3; logLike = model.loglike(end);<span class="keyword">end</span>;
+0019 
+0020 <span class="comment">%% Init section</span>
+0021 nParam = model.nstates*(model.nstates-1)+<span class="keyword">...</span><span class="comment">       %Transition Matrix N*(N-1)</span>
+0022          model.nstates-1;                          <span class="comment">%pi vector N-1</span>
+0023 <span class="comment">%% Main calculus</span>
+0024 <span class="keyword">switch</span> lower(model.type)
+0025     <span class="keyword">case</span> <span class="string">'gauss'</span>
+0026         <span class="comment">%by default we have FULL cov matrix   (using kmeansInitMixGauss)</span>
+0027         <span class="comment">%nParam = k*obj.NDimensions * (obj.NDimensions+1)/2;</span>
+0028         nParam = nParam + model.d * model.nstates * (model.d + 1)/2;    <span class="comment">%Sigma</span>
+0029         nParam = nParam + model.nstates - 1 + model.nstates * model.d;  <span class="comment">%mu, weight</span>
+0030     <span class="keyword">case</span> <span class="string">'mhmm'</span>
+0031         <span class="comment">%% part for calculating number of Sigmas</span>
+0032         <span class="keyword">switch</span> lower(model.cov_type)
+0033             <span class="keyword">case</span> <span class="string">'full'</span>             
+0034                 <span class="comment">%nParam = k*obj.NDimensions * (obj.NDimensions+1)/2;</span>
+0035                 nParam = nParam + model.d * model.nstates * model.nmix * (model.d + 1)/2;
+0036             <span class="keyword">case</span> <span class="string">'diag'</span>
+0037                 <span class="comment">%nParam = obj.NDimensions * k;</span>
+0038                 nParam = nParam + model.d * model.nstates * model.nmix;
+0039             <span class="keyword">case</span> <span class="string">'spherical'</span>
+0040                 <span class="comment">%nParam = k;    %one parameter per component (mixture)</span>
+0041                 nParam = nParam + model.nstates * model.nmix;
+0042             <span class="keyword">otherwise</span>, error(<span class="string">'%s is not a valid output type of model Initialization'</span>);
+0043         <span class="keyword">end</span>
+0044         <span class="comment">%% common part  nParam = nParam + weight_params+mu_params</span>
+0045         <span class="comment">%nParam = nParam + k-1 + k * obj.NDimensions;</span>
+0046         nParam = nParam + model.nstates * model.nmix - 1 + model.nstates * model.nmix * model.d;
+0047         <span class="comment">%% mixmat parameter counting</span>
+0048         <span class="keyword">if</span> model.nmix &gt; 1
+0049             <span class="keyword">if</span> iscell(model.mixmat)
+0050                 error (<span class="string">'Non stationary mixmat is not yet implemented'</span>);
+0051             <span class="keyword">else</span>
+0052                 nParam = nParam + model.nstates * (model.nmix-1);
+0053             <span class="keyword">end</span>
+0054         <span class="keyword">end</span>
+0055         
+0056     <span class="keyword">case</span> <span class="string">'mixgausstied'</span>  , error(<span class="string">'%s not implemeted yet'</span>);
+0057     <span class="keyword">case</span> <span class="string">'discrete'</span>      , nParam = nParam + ( model.emission.nstates*(model.emission.nObsStates - 1) );
+0058     <span class="keyword">case</span> <span class="string">'student'</span>       , error(<span class="string">'%s not implemeted yet'</span>);
+0059     <span class="keyword">case</span> <span class="string">'hsmm'</span>          ,
+0060         nParam = nParam + model.nstates*(size(model.P,2)-1) + model.nstates*(size(model.B,2)-1);   <span class="comment">%+[P matrix]+[B matrix]-&gt; M^2 +MK +MD</span>
+0061     <span class="keyword">otherwise</span>           , error(<span class="string">'%s is not a valid output distribution type'</span>);
+0062 <span class="keyword">end</span>
+0063 
+0064 [AIC,BIC,AICc] = abic (logLike, nParam, nbdata);
+0065 
+0066 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of dhmm_em_demo</title>
+  <meta name="keywords" content="dhmm_em_demo">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>dhmm_em_demo
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="dhmm_em.html" class="code" title="function [LL, prior, transmat, obsmat, nrIterations] =dhmm_em(data, prior, transmat, obsmat, varargin)">dhmm_em</a>	LEARN_DHMM Find the ML/MAP parameters of an HMM with discrete outputs using EM.</li><li><a href="dhmm_logprob.html" class="code" title="function [loglik, errors] = dhmm_logprob(data, prior, transmat, obsmat)">dhmm_logprob</a>	LOG_LIK_DHMM Compute the log-likelihood of a dataset using a discrete HMM</li><li><a href="dhmm_sample.html" class="code" title="function [obs, hidden] = dhmm_sample(initial_prob, transmat, obsmat, numex, len)">dhmm_sample</a>	SAMPLE_DHMM Generate random sequences from a Hidden Markov Model with discrete outputs.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="testHMM.html" class="code" title="">testHMM</a>	Run all the demos, to check everything is "syntactically correct"</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 O = 3;
+0002 Q = 2;
+0003 
+0004 <span class="comment">% &quot;true&quot; parameters</span>
+0005 prior0 = normalize(rand(Q,1));
+0006 transmat0 = mk_stochastic(rand(Q,Q));
+0007 obsmat0 = mk_stochastic(rand(Q,O));
+0008 
+0009 <span class="comment">% training data</span>
+0010 T = 5;
+0011 nex = 10;
+0012 data = <a href="dhmm_sample.html" class="code" title="function [obs, hidden] = dhmm_sample(initial_prob, transmat, obsmat, numex, len)">dhmm_sample</a>(prior0, transmat0, obsmat0, T, nex);
+0013 
+0014 <span class="comment">% initial guess of parameters</span>
+0015 prior1 = normalize(rand(Q,1));
+0016 transmat1 = mk_stochastic(rand(Q,Q));
+0017 obsmat1 = mk_stochastic(rand(Q,O));
+0018 
+0019 <span class="comment">% improve guess of parameters using EM</span>
+0020 [LL, prior2, transmat2, obsmat2] = <a href="dhmm_em.html" class="code" title="function [LL, prior, transmat, obsmat, nrIterations] =dhmm_em(data, prior, transmat, obsmat, varargin)">dhmm_em</a>(data, prior1, transmat1, obsmat1, <span class="string">'max_iter'</span>, 30);
+0021 LL
+0022 
+0023 <span class="comment">% use model to compute log likelihood</span>
+0024 loglik = <a href="dhmm_logprob.html" class="code" title="function [loglik, errors] = dhmm_logprob(data, prior, transmat, obsmat)">dhmm_logprob</a>(data, prior2, transmat2, obsmat2)
+0025 <span class="comment">% log lik is slightly different than LL(end), since it is computed after the final M step</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

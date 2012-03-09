@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of hsmmSample</title>
+  <meta name="keywords" content="hsmmSample">
+  <meta name="description" content="function [sim, observed, hidden] = hsmmSample(PAI,A,B,P,len,nsamples)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html hsmm -->
+<h1>hsmmSample
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [sim, observed, hidden] = hsmmSample(PAI,A,B,P,len,nsamples)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [sim, observed, hidden] = hsmmSample(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">function [sim, observed, hidden] = hsmmSample(PAI,A,B,P,len,nsamples)
+ or
+function [sim, observed, hidden] = hsmmSample(model,len,nsamples)
+
+   sim - simulated data with DEcanonization - Vk(Observation)
+   observed - Observation
+   hidden - hidden states</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function S = markovMySample(model, len, nsamples)</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [sim, observed, hidden] = hsmmSample(varargin)</a>
+0002 <span class="comment">%function [sim, observed, hidden] = hsmmSample(PAI,A,B,P,len,nsamples)</span>
+0003 <span class="comment">% or</span>
+0004 <span class="comment">%function [sim, observed, hidden] = hsmmSample(model,len,nsamples)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   sim - simulated data with DEcanonization - Vk(Observation)</span>
+0007 <span class="comment">%   observed - Observation</span>
+0008 <span class="comment">%   hidden - hidden states</span>
+0009 
+0010 <span class="keyword">if</span> nargin == 3
+0011     model = varargin{1};          <span class="comment">% 1st param Model</span>
+0012     len = varargin{2};            <span class="comment">% 2nd param len</span>
+0013     nsamples = varargin{3};       <span class="comment">% 3rd param nsamples</span>
+0014 <span class="keyword">else</span>
+0015     model.PAI=varargin{1};
+0016     model.A=varargin{2};
+0017     model.B=varargin{3};  <span class="comment">%emission</span>
+0018     model.P=varargin{4};
+0019     len = varargin{5};
+0020     nsamples = varargin{6};
+0021 <span class="keyword">end</span>
+0022 
+0023 SetDefaultValue(3, <span class="string">'nsamples'</span>, 1);
+0024 E = model.B;    <span class="comment">%define emission matrix</span>
+0025 
+0026 <span class="keyword">if</span> numel(len) == 1
+0027     len = repmat(len, nsamples, 1);
+0028 <span class="keyword">end</span>
+0029 hidden   = cell(nsamples, 1);
+0030 observed = cell(nsamples, 1);
+0031 
+0032 <span class="keyword">for</span> i=1:nsamples
+0033     T = len(i);
+0034     hidden{i}   = rowvec(<a href="#_sub1" class="code" title="subfunction S = markovMySample(model, len, nsamples)">markovMySample</a>(model, T, 1));
+0035     observed{i} = zeros(1, T);
+0036     <span class="keyword">for</span> t=1:T
+0037         observed{i}(t) = sampleDiscrete(E(hidden{i}(t), :));
+0038     <span class="keyword">end</span>
+0039 <span class="keyword">end</span>
+0040 <span class="keyword">if</span> nsamples == 1
+0041     hidden = hidden{1};
+0042     observed = observed{1};
+0043 <span class="keyword">end</span>
+0044 sim = model.Vk(observed);       <span class="comment">% save simulated data with canonization</span>
+0045 
+0046 
+0047 <a name="_sub1" href="#_subfunctions" class="code">function S = markovMySample(model, len, nsamples)</a>
+0048     <span class="comment">% Sample from a markov distribution</span>
+0049     <span class="comment">% S is of size nsamples-by-len</span>
+0050     <span class="comment">%</span>
+0051     
+0052     <span class="comment">% This file is from pmtk3.googlecode.com</span>
+0053     
+0054     <span class="keyword">if</span> nargin &lt; 3, nsamples = 1; <span class="keyword">end</span>
+0055     pi = model.PAI;
+0056     A = model.A;
+0057     P = model.P;
+0058     
+0059     S = zeros(nsamples, len);
+0060     
+0061     <span class="keyword">for</span> ii=1:nsamples
+0062         S(ii, 1) = sampleDiscrete(pi);
+0063         duration = sampleDiscrete(P(S(ii,1),:));  <span class="comment">%pick up the duration for init state</span>
+0064         S(ii, 1:duration) = S(ii, 1);
+0065         tt=duration+1;
+0066         <span class="keyword">while</span> tt&lt;=len
+0067             S(ii, tt) = sampleDiscrete(A(S(ii, tt-1), :));
+0068             duration = sampleDiscrete(P(S(ii,tt),:));
+0069             S(ii, tt:tt+duration-1) = S(ii, tt);
+0070             tt=tt+duration;
+0071         <span class="keyword">end</span>
+0072         
+0073     <span class="keyword">end</span>
+0074 <span class="keyword">end</span>
+0075 
+0076 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

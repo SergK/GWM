@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gwm_maxmin</title>
+  <meta name="keywords" content="gwm_maxmin">
+  <meta name="description" content="%function [row_col LinearIndex]=gwm_maxmin(data,num_of_values,extremum_type)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html GridWM -->
+<h1>gwm_maxmin
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>%function [row_col LinearIndex]=gwm_maxmin(data,num_of_values,extremum_type)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [row_col LinearIndex]=gwm_maxmin(data,num_of_values,extremum_type) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%function [row_col LinearIndex]=gwm_maxmin(data,num_of_values,extremum_type)
+   Select number of NUM_OF_VALUES MAX/MIN values from matrix and return
+   its indexes in [row col] notation or in linear index (Linear index can 
+   be processed with ind2sub)
+       INPUT:
+               data            - matrix for searching MIN/MAX values
+               num_of_values   - number of extreme values to return
+               extreme_type    - which extreme type to use ('max' or 'min')
+       OUTPUT:
+               row_col         - matrix where in 1st column we store row
+                                 index and in 3nd column - column index
+                                        row  column
+                                        [1     2 
+                                         2     3
+                                         4     3]
+               LinearIndex     - we store here the linear index which
+                                 further can be processed with ind2sub function
+ See also
+ maxnd</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [row_col LinearIndex]=gwm_maxmin(data,num_of_values,extremum_type)</a>
+0002 <span class="comment">%%function [row_col LinearIndex]=gwm_maxmin(data,num_of_values,extremum_type)</span>
+0003 <span class="comment">%   Select number of NUM_OF_VALUES MAX/MIN values from matrix and return</span>
+0004 <span class="comment">%   its indexes in [row col] notation or in linear index (Linear index can</span>
+0005 <span class="comment">%   be processed with ind2sub)</span>
+0006 <span class="comment">%       INPUT:</span>
+0007 <span class="comment">%               data            - matrix for searching MIN/MAX values</span>
+0008 <span class="comment">%               num_of_values   - number of extreme values to return</span>
+0009 <span class="comment">%               extreme_type    - which extreme type to use ('max' or 'min')</span>
+0010 <span class="comment">%       OUTPUT:</span>
+0011 <span class="comment">%               row_col         - matrix where in 1st column we store row</span>
+0012 <span class="comment">%                                 index and in 3nd column - column index</span>
+0013 <span class="comment">%                                        row  column</span>
+0014 <span class="comment">%                                        [1     2</span>
+0015 <span class="comment">%                                         2     3</span>
+0016 <span class="comment">%                                         4     3]</span>
+0017 <span class="comment">%               LinearIndex     - we store here the linear index which</span>
+0018 <span class="comment">%                                 further can be processed with ind2sub function</span>
+0019 <span class="comment">% See also</span>
+0020 <span class="comment">% maxnd</span>
+0021 
+0022 
+0023 <span class="comment">%%</span>
+0024 
+0025 <span class="keyword">switch</span> lower(extremum_type)
+0026     <span class="keyword">case</span> <span class="string">'max'</span>          , [~,sortIndex] = sort(data(:),<span class="string">'descend'</span>);  <span class="comment">% Sort the values in descending order</span>
+0027     <span class="keyword">case</span> <span class="string">'min'</span>          , [~,sortIndex] = sort(data(:));  <span class="comment">% Sort the values in ascending order</span>
+0028     <span class="keyword">otherwise</span>           , error(<span class="string">'%s is not a valid extremum. Use max or min'</span>);
+0029 <span class="keyword">end</span>
+0030 
+0031 LinearIndex = sortIndex(1:num_of_values);  <span class="comment">% Get a linear index of NUM_OF_VALUES extreme values in DATA</span>
+0032 [row_num col_num]=ind2sub(size(data),LinearIndex);     <span class="comment">%Transform linear index</span>
+0033 row_col = [row_num col_num];
+0034 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Wed 31-Aug-2011 15:38:10 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

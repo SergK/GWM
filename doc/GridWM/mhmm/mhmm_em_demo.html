@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mhmm_em_demo</title>
+  <meta name="keywords" content="mhmm_em_demo">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>mhmm_em_demo
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="mhmm_em.html" class="code" title="function [LL, prior, transmat, mu, Sigma, mixmat] =mhmm_em(data, prior, transmat, mu, Sigma, mixmat, varargin)">mhmm_em</a>	LEARN_MHMM Compute the ML parameters of an HMM with (mixtures of) Gaussians output using EM.</li><li><a href="mhmm_logprob.html" class="code" title="function [loglik, errors] = mhmm_logprob(data, prior, transmat, mu, Sigma, mixmat)">mhmm_logprob</a>	LOG_LIK_MHMM Compute the log-likelihood of a dataset using a (mixture of) Gaussians HMM</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="testHMM.html" class="code" title="">testHMM</a>	Run all the demos, to check everything is "syntactically correct"</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="keyword">if</span> 1
+0002   O = 1;
+0003   T = 10;
+0004   nex = 50;
+0005   M = 2;
+0006   Q = 3;
+0007 <span class="keyword">else</span>
+0008   O = 8;          <span class="comment">%Number of coefficients in a vector</span>
+0009   T = 420;         <span class="comment">%Number of vectors in a sequence</span>
+0010   nex = 1;        <span class="comment">%Number of sequences</span>
+0011   M = 1;          <span class="comment">%Number of mixtures</span>
+0012   Q = 6;          <span class="comment">%Number of states</span>
+0013 <span class="keyword">end</span>
+0014 cov_type = <span class="string">'full'</span>;
+0015 
+0016 data = randn(O,T,nex);
+0017 
+0018 <span class="comment">% initial guess of parameters</span>
+0019 prior0 = normalise(rand(Q,1));
+0020 transmat0 = mk_stochastic(rand(Q,Q));
+0021 
+0022 <span class="keyword">if</span> 0
+0023   Sigma0 = repmat(eye(O), [1 1 Q M]);
+0024   <span class="comment">% Initialize each mean to a random data point</span>
+0025   indices = randperm(T*nex);
+0026   mu0 = reshape(data(:,indices(1:(Q*M))), [O Q M]);
+0027   mixmat0 = mk_stochastic(rand(Q,M));
+0028 <span class="keyword">else</span>
+0029   <span class="comment">%[mu0, Sigma0] = mixgauss_init(Q*M, data, cov_type);</span>
+0030   [d T] = size(data);
+0031    data = reshape(data, d, T);
+0032   [mu0, Sigma0, mixweight, counts] = kmeansInitMixGauss(data', Q*M);
+0033   mu0 = reshape(mu0, [O Q M]);
+0034   Sigma0 = reshape(Sigma0, [O O Q M]);
+0035   mixmat0 = mk_stochastic(rand(Q,M));
+0036 <span class="keyword">end</span>
+0037 
+0038 [LL, prior1, transmat1, mu1, Sigma1, mixmat1] = <span class="keyword">...</span>
+0039     <a href="mhmm_em.html" class="code" title="function [LL, prior, transmat, mu, Sigma, mixmat] =mhmm_em(data, prior, transmat, mu, Sigma, mixmat, varargin)">mhmm_em</a>(data, prior0, transmat0, mu0, Sigma0, mixmat0, <span class="string">'max_iter'</span>, 25);
+0040 
+0041 
+0042 loglik = <a href="mhmm_logprob.html" class="code" title="function [loglik, errors] = mhmm_logprob(data, prior, transmat, mu, Sigma, mixmat)">mhmm_logprob</a>(data, prior1, transmat1, mu1, Sigma1, mixmat1);
+0043</pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

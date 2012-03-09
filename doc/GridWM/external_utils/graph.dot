@@ -1,0 +1,9 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+
+  abic [URL="abic.html"];
+  howmany [URL="howmany.html"];
+  insertrows [URL="insertrows.html"];
+  litekmeans [URL="litekmeans.html"];
+  scatterd [URL="scatterd.html"];
+}

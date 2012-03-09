@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gwm_showExperimentResult</title>
+  <meta name="keywords" content="gwm_showExperimentResult">
+  <meta name="description" content="function logLikes = gwm_showExperimentResult(models,logLikes)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html GridWM -->
+<h1>gwm_showExperimentResult
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function logLikes = gwm_showExperimentResult(models,logLikes)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function logLikes = gwm_showExperimentResult(models,logLikes) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">function logLikes = gwm_showExperimentResult(models,logLikes)
+ The function plots LogLike for group of experiments
+ INPUTS:
+     models      - Matrix of experiments, where:
+     models{nRuns,nModels} =     model   model1  model2   model13
+                                 model   model1  model2   model13
+                                 model   model1  model2   model13
+     logLikes    - Matrix of logLikes, may be omitted than this value will be set from models{i,j}       
+     logLikes{i,j}
+ OUTPUTS:
+     logLikes from matrix of experiments;</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function logLikes = gwm_showExperimentResult(models,logLikes)</a>
+0002 <span class="comment">%function logLikes = gwm_showExperimentResult(models,logLikes)</span>
+0003 <span class="comment">% The function plots LogLike for group of experiments</span>
+0004 <span class="comment">% INPUTS:</span>
+0005 <span class="comment">%     models      - Matrix of experiments, where:</span>
+0006 <span class="comment">%     models{nRuns,nModels} =     model   model1  model2   model13</span>
+0007 <span class="comment">%                                 model   model1  model2   model13</span>
+0008 <span class="comment">%                                 model   model1  model2   model13</span>
+0009 <span class="comment">%     logLikes    - Matrix of logLikes, may be omitted than this value will be set from models{i,j}</span>
+0010 <span class="comment">%     logLikes{i,j}</span>
+0011 <span class="comment">% OUTPUTS:</span>
+0012 <span class="comment">%     logLikes from matrix of experiments;</span>
+0013 
+0014 <span class="comment">%% get experements results (Number of runs per models ans number of models)</span>
+0015 [nRuns nModels] = size(models);
+0016 
+0017 <span class="comment">%% If we do not provide LogLikes, lets take this info from each models</span>
+0018 <span class="keyword">if</span> nargin&lt;2
+0019     <span class="comment">%cellfun(@(m)structvals(m,{'loglike'}),(models),'UniformOutput',0) % very slow version</span>
+0020     logLikes = cellfun(@(x) x.loglike, models(:), <span class="string">'Uniform'</span>, 0);
+0021     logLikes = reshape(logLikes,nRuns,nModels);
+0022 <span class="keyword">end</span>;
+0023 
+0024 <span class="comment">%% building groups for group plotting</span>
+0025 group_plot = cell(1,nModels);
+0026 mylegend = cell(1,nModels);
+0027 <span class="keyword">for</span> i=1:nModels
+0028     group_plot{i} = logLikes(:,i);
+0029     mylegend{i} = sprintf(<span class="string">'%d-states;%d-mix'</span>,models{1,i}.nstates,models{1,i}.nmix);
+0030 <span class="keyword">end</span>
+0031 h = gwm_mplot(group_plot,<span class="string">'plot_type'</span>,<span class="string">'group'</span>);title(<span class="string">'Plot by groups'</span>);
+0032 r = cellfun(@(x) x(1),h);                       <span class="comment">%we get the first handle in each group</span>
+0033 legend(r,mylegend,<span class="string">'Location'</span>,<span class="string">'SouthEast'</span>);      <span class="comment">%legend([h1 h2],{'label1', 'label2'});</span>
+0034 
+0035 <span class="comment">%% select best model in each group (max ll in each column)</span>
+0036 best_models_idx = maxidx(cellfun(@max,logLikes));   <span class="comment">%return index of the best model in each column(bootstrap)</span>
+0037 best_models = cell(nModels,1);
+0038 <span class="keyword">for</span> i=1:nModels
+0039     best_models(i,1) = logLikes(best_models_idx(i),i);
+0040     mylegend{i} = sprintf(<span class="string">'%d(%d)-states(mix);(LogLike=%d)'</span>,models{best_models_idx(i),i}.nstates,<span class="keyword">...</span>
+0041                                              models{best_models_idx(i),i}.nmix,<span class="keyword">...</span>
+0042                                              models{best_models_idx(i),i}.loglike(end));
+0043 <span class="keyword">end</span>
+0044 gwm_mplot(best_models,<span class="string">'plot_type'</span>,<span class="string">'mult'</span>);title(<span class="string">'Plot the best models with diff states'</span>);legend(mylegend,<span class="string">'Location'</span>,<span class="string">'SouthEast'</span>);
+0045 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of hsmm_new</title>
+  <meta name="keywords" content="hsmm_new">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html hsmm -->
+<h1>hsmm_new
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [PAI,A,B,P,Qest,lkh,ll]=hsmm_new(PAI,A,B,P,O,IterationNo) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> 
+ Author: Shun-Zheng Yu
+ Available: http://sist.sysu.edu.cn/~syu/Publications/hsmm_new.m
+ 
+ HSMM solve three fundamental problems for Hidden Semi-Markov Model using a new Forward-Backward algorithm
+ Usage: [PAI,A,B,P,Stateseq,Loglikelihood]=hsmm_new(PAI,A,B,P,O,MaxIterationNo)
+ MaxIterationNo=0: estimate StateSeq and calculate Loglikelihood only; 
+ MaxIterationNo&gt;1: re-estimate parameters, estimate StateSeq and Loglikelihood.
+ First use [A,B,P,PAI,Vk,O,K]=hsmmInitialize(O,M,D,K) to initialize
+ 
+ Ref: Practical Implementation of an Efficient Forward-Backward Algorithm for an Explicit Duration Hidden Markov Model
+ by Shun-Zheng Yu and H. Kobayashi
+ IEEE Transactions on Signal Processing, Vol. 54, No. 5, MAY 2006, pp. 1947-1951 
+ 
+  This program is free software; you can redistribute it and/or
+  modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation; either version
+  2 of the License, or (at your option) any later version.
+  http://www.gnu.org/licenses/gpl.txt
+
+++++++++ Markov Model +++++++++++</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="hsmmFit.html" class="code" title="function [model,ll]=hsmmFit(data,M,D,K,varargin)">hsmmFit</a>	function model=hsmmFit(data,M,D,K,varargin)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [PAI,A,B,P,Qest,lkh,ll]=hsmm_new(PAI,A,B,P,O,IterationNo)</a>
+0002 <span class="comment">%</span>
+0003 <span class="comment">% Author: Shun-Zheng Yu</span>
+0004 <span class="comment">% Available: http://sist.sysu.edu.cn/~syu/Publications/hsmm_new.m</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% HSMM solve three fundamental problems for Hidden Semi-Markov Model using a new Forward-Backward algorithm</span>
+0007 <span class="comment">% Usage: [PAI,A,B,P,Stateseq,Loglikelihood]=hsmm_new(PAI,A,B,P,O,MaxIterationNo)</span>
+0008 <span class="comment">% MaxIterationNo=0: estimate StateSeq and calculate Loglikelihood only;</span>
+0009 <span class="comment">% MaxIterationNo&gt;1: re-estimate parameters, estimate StateSeq and Loglikelihood.</span>
+0010 <span class="comment">% First use [A,B,P,PAI,Vk,O,K]=hsmmInitialize(O,M,D,K) to initialize</span>
+0011 <span class="comment">%</span>
+0012 <span class="comment">% Ref: Practical Implementation of an Efficient Forward-Backward Algorithm for an Explicit Duration Hidden Markov Model</span>
+0013 <span class="comment">% by Shun-Zheng Yu and H. Kobayashi</span>
+0014 <span class="comment">% IEEE Transactions on Signal Processing, Vol. 54, No. 5, MAY 2006, pp. 1947-1951</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">%  This program is free software; you can redistribute it and/or</span>
+0017 <span class="comment">%  modify it under the terms of the GNU General Public License</span>
+0018 <span class="comment">%  as published by the Free Software Foundation; either version</span>
+0019 <span class="comment">%  2 of the License, or (at your option) any later version.</span>
+0020 <span class="comment">%  http://www.gnu.org/licenses/gpl.txt</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">%++++++++ Markov Model +++++++++++</span>
+0023 M=length(PAI);               <span class="comment">%The total number of states</span>
+0024 T=length(O);                 <span class="comment">%The total time</span>
+0025 D=size(P,2);                 <span class="comment">%The maximum duration of states</span>
+0026 K=size(B,2);                 <span class="comment">%The total number of observation values</span>
+0027 <span class="comment">%----------------------------------------------------</span>
+0028 ALPHA=zeros(M,D);   <span class="comment">%States_x_MaxDuration (for FORWARD)</span>
+0029 bmx=zeros(M,T);     <span class="comment">%States_x_SequenceLength</span>
+0030 S=zeros(M,T);       <span class="comment">%States_x_SequenceLength</span>
+0031 E=zeros(M,T);       <span class="comment">%States_x_SequenceLength</span>
+0032 BETA=ones(M,D);     <span class="comment">%States_x_MaxDuration (for BACKWARD)</span>
+0033 Ex=ones(M,D);       <span class="comment">%States_x_MaxDuration</span>
+0034 Sx=ones(M,D);       <span class="comment">%States_x_MaxDuration</span>
+0035 GAMMA=zeros(M,1);   <span class="comment">%States_x_1 (FOR Pi)</span>
+0036 Pest=zeros(M,D);    <span class="comment">% re-ESTIMATED DURATION Matrix</span>
+0037 Aest=zeros(M,M);    <span class="comment">% re-ESTIMATED TRANSTITION Matrix</span>
+0038 Best=zeros(M,K);    <span class="comment">% re-ESTIMATED EMISSION Matrix</span>
+0039 Qest=zeros(T,1);    <span class="comment">% re-ESTIMATED Path</span>
+0040 
+0041 ir1=max(1,IterationNo);
+0042 
+0043 <span class="keyword">for</span> ir=1:ir1
+0044 
+0045 <span class="comment">%    starttime=clock;</span>
+0046 <span class="comment">%++++++++++++++++++     Forward     +++++++++++++++++</span>
+0047 <span class="comment">%---------------    Initialization    ---------------</span>
+0048 ALPHA(:)=0; ALPHA=repmat(PAI,1,D).*P;        <span class="comment">%Equation (13)</span>
+0049 r=(B(:,O(1))'*sum(ALPHA,2));            <span class="comment">%Equation (3)</span>
+0050 bmx(:,1)=B(:,O(1))./r;                <span class="comment">%Equation (2)</span>
+0051 E(:)=0; E(:,1)=bmx(:,1).*ALPHA(:,1);        <span class="comment">%Equation (5)</span>
+0052 S(:)=0; S(:,1)=A'*E(:,1);            <span class="comment">%Equation (6)</span>
+0053 lkh=log(r);
+0054 <span class="comment">%---------------    Induction    ---------------</span>
+0055 <span class="keyword">for</span> t=2:T
+0056     ALPHA=[repmat(S(:,t-1),1,D-1).*P(:,1:D-1)+repmat(bmx(:,t-1),1,D-1).*ALPHA(:,2:D),S(:,t-1).*P(:,D)];        <span class="comment">%Equation (12)</span>
+0057     r=(B(:,O(t))'*sum(ALPHA,2));        <span class="comment">%Equation (3)</span>
+0058     bmx(:,t)=B(:,O(t))./r;            <span class="comment">%Equation (2)</span>
+0059     E(:,t)=bmx(:,t).*ALPHA(:,1);        <span class="comment">%Equation (5)</span>
+0060     S(:,t)=A'*E(:,t);                <span class="comment">%Equation (6)</span>
+0061     lkh=lkh+log(r);
+0062 <span class="keyword">end</span>
+0063 <span class="comment">%++++++++ To check if the likelihood is increased ++++++++</span>
+0064 ll(ir)=lkh;
+0065 <span class="keyword">if</span> ir&gt;1
+0066 <span class="comment">%    clock-starttime</span>
+0067     <span class="comment">%%%%%if (lkh-lkh1)/T&lt;0.001</span>
+0068     <span class="keyword">if</span> (ll(ir)-ll(ir-1))/T&lt;0.001
+0069         <span class="keyword">break</span>
+0070     <span class="keyword">end</span>
+0071  <span class="keyword">end</span>
+0072 <span class="comment">%%%%%lkh1=lkh;</span>
+0073 
+0074 <span class="comment">%++++++++ Backward and Parameter Restimation ++++++++</span>
+0075 <span class="comment">%---------------    Initialization    ---------------</span>
+0076 
+0077 Aest(:)=0;  Aest=E(:,T)*ones(1,M);  <span class="comment">%Since T_{T|T}(m,n) = E_{T}(m) a_{mn}</span>
+0078 Pest(:)=0;  
+0079 GAMMA=bmx(:,T).*sum(ALPHA,2);
+0080 Best(:)=0;
+0081 Best(:,O(T))=GAMMA;
+0082 [X,Qest(T)]=max(GAMMA);
+0083 
+0084 BETA=repmat(bmx(:,T),1,D);                <span class="comment">%Equation (7)</span>
+0085 Ex=sum(P.*BETA,2);                    <span class="comment">%Equation (8)</span>
+0086 Sx=A*Ex;                        <span class="comment">%Equation (9)</span>
+0087 
+0088 <span class="comment">%---------------    Induction    ---------------</span>
+0089 <span class="keyword">for</span> t=(T-1):-1:1
+0090     <span class="comment">%% for estimate of A</span>
+0091     Aest=Aest+E(:,t)*Ex';
+0092     <span class="comment">%% for estimate of P</span>
+0093     Pest=Pest+repmat(S(:,t),1,D).*BETA;
+0094     <span class="comment">%% for estimate of state at time t</span>
+0095     GAMMA=GAMMA+E(:,t).*Sx-S(:,t).*Ex;
+0096     GAMMA(GAMMA&lt;0)=0;           <span class="comment">% eleminate errors due to inaccurace of the computation.</span>
+0097     [X,Qest(t)]=max(GAMMA);
+0098     <span class="comment">%% for estimate of B</span>
+0099     Best(:,O(t))=Best(:,O(t))+GAMMA;
+0100     
+0101     BETA=repmat(bmx(:,t),1,D).*[Sx,BETA(:,1:D-1)];    <span class="comment">%Equation (14)</span>
+0102     Ex=sum(P.*BETA,2);                    <span class="comment">%Equation (8)</span>
+0103     Sx=A*Ex;                        <span class="comment">%Equation (9)</span>
+0104 <span class="keyword">end</span>
+0105 
+0106 Pest=Pest+repmat(PAI,1,D).*BETA;    <span class="comment">%Since D_{1|T}(m,d) = \PAI(m) P_{m}(d) \Beta_{1}(m,d)</span>
+0107 
+0108   <span class="keyword">if</span> IterationNo&gt;0            <span class="comment">% re-estimate parameters</span>
+0109     PAI=GAMMA./sum(GAMMA);
+0110     Aest=Aest.*A;   A=Aest./repmat(sum(Aest,2),1,M);
+0111     B=Best./repmat(sum(Best,2),1,K);
+0112     Pest=Pest.*P;   P=Pest./repmat(sum(Pest,2),1,D);
+0113   <span class="keyword">end</span>
+0114 
+0115 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mhmmSample</title>
+  <meta name="keywords" content="mhmmSample">
+  <meta name="description" content="function [obs, hidden] = mhmmSample(model, T, numex)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>mhmmSample
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [obs, hidden] = mhmmSample(model, T, numex)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [obs, hidden] = mhmmSample(model, T, numex) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">function [obs, hidden] = mhmmSample(model, T, numex)
+ SAMPLE_MHMM Generate random sequences from an HMM with (mixtures of) Gaussian output.
+ [obs, hidden] = sample_mhmm(T, numex, initial_prob, transmat, mu, Sigma, mixmat)
+
+ INPUTS:
+       - T - length of each sequence
+       - numex - num. sequences
+       - model:
+           init_state_prob(i) = Pr(Q(1) = i)
+           transmat(i,j) = Pr(Q(t+1)=j | Q(t)=i)
+           mu(:,j,k) = mean of Y(t) given Q(t)=j, M(t)=k
+           Sigma(:,:,j,k) = cov. of Y(t) given Q(t)=j, M(t)=k
+           mixmat(j,k) = Pr(M(t)=k | Q(t)=j) : set to ones(Q,1) or omit if single mixture
+
+ OUTPUT:
+       - obs(:,t,l) = observation vector at time t for sequence l
+       - hidden(t,l) = the hidden state at time t for sequence l
+
+See Also
+ <a href="mhmmFit.html" class="code" title="function [model, loglikHist] = mhmmFit(data, nstates, nmix, varargin)">mhmmFit</a>, <a href="mhmmLogprob.html" class="code" title="function [Loglike,sumLogLike,errors] = mhmmLogprob(model, data)">mhmmLogprob</a></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [obs, hidden] = mhmmSample(model, T, numex)</a>
+0002 <span class="comment">%function [obs, hidden] = mhmmSample(model, T, numex)</span>
+0003 <span class="comment">% SAMPLE_MHMM Generate random sequences from an HMM with (mixtures of) Gaussian output.</span>
+0004 <span class="comment">% [obs, hidden] = sample_mhmm(T, numex, initial_prob, transmat, mu, Sigma, mixmat)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% INPUTS:</span>
+0007 <span class="comment">%       - T - length of each sequence</span>
+0008 <span class="comment">%       - numex - num. sequences</span>
+0009 <span class="comment">%       - model:</span>
+0010 <span class="comment">%           init_state_prob(i) = Pr(Q(1) = i)</span>
+0011 <span class="comment">%           transmat(i,j) = Pr(Q(t+1)=j | Q(t)=i)</span>
+0012 <span class="comment">%           mu(:,j,k) = mean of Y(t) given Q(t)=j, M(t)=k</span>
+0013 <span class="comment">%           Sigma(:,:,j,k) = cov. of Y(t) given Q(t)=j, M(t)=k</span>
+0014 <span class="comment">%           mixmat(j,k) = Pr(M(t)=k | Q(t)=j) : set to ones(Q,1) or omit if single mixture</span>
+0015 <span class="comment">%</span>
+0016 <span class="comment">% OUTPUT:</span>
+0017 <span class="comment">%       - obs(:,t,l) = observation vector at time t for sequence l</span>
+0018 <span class="comment">%       - hidden(t,l) = the hidden state at time t for sequence l</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">%See Also</span>
+0021 <span class="comment">% mhmmFit, mhmmLogprob</span>
+0022 
+0023 <span class="comment">%Q = length(initial_prob);</span>
+0024 <span class="comment">%Q = model.nstates;</span>
+0025 mu = model.mu;
+0026 Sigma = model.Sigma;
+0027 initial_prob = model.pi;
+0028 transmat = model.A;
+0029 
+0030 mixmat = model.mixmat;
+0031 O = size(mu,1);
+0032 
+0033 hidden = zeros(T, numex);
+0034 obs = zeros(O, T, numex);
+0035 
+0036 hidden = mc_sample(initial_prob, transmat, T, numex)';
+0037 <span class="keyword">for</span> i=1:numex
+0038     <span class="keyword">for</span> t=1:T
+0039         q = hidden(t,i);
+0040         m = sampleDiscrete(mixmat(q,:), 1, 1);
+0041         obs(:,t,i) =  gaussSample(mu(:,q,m), Sigma(:,:,q,m), 1);
+0042     <span class="keyword">end</span>
+0043 <span class="keyword">end</span>
+0044 <span class="keyword">end</span>
+0045</pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

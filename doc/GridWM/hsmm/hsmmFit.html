@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of hsmmFit</title>
+  <meta name="keywords" content="hsmmFit">
+  <meta name="description" content="function model=hsmmFit(data,M,D,K,varargin)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html hsmm -->
+<h1>hsmmFit
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function model=hsmmFit(data,M,D,K,varargin)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [model,ll]=hsmmFit(data,M,D,K,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">function model=hsmmFit(data,M,D,K,varargin)
+   data - train data
+   M - number of states
+   D - max duration
+   K - Max value of Observation
+   init_type (Transition matrix):
+       - 'uniform'         &lt;-default
+       - 'rand' 
+       - 'rand-zero-diag'  &lt;-random with zero diag
+       - 'left-right'      &lt;-Bakis (full jump example)
+                     A =
+                         0.2025    0.1221    0.6754
+                              0    0.6427    0.3573
+                              0         0    1.0000
+       - 'unif-zero-diag'       &lt;-uniform with zero diag
+   jump_step - constrained jump for left-right model (default - max)
+%</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="hsmmCreate.html" class="code" title="function [model]=hsmmCreate(O,M,D,K,varargin)">hsmmCreate</a>	function [A,B,P,PAI,Vk,O,K]=hsmmCreate(O,M,D,K,varargin)</li><li><a href="hsmm_new.html" class="code" title="function [PAI,A,B,P,Qest,lkh,ll]=hsmm_new(PAI,A,B,P,O,IterationNo)">hsmm_new</a>	</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [model,ll]=hsmmFit(data,M,D,K,varargin)</a>
+0002 <span class="comment">%function model=hsmmFit(data,M,D,K,varargin)</span>
+0003 <span class="comment">%   data - train data</span>
+0004 <span class="comment">%   M - number of states</span>
+0005 <span class="comment">%   D - max duration</span>
+0006 <span class="comment">%   K - Max value of Observation</span>
+0007 <span class="comment">%   init_type (Transition matrix):</span>
+0008 <span class="comment">%       - 'uniform'         &lt;-default</span>
+0009 <span class="comment">%       - 'rand'</span>
+0010 <span class="comment">%       - 'rand-zero-diag'  &lt;-random with zero diag</span>
+0011 <span class="comment">%       - 'left-right'      &lt;-Bakis (full jump example)</span>
+0012 <span class="comment">%                     A =</span>
+0013 <span class="comment">%                         0.2025    0.1221    0.6754</span>
+0014 <span class="comment">%                              0    0.6427    0.3573</span>
+0015 <span class="comment">%                              0         0    1.0000</span>
+0016 <span class="comment">%       - 'unif-zero-diag'       &lt;-uniform with zero diag</span>
+0017 <span class="comment">%   jump_step - constrained jump for left-right model (default - max)</span>
+0018     <span class="comment">%%</span>
+0019 [   init_type,  <span class="keyword">...</span>
+0020     iter,       <span class="keyword">...</span>
+0021     jump_step ] <span class="keyword">...</span>
+0022     = process_options(varargin  , <span class="keyword">...</span>
+0023     <span class="string">'init_type'</span>                 , <span class="string">'uniform'</span>,<span class="keyword">...</span>
+0024     <span class="string">'iter'</span>                      ,  100,     <span class="keyword">...</span><span class="comment">   %Number of iteration for model EM</span>
+0025     <span class="string">'jump_step'</span>                 ,  M-1);            
+0026 <span class="comment">%Data check and convert it to column form</span>
+0027 <span class="keyword">if</span> isrowvec(data)
+0028     data=data';
+0029 <span class="keyword">end</span>
+0030 
+0031 <span class="comment">%Model init</span>
+0032 
+0033     <span class="comment">%[A,B,P,PAI,Vk,O,K]=hsmmInitialize_new(data,M,D,K,'init_type',init_type);</span>
+0034     [model]=<a href="hsmmCreate.html" class="code" title="function [model]=hsmmCreate(O,M,D,K,varargin)">hsmmCreate</a>(data,M,D,K,<span class="string">'init_type'</span>,init_type,<span class="string">'jump_step'</span>,jump_step);
+0035 
+0036     <span class="comment">%model re-estimation</span>
+0037     [PAI,A,B,P,Qest,lkh,ll]=<a href="hsmm_new.html" class="code" title="function [PAI,A,B,P,Qest,lkh,ll]=hsmm_new(PAI,A,B,P,O,IterationNo)">hsmm_new</a>(model.PAI,model.A,model.B,model.P,model.O,iter);
+0038     model.PAI=PAI;
+0039     model.A=A;
+0040     model.B=B;
+0041     model.P=P;
+0042     model.Qest=Qest;
+0043     model.lkh=lkh;
+0044     model.ll=ll;
+0045     model.K=K;
+0046 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

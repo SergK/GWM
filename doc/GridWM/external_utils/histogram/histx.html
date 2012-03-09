@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of histx</title>
+  <meta name="keywords" content="histx">
+  <meta name="description" content="A wrapper for hist that picks the &quot;ideal&quot; number of bins to use if">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GridWM --><!-- ../menu.html external_utils --><!-- menu.html histogram -->
+<h1>histx
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>A wrapper for hist that picks the &quot;ideal&quot; number of bins to use if</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [n, xout] = histx(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> A wrapper for hist that picks the &quot;ideal&quot; number of bins to use if
+ unspecified. 
+ 
+ N = HISTX(Y) bins the elements of Y into M equally spaced containers and
+ returns the number of elements in each container.  If Y is a matrix, HIST
+ works down the columns.  The value of M is the middle (median) value of
+ the optimal number of bins calculated using the Freedman-Diaconis, Scott
+ and Sturges methods.  See below for further information on these methods.
+ 
+ N = HISTX(Y,M), where M is a scalar, uses M bins.  (This is identical to
+ N = HIST(Y,M).)
+ 
+ N = HISTX(Y, X), where X is a vector, returns the distribution of Y among
+ bins with centers specified by X. The first bin includes data between
+ -inf and the first center and the last bin includes data between the last
+ bin and inf. Note: Use HISTC if it is more natural to specify bin edges
+ instead.  (This is identical to N = HIST(Y,X).) 
+ 
+ N = HISTX(Y, METHOD), where METHOD is a string chooses the number of bins
+ as follows:
+ 
+ 'fd': The Freedman-Diaconis method, based upon the inter-quartile range
+ and number of data, is used. 
+ 'scott': The Scott method, based upon the sample standard deviation and
+ nnumber of data, is used. 
+ 'sturges': The Sturges method, based upon the number of data, is used.
+ 'middle': All three methods are tried, and the middle value is used.
+ 
+ N = HISTX(Y, [], MINIMUM), where MINIMUM is a numeric scalar, defines the
+ smallest acceptable number of bins.
+ 
+ N = HISTX(Y, [], [], MAXIMUM), where MAXIMUM is a numeric scalar, defines the
+ largest acceptable number of bins.
+ 
+ HISTX(...) without output arguments produces a histogram bar plot of the
+ results. The bar edges on the first and last bins may extend to cover the
+ min and max of the data unless a matrix of data is supplied.
+ 
+ HISTX(Y, 'all') produces three histograms in a new figure window, drawn
+ with the number of bins calculated using each of the three methods.
+ 
+ HISTX(AX, ...) plots into AX instead of GCA.
+ 
+ Notes:  
+ 1. When the method chosen is 'all', any axes inputted will be ignored
+ with a warning.  Likewise for output arguments.
+ 
+ 2. References for the methods can be found in the help page for
+ CALCNBINS.
+ 
+ Examples:
+ y = randn(10000,1);
+ histx(y)
+ histx(y, 'all')
+ 
+ See also: <a href="calcnbins.html" class="code" title="function nbins = calcnbins(x, method, minimum, maximum)">CALCNBINS</a>, HIST.
+
+ $ Author: Richard Cotton $        $ Date: 2008/08/28 $    $ Version 1.1 $</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="calcnbins.html" class="code" title="function nbins = calcnbins(x, method, minimum, maximum)">calcnbins</a>	Calculate the "ideal" number of bins to use in a histogram, using a</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [n, xout] = histx(varargin)</a>
+0002 <span class="comment">% A wrapper for hist that picks the &quot;ideal&quot; number of bins to use if</span>
+0003 <span class="comment">% unspecified.</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% N = HISTX(Y) bins the elements of Y into M equally spaced containers and</span>
+0006 <span class="comment">% returns the number of elements in each container.  If Y is a matrix, HIST</span>
+0007 <span class="comment">% works down the columns.  The value of M is the middle (median) value of</span>
+0008 <span class="comment">% the optimal number of bins calculated using the Freedman-Diaconis, Scott</span>
+0009 <span class="comment">% and Sturges methods.  See below for further information on these methods.</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% N = HISTX(Y,M), where M is a scalar, uses M bins.  (This is identical to</span>
+0012 <span class="comment">% N = HIST(Y,M).)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% N = HISTX(Y, X), where X is a vector, returns the distribution of Y among</span>
+0015 <span class="comment">% bins with centers specified by X. The first bin includes data between</span>
+0016 <span class="comment">% -inf and the first center and the last bin includes data between the last</span>
+0017 <span class="comment">% bin and inf. Note: Use HISTC if it is more natural to specify bin edges</span>
+0018 <span class="comment">% instead.  (This is identical to N = HIST(Y,X).)</span>
+0019 <span class="comment">%</span>
+0020 <span class="comment">% N = HISTX(Y, METHOD), where METHOD is a string chooses the number of bins</span>
+0021 <span class="comment">% as follows:</span>
+0022 <span class="comment">%</span>
+0023 <span class="comment">% 'fd': The Freedman-Diaconis method, based upon the inter-quartile range</span>
+0024 <span class="comment">% and number of data, is used.</span>
+0025 <span class="comment">% 'scott': The Scott method, based upon the sample standard deviation and</span>
+0026 <span class="comment">% nnumber of data, is used.</span>
+0027 <span class="comment">% 'sturges': The Sturges method, based upon the number of data, is used.</span>
+0028 <span class="comment">% 'middle': All three methods are tried, and the middle value is used.</span>
+0029 <span class="comment">%</span>
+0030 <span class="comment">% N = HISTX(Y, [], MINIMUM), where MINIMUM is a numeric scalar, defines the</span>
+0031 <span class="comment">% smallest acceptable number of bins.</span>
+0032 <span class="comment">%</span>
+0033 <span class="comment">% N = HISTX(Y, [], [], MAXIMUM), where MAXIMUM is a numeric scalar, defines the</span>
+0034 <span class="comment">% largest acceptable number of bins.</span>
+0035 <span class="comment">%</span>
+0036 <span class="comment">% HISTX(...) without output arguments produces a histogram bar plot of the</span>
+0037 <span class="comment">% results. The bar edges on the first and last bins may extend to cover the</span>
+0038 <span class="comment">% min and max of the data unless a matrix of data is supplied.</span>
+0039 <span class="comment">%</span>
+0040 <span class="comment">% HISTX(Y, 'all') produces three histograms in a new figure window, drawn</span>
+0041 <span class="comment">% with the number of bins calculated using each of the three methods.</span>
+0042 <span class="comment">%</span>
+0043 <span class="comment">% HISTX(AX, ...) plots into AX instead of GCA.</span>
+0044 <span class="comment">%</span>
+0045 <span class="comment">% Notes:</span>
+0046 <span class="comment">% 1. When the method chosen is 'all', any axes inputted will be ignored</span>
+0047 <span class="comment">% with a warning.  Likewise for output arguments.</span>
+0048 <span class="comment">%</span>
+0049 <span class="comment">% 2. References for the methods can be found in the help page for</span>
+0050 <span class="comment">% CALCNBINS.</span>
+0051 <span class="comment">%</span>
+0052 <span class="comment">% Examples:</span>
+0053 <span class="comment">% y = randn(10000,1);</span>
+0054 <span class="comment">% histx(y)</span>
+0055 <span class="comment">% histx(y, 'all')</span>
+0056 <span class="comment">%</span>
+0057 <span class="comment">% See also: CALCNBINS, HIST.</span>
+0058 <span class="comment">%</span>
+0059 <span class="comment">% $ Author: Richard Cotton $        $ Date: 2008/08/28 $    $ Version 1.1 $</span>
+0060 
+0061 <span class="comment">% Check there is at least one input, and see if the first input is an axis.</span>
+0062 error(nargchk(1,inf,nargin,<span class="string">'struct'</span>));
+0063 [cax,args,nargs] = axescheck(varargin{:});
+0064 
+0065 plotall = false;
+0066 y = args{1};
+0067 
+0068 <span class="comment">% If the number of bins wasn't specified, calculate it using calcnbins.</span>
+0069 <span class="keyword">if</span> nargs &lt; 4 || isempty(args{4})
+0070    args{4} = []; <span class="comment">% this also sets missing arguments before this positon to [].</span>
+0071 <span class="keyword">end</span>
+0072 
+0073 <span class="keyword">if</span> ~isempty(args{2}) &amp;&amp; isnumeric(args{2})
+0074    nbins = args{2};
+0075 <span class="keyword">else</span>
+0076    nbins = <a href="calcnbins.html" class="code" title="function nbins = calcnbins(x, method, minimum, maximum)">calcnbins</a>(y, args{2}, args{3}, args{4});
+0077    <span class="keyword">if</span> ischar(args{2}) &amp;&amp; strcmpi(args{2}, <span class="string">'all'</span>)
+0078       plotall = true;
+0079    <span class="keyword">end</span>
+0080 <span class="keyword">end</span>
+0081 
+0082 <span class="comment">% Plot the histogram(s)</span>
+0083 <span class="keyword">if</span> plotall
+0084    <span class="keyword">if</span> nargout &gt; 0 
+0085       warning(<span class="string">'histx:ignoreargout'</span>, <span class="string">'No arguments will be returned when the method is &quot;all&quot;.'</span>);
+0086    <span class="keyword">end</span>
+0087    <span class="keyword">if</span> ~isempty(cax)
+0088       warning(<span class="string">'histx:ignoreaxes'</span>, <span class="string">'The input axes are ignored when the method is &quot;all&quot;.'</span>);
+0089    <span class="keyword">end</span>
+0090    n = [];
+0091    xout = [];
+0092    figure();
+0093    subplot(3, 1, 1); hist(y, nbins.fd);
+0094    title(<span class="string">'Freedman-Diaconis'' method'</span>);
+0095    subplot(3, 1, 2); hist(y, nbins.scott);
+0096    title(<span class="string">'Scott''s method'</span>);
+0097    subplot(3, 1, 3); hist(y, nbins.sturges);
+0098    title(<span class="string">'Sturges'' method'</span>);
+0099 <span class="keyword">else</span>
+0100    <span class="keyword">if</span> nargout==0
+0101       <span class="keyword">if</span> isempty(cax)
+0102          hist(y, nbins);
+0103       <span class="keyword">else</span>
+0104          hist(cax, y, nbins);
+0105       <span class="keyword">end</span>
+0106    <span class="keyword">else</span>
+0107       <span class="keyword">if</span> isempty(cax)
+0108       [n, xout] = hist(y, nbins);
+0109    <span class="keyword">else</span>
+0110       [n, xout] = hist(cax, y, nbins);
+0111       <span class="keyword">end</span>
+0112    <span class="keyword">end</span>
+0113 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

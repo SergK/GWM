@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mhmm_logprob</title>
+  <meta name="keywords" content="mhmm_logprob">
+  <meta name="description" content="LOG_LIK_MHMM Compute the log-likelihood of a dataset using a (mixture of) Gaussians HMM">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>mhmm_logprob
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>LOG_LIK_MHMM Compute the log-likelihood of a dataset using a (mixture of) Gaussians HMM</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [loglik, errors] = mhmm_logprob(data, prior, transmat, mu, Sigma, mixmat) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> LOG_LIK_MHMM Compute the log-likelihood of a dataset using a (mixture of) Gaussians HMM
+ [loglik, errors] = log_lik_mhmm(data, prior, transmat, mu, sigma, mixmat)
+
+ data{m}(:,t) or data(:,t,m) if all cases have same length
+ errors  is a list of the cases which received a loglik of -infinity
+
+ Set mixmat to ones(Q,1) or omit it if there is only 1 mixture component</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="mhmm_em_demo.html" class="code" title="">mhmm_em_demo</a>	</li><li><a href="mhmm_em_demo_orig.html" class="code" title="">mhmm_em_demo_orig</a>	</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [loglik, errors] = mhmm_logprob(data, prior, transmat, mu, Sigma, mixmat)</a>
+0002 <span class="comment">% LOG_LIK_MHMM Compute the log-likelihood of a dataset using a (mixture of) Gaussians HMM</span>
+0003 <span class="comment">% [loglik, errors] = log_lik_mhmm(data, prior, transmat, mu, sigma, mixmat)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% data{m}(:,t) or data(:,t,m) if all cases have same length</span>
+0006 <span class="comment">% errors  is a list of the cases which received a loglik of -infinity</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% Set mixmat to ones(Q,1) or omit it if there is only 1 mixture component</span>
+0009 
+0010 Q = length(prior);
+0011 <span class="keyword">if</span> size(mixmat,1) ~= Q <span class="comment">% trap old syntax</span>
+0012   error(<span class="string">'mixmat should be QxM'</span>)
+0013 <span class="keyword">end</span>
+0014 <span class="keyword">if</span> nargin &lt; 6, mixmat = ones(Q,1); <span class="keyword">end</span>
+0015 
+0016 <span class="keyword">if</span> ~iscell(data)
+0017   data = num2cell(data, [1 2]); <span class="comment">% each elt of the 3rd dim gets its own cell</span>
+0018 <span class="keyword">end</span>
+0019 ncases = length(data);
+0020 
+0021 loglik = 0;
+0022 errors = [];
+0023 <span class="keyword">for</span> m=1:ncases
+0024   obslik = mixgauss_prob(data{m}, mu, Sigma, mixmat);
+0025   [alpha, beta, gamma, ll] = fwdback(prior, transmat, obslik, <span class="string">'fwd_only'</span>, 1);
+0026   <span class="keyword">if</span> ll==-inf
+0027     errors = [errors m];
+0028   <span class="keyword">end</span>
+0029   loglik = loglik + ll;
+0030 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

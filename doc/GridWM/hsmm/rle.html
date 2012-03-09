@@ -1,0 +1,80 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of rle</title>
+  <meta name="keywords" content="rle">
+  <meta name="description" content="data = rle(x) (de)compresses the data with the RLE-Algorithm">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html hsmm -->
+<h1>rle
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>data = rle(x) (de)compresses the data with the RLE-Algorithm</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function data = rle(x) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> data = rle(x) (de)compresses the data with the RLE-Algorithm
+   Compression:
+      if x is a numbervector data{1} contains the values
+      and data{2} contains the run lenths
+
+   Decompression:
+      if x is a cell array, data contains the uncompressed values
+
+      Version 1.0 by Stefan Eireiner (&lt;a href=&quot;mailto:stefan-e@web.de?subject=rle&quot;&gt;stefan-e@web.de&lt;/a&gt;)
+      based on Code by Peter J. Acklam
+      last change 14.05.2004</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="hsmmSeqStat.html" class="code" title="function [mmax,mmedian,mmean]=hsmmSeqStat(data)">hsmmSeqStat</a>	function [mmax,mmedian,mmean]=hsmmSeqStat(data)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function data = rle(x)</a>
+0002 <span class="comment">% data = rle(x) (de)compresses the data with the RLE-Algorithm</span>
+0003 <span class="comment">%   Compression:</span>
+0004 <span class="comment">%      if x is a numbervector data{1} contains the values</span>
+0005 <span class="comment">%      and data{2} contains the run lenths</span>
+0006 <span class="comment">%</span>
+0007 <span class="comment">%   Decompression:</span>
+0008 <span class="comment">%      if x is a cell array, data contains the uncompressed values</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%      Version 1.0 by Stefan Eireiner (&lt;a href=&quot;mailto:stefan-e@web.de?subject=rle&quot;&gt;stefan-e@web.de&lt;/a&gt;)</span>
+0011 <span class="comment">%      based on Code by Peter J. Acklam</span>
+0012 <span class="comment">%      last change 14.05.2004</span>
+0013 
+0014 <span class="keyword">if</span> iscell(x) <span class="comment">% decoding</span>
+0015     i = cumsum([ 1 x{2} ]);
+0016     j = zeros(1, i(end)-1);
+0017     j(i(1:end-1)) = 1;
+0018     data = x{1}(cumsum(j));
+0019 <span class="keyword">else</span> <span class="comment">% encoding</span>
+0020     <span class="keyword">if</span> size(x,1) &gt; size(x,2), x = x'; <span class="keyword">end</span> <span class="comment">% if x is a column vector, tronspose</span>
+0021     i = [ find(x(1:end-1) ~= x(2:end)) length(x) ];
+0022     data{2} = diff([ 0 i ]);
+0023     data{1} = x(i);
+0024 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

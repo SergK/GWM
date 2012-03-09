@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of histnorm</title>
+  <meta name="keywords" content="histnorm">
+  <meta name="description" content="HISTNORM Histogram normalized">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GridWM --><!-- ../menu.html external_utils --><!-- menu.html histogram -->
+<h1>histnorm
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>HISTNORM Histogram normalized</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function varargout = histnorm(varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> HISTNORM Histogram normalized
+   [...] = HISTNORM(...) works like HIST, but the frequency is normalized
+   so that area sum is 1.
+
+   Bonus usage!
+   [...] = HISTNORM(..., 'plot') plots and returns the output arguments. 
+   Be sure 'plot' is the last argument.
+
+   Example:
+       data = randn (10000, 1);
+       [xo,no] = histnorm(data, 101, 'plot');
+       hold on
+       plot (no, normpdf(no), 'r');
+       hold off
+
+   See also: HIST.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function varargout = histnorm(varargin)</a>
+0002 <span class="comment">% HISTNORM Histogram normalized</span>
+0003 <span class="comment">%   [...] = HISTNORM(...) works like HIST, but the frequency is normalized</span>
+0004 <span class="comment">%   so that area sum is 1.</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">%   Bonus usage!</span>
+0007 <span class="comment">%   [...] = HISTNORM(..., 'plot') plots and returns the output arguments.</span>
+0008 <span class="comment">%   Be sure 'plot' is the last argument.</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">%   Example:</span>
+0011 <span class="comment">%       data = randn (10000, 1);</span>
+0012 <span class="comment">%       [xo,no] = histnorm(data, 101, 'plot');</span>
+0013 <span class="comment">%       hold on</span>
+0014 <span class="comment">%       plot (no, normpdf(no), 'r');</span>
+0015 <span class="comment">%       hold off</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">%   See also: HIST.</span>
+0018 
+0019 <span class="comment">%   Copyright 2009 DWTFYW.</span>
+0020 
+0021 <span class="comment">% check whether plot is done</span>
+0022 doPlot = 0;
+0023 <span class="keyword">if</span> ischar (varargin{end}) &amp;&amp; strcmpi (<span class="string">'plot'</span>, varargin{end})
+0024     doPlot = 1;
+0025     varargin = varargin(1:end-1);
+0026 <span class="keyword">elseif</span> nargout == 0
+0027     doPlot = 1;    
+0028 <span class="keyword">end</span>
+0029 
+0030 <span class="comment">% normalize so the &quot;area&quot; is 1</span>
+0031 [xo,no] = hist (varargin{:});
+0032 binwidths = diff ([min(varargin{1}) no(1:end-1)+diff(no)/2 max(varargin{1})]);
+0033 xonorm = xo/sum (xo .* binwidths);
+0034 varargout = {xonorm, no};
+0035 varargout = varargout(1:nargout);
+0036 
+0037 <span class="comment">% do plot</span>
+0038 <span class="keyword">if</span> doPlot
+0039     cax = axescheck(varargin{:});
+0040 
+0041 <span class="comment">%     % bored way: bar plot</span>
+0042 <span class="comment">%     if isempty (cax)</span>
+0043 <span class="comment">%         bar (no, xonorm, 'hist');</span>
+0044 <span class="comment">%     else</span>
+0045 <span class="comment">%         bar (cax, no, xonorm, 'hist');</span>
+0046 <span class="comment">%     end</span>
+0047     
+0048     <span class="comment">% funny way: modify vertices of bar plot</span>
+0049     hist (varargin{:});
+0050     <span class="keyword">if</span> isempty (cax)
+0051         cax = gca;
+0052     <span class="keyword">end</span>
+0053     ch = findobj (get (cax, <span class="string">'children'</span>), <span class="string">'type'</span>, <span class="string">'patch'</span>); ch = ch(1);
+0054     vertices = get (ch, <span class="string">'vertices'</span>);
+0055     <span class="keyword">for</span> idx = 1:numel (xonorm)
+0056         vertices((idx-1)*5+[3 4],2) = xonorm(idx);     <span class="comment">% hope it works :)</span>
+0057     <span class="keyword">end</span>
+0058     set (ch, <span class="string">'vertices'</span>, vertices);
+0059 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

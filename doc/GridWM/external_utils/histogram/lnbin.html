@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of lnbin</title>
+  <meta name="keywords" content="lnbin">
+  <meta name="description" content="This function take the input of a data vector x, which is to be binned;">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GridWM --><!-- ../menu.html external_utils --><!-- menu.html histogram -->
+<h1>lnbin
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>This function take the input of a data vector x, which is to be binned;</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [midpts Freq eFreq]=lnbin(x,BinNum) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> This function take the input of a data vector x, which is to be binned;
+ it also takes in the amount bins one would like the data binned into. The
+ output is two vectors, one containing the normalised frequency of each bin 
+ (Freq), the other, the midpoint of each bin (midpts).
+ Added and error to the binned frequency: eFreq (As of June 30 2010). If this
+ option is not required, just call the function without including the third out
+ put; i.e.: [midpts Freq]=lnbin(x,BinNum).</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% This function take the input of a data vector x, which is to be binned;</span>
+0002 <span class="comment">% it also takes in the amount bins one would like the data binned into. The</span>
+0003 <span class="comment">% output is two vectors, one containing the normalised frequency of each bin</span>
+0004 <span class="comment">% (Freq), the other, the midpoint of each bin (midpts).</span>
+0005 <span class="comment">% Added and error to the binned frequency: eFreq (As of June 30 2010). If this</span>
+0006 <span class="comment">% option is not required, just call the function without including the third out</span>
+0007 <span class="comment">% put; i.e.: [midpts Freq]=lnbin(x,BinNum).</span>
+0008 
+0009 <a name="_sub0" href="#_subfunctions" class="code">function [midpts Freq eFreq]=lnbin(x,BinNum)</a>
+0010 x=sort(x);
+0011 i=1;
+0012 <span class="keyword">while</span> x(i)&lt;=0;
+0013    i=i+1; 
+0014 <span class="keyword">end</span>
+0015 str = num2str((length(x)-i)/length(x)*100);
+0016 stuff=<span class="string">'Percentage of input vec binned '</span>;
+0017 disp([stuff str])
+0018 
+0019 FPT=x(i:length(x));
+0020 LFPT=log(FPT);
+0021 max1=log( ceil(max(FPT)) );
+0022 min1=log(floor(min(FPT)));
+0023 <span class="comment">% min1=1;</span>
+0024 
+0025 LFreq=zeros(BinNum,1);
+0026 LTime=zeros(BinNum,1);
+0027 Lends=zeros(BinNum,2);
+0028 
+0029 step=(max1-min1)/BinNum;
+0030 
+0031 
+0032 <span class="comment">% ------------ LOG Binning Data ------------------------</span>
+0033 <span class="keyword">for</span> i=1:length(FPT)
+0034     <span class="keyword">for</span> k=1:BinNum
+0035        <span class="keyword">if</span>( (k-1)*step+min1 &lt;= LFPT(i) &amp;&amp; LFPT(i) &lt; k*step+min1)
+0036            LFreq(k)=LFreq(k)+1;
+0037        <span class="keyword">end</span>
+0038         LTime(k)=k*step-(0.5*step)+min1;
+0039         Lends(k,1)=(k-1)*step+min1;
+0040         Lends(k,2)=(k)*step+min1;
+0041     <span class="keyword">end</span>  
+0042 <span class="keyword">end</span> 
+0043 ends=exp(Lends);
+0044 
+0045 widths=ends(1:length(ends),2)-ends(1:length(ends),1);
+0046 Freq=LFreq./widths./length(x);
+0047 eFreq=1./sqrt(LFreq).*Freq;
+0048 midpts = exp(LTime);</pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,21 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  hsmmFit -> hsmmCreate;
+  hsmmFit -> hsmm_new;
+  hsmmSeqStat -> rle;
+  hsmmSeqStat -> rle2hist;
+
+  hsmm [URL="hsmm.html"];
+  hsmmCreate [URL="hsmmCreate.html"];
+  hsmmFit [URL="hsmmFit.html"];
+  hsmmInitialize [URL="hsmmInitialize.html"];
+  hsmmInitialize_new [URL="hsmmInitialize_new.html"];
+  hsmmSample [URL="hsmmSample.html"];
+  hsmmSeqStat [URL="hsmmSeqStat.html"];
+  hsmm_new [URL="hsmm_new.html"];
+  mk_leftright_transmat [URL="mk_leftright_transmat.html"];
+  mk_rightleft_transmat [URL="mk_rightleft_transmat.html"];
+  plotseq [URL="plotseq.html"];
+  rle [URL="rle.html"];
+  rle2hist [URL="rle2hist.html"];
+}

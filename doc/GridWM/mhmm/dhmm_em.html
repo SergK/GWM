@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of dhmm_em</title>
+  <meta name="keywords" content="dhmm_em">
+  <meta name="description" content="LEARN_DHMM Find the ML/MAP parameters of an HMM with discrete outputs using EM.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>dhmm_em
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>LEARN_DHMM Find the ML/MAP parameters of an HMM with discrete outputs using EM.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [LL, prior, transmat, obsmat, nrIterations] =dhmm_em(data, prior, transmat, obsmat, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> LEARN_DHMM Find the ML/MAP parameters of an HMM with discrete outputs using EM.
+ [ll_trace, prior, transmat, obsmat, iterNr] = learn_dhmm(data, prior0, transmat0, obsmat0, ...)
+
+ Notation: Q(t) = hidden state, Y(t) = observation
+
+ INPUTS:
+ data{ex} or data(ex,:) if all sequences have the same length
+ prior(i)
+ transmat(i,j)
+ obsmat(i,o)
+
+ Optional parameters may be passed as 'param_name', param_value pairs.
+ Parameter names are shown below; default values in [] - if none, argument is mandatory.
+
+ 'max_iter' - max number of EM iterations [10]
+ 'thresh' - convergence threshold [1e-4]
+ 'verbose' - if 1, print out loglik at every iteration [1]
+ 'obs_prior_weight' - weight to apply to uniform dirichlet prior on observation matrix [0]
+
+ To clamp some of the parameters, so learning does not change them:
+ 'adj_prior' - if 0, do not change prior [1]
+ 'adj_trans' - if 0, do not change transmat [1]
+ 'adj_obs' - if 0, do not change obsmat [1]
+
+ Modified by Herbert Jaeger so xi are not computed individually
+ but only their sum (over time) as xi_summed; this is the only way how they are used
+ and it saves a lot of memory.</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="dhmm_em_demo.html" class="code" title="">dhmm_em_demo</a>	</li><li><a href="dhmm_em_online_demo.html" class="code" title="">dhmm_em_online_demo</a>	Example of online EM applied to a simple POMDP with fixed action seq</li></ul>
+<!-- crossreference -->
+
+<h2><a name="_subfunctions"></a>SUBFUNCTIONS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="#_sub1" class="code">function [loglik, exp_num_trans, exp_num_visits1, exp_num_emit, exp_num_visitsT] =</a></li></ul>
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [LL, prior, transmat, obsmat, nrIterations] = </a><span class="keyword">...</span>
+0002     dhmm_em(data, prior, transmat, obsmat, varargin)
+0003 <span class="comment">% LEARN_DHMM Find the ML/MAP parameters of an HMM with discrete outputs using EM.</span>
+0004 <span class="comment">% [ll_trace, prior, transmat, obsmat, iterNr] = learn_dhmm(data, prior0, transmat0, obsmat0, ...)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% Notation: Q(t) = hidden state, Y(t) = observation</span>
+0007 <span class="comment">%</span>
+0008 <span class="comment">% INPUTS:</span>
+0009 <span class="comment">% data{ex} or data(ex,:) if all sequences have the same length</span>
+0010 <span class="comment">% prior(i)</span>
+0011 <span class="comment">% transmat(i,j)</span>
+0012 <span class="comment">% obsmat(i,o)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Optional parameters may be passed as 'param_name', param_value pairs.</span>
+0015 <span class="comment">% Parameter names are shown below; default values in [] - if none, argument is mandatory.</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% 'max_iter' - max number of EM iterations [10]</span>
+0018 <span class="comment">% 'thresh' - convergence threshold [1e-4]</span>
+0019 <span class="comment">% 'verbose' - if 1, print out loglik at every iteration [1]</span>
+0020 <span class="comment">% 'obs_prior_weight' - weight to apply to uniform dirichlet prior on observation matrix [0]</span>
+0021 <span class="comment">%</span>
+0022 <span class="comment">% To clamp some of the parameters, so learning does not change them:</span>
+0023 <span class="comment">% 'adj_prior' - if 0, do not change prior [1]</span>
+0024 <span class="comment">% 'adj_trans' - if 0, do not change transmat [1]</span>
+0025 <span class="comment">% 'adj_obs' - if 0, do not change obsmat [1]</span>
+0026 <span class="comment">%</span>
+0027 <span class="comment">% Modified by Herbert Jaeger so xi are not computed individually</span>
+0028 <span class="comment">% but only their sum (over time) as xi_summed; this is the only way how they are used</span>
+0029 <span class="comment">% and it saves a lot of memory.</span>
+0030 
+0031 [max_iter, thresh, verbose, obs_prior_weight, adj_prior, adj_trans, adj_obs] = <span class="keyword">...</span>
+0032     process_options(varargin, <span class="string">'max_iter'</span>, 10, <span class="string">'thresh'</span>, 1e-4, <span class="string">'verbose'</span>, 1, <span class="keyword">...</span>
+0033     <span class="string">'obs_prior_weight'</span>, 0, <span class="string">'adj_prior'</span>, 1, <span class="string">'adj_trans'</span>, 1, <span class="string">'adj_obs'</span>, 1);
+0034 
+0035 previous_loglik = -inf;
+0036 loglik = 0;
+0037 converged = 0;
+0038 num_iter = 1;
+0039 LL = [];
+0040 
+0041 <span class="keyword">if</span> ~iscell(data)
+0042     data = num2cell(data, 2); <span class="comment">% each row gets its own cell</span>
+0043 <span class="keyword">end</span>
+0044 
+0045 <span class="keyword">while</span> (num_iter &lt;= max_iter) &amp;&amp; ~converged
+0046     <span class="comment">% E step</span>
+0047     [loglik, exp_num_trans, exp_num_visits1, exp_num_emit] = <span class="keyword">...</span>
+0048         compute_ess_dhmm(prior, transmat, obsmat, data, obs_prior_weight);
+0049     
+0050     <span class="comment">% M step</span>
+0051     <span class="keyword">if</span> adj_prior
+0052         prior = normalize(exp_num_visits1);
+0053     <span class="keyword">end</span>
+0054     <span class="keyword">if</span> adj_trans &amp;&amp; ~isempty(exp_num_trans)
+0055         transmat = mkStochastic(exp_num_trans);
+0056     <span class="keyword">end</span>
+0057     <span class="keyword">if</span> adj_obs
+0058         obsmat = mkStochastic(exp_num_emit);
+0059     <span class="keyword">end</span>
+0060     
+0061     <span class="keyword">if</span> verbose, fprintf(1, <span class="string">'iteration %d, loglik = %f\n'</span>, num_iter, loglik); <span class="keyword">end</span>
+0062     num_iter =  num_iter + 1;
+0063     converged = convergenceTest(loglik, previous_loglik, thresh, true);
+0064     previous_loglik = loglik;
+0065     LL = [LL loglik];
+0066 <span class="keyword">end</span>
+0067 nrIterations = num_iter - 1;
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="comment">%%%%%%%%%%%%%%%%%%%%%%%</span>
+0071 <a name="_sub1" href="#_subfunctions" class="code">function [loglik, exp_num_trans, exp_num_visits1, exp_num_emit, exp_num_visitsT] = </a><span class="keyword">...</span>
+0072     compute_ess_dhmm(startprob, transmat, obsmat, data, dirichlet)
+0073 <span class="comment">% COMPUTE_ESS_DHMM Compute the Expected Sufficient Statistics for an HMM with discrete outputs</span>
+0074 <span class="comment">% function [loglik, exp_num_trans, exp_num_visits1, exp_num_emit, exp_num_visitsT] = ...</span>
+0075 <span class="comment">%    compute_ess_dhmm(startprob, transmat, obsmat, data, dirichlet)</span>
+0076 <span class="comment">%</span>
+0077 <span class="comment">% INPUTS:</span>
+0078 <span class="comment">% startprob(i)</span>
+0079 <span class="comment">% transmat(i,j)</span>
+0080 <span class="comment">% obsmat(i,o)</span>
+0081 <span class="comment">% data{seq}(t)</span>
+0082 <span class="comment">% dirichlet - weighting term for uniform dirichlet prior on expected emissions</span>
+0083 <span class="comment">%</span>
+0084 <span class="comment">% OUTPUTS:</span>
+0085 <span class="comment">% exp_num_trans(i,j) = sum_l sum_{t=2}^T Pr(X(t-1) = i, X(t) = j| Obs(l))</span>
+0086 <span class="comment">% exp_num_visits1(i) = sum_l Pr(X(1)=i | Obs(l))</span>
+0087 <span class="comment">% exp_num_visitsT(i) = sum_l Pr(X(T)=i | Obs(l))</span>
+0088 <span class="comment">% exp_num_emit(i,o) = sum_l sum_{t=1}^T Pr(X(t) = i, O(t)=o| Obs(l))</span>
+0089 <span class="comment">% where Obs(l) = O_1 .. O_T for sequence l.</span>
+0090 
+0091 numex = length(data);
+0092 [S O] = size(obsmat);
+0093 exp_num_trans = zeros(S,S);
+0094 exp_num_visits1 = zeros(S,1);
+0095 exp_num_visitsT = zeros(S,1);
+0096 exp_num_emit = dirichlet*ones(S,O);
+0097 loglik = 0;
+0098 
+0099 <span class="keyword">for</span> ex=1:numex
+0100     obs = data{ex};
+0101     T = length(obs);
+0102     <span class="comment">%%obslik = eval_pdf_cond_multinomial(obs, obsmat);</span>
+0103     <span class="comment">%obslik = multinomial_prob(obs, obsmat);</span>
+0104     
+0105     <span class="comment">%%My edition</span>
+0106     obslik = obsmat(:, obs);
+0107     <span class="comment">%</span>
+0108     
+0109     [alpha, beta, gamma, current_ll, xi_summed] = fwdback(startprob, transmat, obslik);
+0110     
+0111     <span class="comment">%  [gamma1, alpha1, beta1, logp1] = hmmFwdBack(startprob', transmat, obslik);</span>
+0112     <span class="comment">%   xi_summed1                   = hmmComputeTwoSliceSum(alpha1, beta1, transmat, obslik);</span>
+0113     
+0114     loglik = loglik +  current_ll;
+0115     exp_num_trans = exp_num_trans + xi_summed;
+0116     exp_num_visits1 = exp_num_visits1 + gamma(:,1);
+0117     exp_num_visitsT = exp_num_visitsT + gamma(:,T);
+0118     <span class="comment">% loop over whichever is shorter</span>
+0119     <span class="keyword">if</span> T &lt; O
+0120         <span class="keyword">for</span> t=1:T
+0121             o = obs(t);
+0122             exp_num_emit(:,o) = exp_num_emit(:,o) + gamma(:,t);
+0123         <span class="keyword">end</span>
+0124     <span class="keyword">else</span>
+0125         <span class="keyword">for</span> o=1:O
+0126             ndx = find(obs==o);
+0127             <span class="keyword">if</span> ~isempty(ndx)
+0128                 exp_num_emit(:,o) = exp_num_emit(:,o) + sum(gamma(:, ndx), 2);
+0129             <span class="keyword">end</span>
+0130         <span class="keyword">end</span>
+0131     <span class="keyword">end</span>
+0132 <span class="keyword">end</span>
+0133 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

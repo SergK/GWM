@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gwm_maxminnd</title>
+  <meta name="keywords" content="gwm_maxminnd">
+  <meta name="description" content="function [val, idx] = gwm_maxminnd(x,n,criteria)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html GridWM -->
+<h1>gwm_maxminnd
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [val, idx] = gwm_maxminnd(x,n,criteria)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [val, idx] = gwm_maxminnd(x,n,criteria) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">function [val, idx] = gwm_maxminnd(x,n,criteria)
+   INPUT:
+       - x - array or matrix to search
+       - [1:n] or [1,3,4:6] - number of max values to return
+           [val,idx] = maxnd(x,[1:15]) - return 15 max values
+       - criteria - 'max', 'min'
+   OUTPUT:
+       - val - values to return
+       - idx - index to return</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+<li><a href="gwm_selectBestModels.html" class="code" title="function bestmodels=gwm_selectBestModels(models,varargin)">gwm_selectBestModels</a>	function bestmodels=gwm_selectBestModels(models,varargin)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [val, idx] = gwm_maxminnd(x,n,criteria)</a>
+0002 <span class="comment">%function [val, idx] = gwm_maxminnd(x,n,criteria)</span>
+0003 <span class="comment">%   INPUT:</span>
+0004 <span class="comment">%       - x - array or matrix to search</span>
+0005 <span class="comment">%       - [1:n] or [1,3,4:6] - number of max values to return</span>
+0006 <span class="comment">%           [val,idx] = maxnd(x,[1:15]) - return 15 max values</span>
+0007 <span class="comment">%       - criteria - 'max', 'min'</span>
+0008 <span class="comment">%   OUTPUT:</span>
+0009 <span class="comment">%       - val - values to return</span>
+0010 <span class="comment">%       - idx - index to return</span>
+0011 <span class="comment">%</span>
+0012 
+0013 <span class="keyword">if</span> strcmpi(criteria,<span class="string">'max'</span>)
+0014     [xu ind]=sort(x,<span class="string">'descend'</span>);
+0015 <span class="keyword">else</span>
+0016     [xu ind]=sort(x,<span class="string">'ascend'</span>);
+0017 <span class="keyword">end</span>
+0018 <span class="keyword">if</span> numel(xu)&lt;numel(n)  <span class="comment">% we have less unique values than requested</span>
+0019     warning(<span class="string">'We have less (max/min) values than requested'</span>);
+0020     val = xu;idx = ind;
+0021 <span class="keyword">end</span>
+0022 val = xu(n);
+0023 idx = ind(n);
+0024 
+0025 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

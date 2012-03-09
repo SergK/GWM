@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mixgauss_init</title>
+  <meta name="keywords" content="mixgauss_init">
+  <meta name="description" content="MIXGAUSS_INIT Initial parameter estimates for a mixture of Gaussians">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../../menu.html GridWM --><!-- ../menu.html mhmm --><!-- menu.html add -->
+<h1>mixgauss_init
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>MIXGAUSS_INIT Initial parameter estimates for a mixture of Gaussians</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="box"><strong>function [mu, Sigma, weights, mix] = mixgauss_init(M, data, cov_type, method) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> MIXGAUSS_INIT Initial parameter estimates for a mixture of Gaussians
+ function [mu, Sigma, weights, mix] = mixgauss_init(M, data, cov_type, method)
+
+ INPUTS:
+ data(:,t) is the t'th example
+ M = num. mixture components
+ cov_type = 'full', 'diag' or 'spherical'
+ method = 'rnd' (choose centers randomly from data) or 'kmeans' (needs netlab)
+
+ OUTPUTS:
+ mu(:,k) 
+ Sigma(:,:,k) 
+ weights(k)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../../matlabicon.gif)">
+<li><a href="mixgauss_em.html" class="code" title="function [mu, Sigma, prior] = mixgauss_em(Y, nc, varargin)">mixgauss_em</a>	MIXGAUSS_EM Fit the parameters of a mixture of Gaussians using EM</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [mu, Sigma, weights, mix] = mixgauss_init(M, data, cov_type, method)</a>
+0002 <span class="comment">% MIXGAUSS_INIT Initial parameter estimates for a mixture of Gaussians</span>
+0003 <span class="comment">% function [mu, Sigma, weights, mix] = mixgauss_init(M, data, cov_type, method)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% INPUTS:</span>
+0006 <span class="comment">% data(:,t) is the t'th example</span>
+0007 <span class="comment">% M = num. mixture components</span>
+0008 <span class="comment">% cov_type = 'full', 'diag' or 'spherical'</span>
+0009 <span class="comment">% method = 'rnd' (choose centers randomly from data) or 'kmeans' (needs netlab)</span>
+0010 <span class="comment">%</span>
+0011 <span class="comment">% OUTPUTS:</span>
+0012 <span class="comment">% mu(:,k)</span>
+0013 <span class="comment">% Sigma(:,:,k)</span>
+0014 <span class="comment">% weights(k)</span>
+0015 
+0016 <span class="keyword">if</span> nargin &lt; 4, method = <span class="string">'kmeans'</span>; <span class="keyword">end</span>
+0017 
+0018 [d T] = size(data);
+0019 data = reshape(data, d, T); <span class="comment">% in case it is data(:, t, sequence_num)</span>
+0020 
+0021 <span class="keyword">switch</span> method
+0022  <span class="keyword">case</span> <span class="string">'rnd'</span>, 
+0023   C = cov(data');
+0024   Sigma = repmat(diag(diag(C))*0.5, [1 1 M]);
+0025   <span class="comment">% Initialize each mean to a random data point</span>
+0026   indices = randperm(T);
+0027   mu = data(:,indices(1:M));
+0028   weights = normalize(ones(M,1));
+0029  <span class="keyword">case</span> <span class="string">'kmeans'</span>,
+0030   mix = gmm(d, M, cov_type);
+0031   options = foptions;
+0032   max_iter = 500;
+0033   options(1) = 1; <span class="comment">% show warnings</span>
+0034   options(14) = max_iter;
+0035   mix = gmminit(mix, data', options);
+0036   mu = reshape(mix.centres', [d M]);
+0037   weights = mix.priors(:);
+0038   <span class="keyword">for</span> m=1:M
+0039     <span class="keyword">switch</span> cov_type
+0040      <span class="keyword">case</span> <span class="string">'diag'</span>,
+0041       Sigma(:,:,m) = diag(mix.covars(m,:));
+0042      <span class="keyword">case</span> <span class="string">'full'</span>,
+0043       Sigma(:,:,m) = mix.covars(:,:,m);
+0044      <span class="keyword">case</span> <span class="string">'spherical'</span>,
+0045       Sigma(:,:,m) = mix.covars(m) * eye(d);
+0046     <span class="keyword">end</span>
+0047   <span class="keyword">end</span>
+0048 <span class="keyword">end</span>
+0049</pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

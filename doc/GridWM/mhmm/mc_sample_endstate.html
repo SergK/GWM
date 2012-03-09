@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mc_sample_endstate</title>
+  <meta name="keywords" content="mc_sample_endstate">
+  <meta name="description" content="SAMPLE_MC_ENDSTATE Generate a random sequence from a Markov chain until enter the endstate.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>mc_sample_endstate
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SAMPLE_MC_ENDSTATE Generate a random sequence from a Markov chain until enter the endstate.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function S = sample_mc_endstate(startprob, trans, endprob) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SAMPLE_MC_ENDSTATE Generate a random sequence from a Markov chain until enter the endstate.
+ seq = sample_mc(startprob, trans, endprob)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="dhmm_sample_endstate.html" class="code" title="function [obs, hidden] = dhmm_sample_endstate(startprob, transmat, obsmat, endprob, numex)">dhmm_sample_endstate</a>	SAMPLE_DHMM Generate random sequences from an HMM with discrete outputs.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function S = sample_mc_endstate(startprob, trans, endprob)</a>
+0002 <span class="comment">% SAMPLE_MC_ENDSTATE Generate a random sequence from a Markov chain until enter the endstate.</span>
+0003 <span class="comment">% seq = sample_mc(startprob, trans, endprob)</span>
+0004 
+0005 <span class="comment">% add an end state</span>
+0006 Q = size(trans,1);
+0007 transprob = zeros(Q,Q+1);
+0008 end_state = Q+1;
+0009 <span class="keyword">for</span> i=1:Q
+0010   <span class="keyword">for</span> j=1:Q
+0011     transprob(i,j) = (1-endprob(i)) * trans(i,j);
+0012   <span class="keyword">end</span>
+0013   transprob(i,end_state) = endprob(i);
+0014   <span class="comment">%assert(approxeq(sum(transprob(i,:)), 1))</span>
+0015 <span class="keyword">end</span>                  
+0016 
+0017 S = [];
+0018 S(1) = sample_discrete(startprob);
+0019 t = 1;
+0020 p = endprob(S(t));
+0021 stop = (S(1) == end_state);
+0022 <span class="keyword">while</span> ~stop
+0023   S(t+1) = sample_discrete(transprob(S(t),:));
+0024   stop = (S(t+1) == end_state);
+0025   t = t + 1;
+0026 <span class="keyword">end</span>
+0027 S = S(1:end-1); <span class="comment">% don't include end state</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

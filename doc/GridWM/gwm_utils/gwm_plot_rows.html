@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gwm_plot_rows</title>
+  <meta name="keywords" content="gwm_plot_rows">
+  <meta name="description" content="%function gwm_plot_rows(x,on_the_same,varargin)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html gwm_utils -->
+<h1>gwm_plot_rows
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>%function gwm_plot_rows(x,on_the_same,varargin)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function gwm_plot_rows(x,on_the_same,varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%function gwm_plot_rows(x,on_the_same,varargin)
+   x - data to plot
+   on_the_same - do plot on the same figure (true | false)
+   'plot' - simple plot
+   'norm' - for norm plot
+   'acf' - for acf plot
+   'hist' - for acf plot
+   'cdf' - for acf plot</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function gwm_plot_rows(x,on_the_same,varargin)</a>
+0002 
+0003 <span class="comment">%%function gwm_plot_rows(x,on_the_same,varargin)</span>
+0004 <span class="comment">%   x - data to plot</span>
+0005 <span class="comment">%   on_the_same - do plot on the same figure (true | false)</span>
+0006 <span class="comment">%   'plot' - simple plot</span>
+0007 <span class="comment">%   'norm' - for norm plot</span>
+0008 <span class="comment">%   'acf' - for acf plot</span>
+0009 <span class="comment">%   'hist' - for acf plot</span>
+0010 <span class="comment">%   'cdf' - for acf plot</span>
+0011     x_size=rowsLightspeed(x);
+0012     <span class="keyword">if</span> nargin==2
+0013         init_type=<span class="string">'plot'</span>;
+0014     <span class="keyword">else</span>
+0015         init_type = varargin{1};
+0016     <span class="keyword">end</span>
+0017     hold on;
+0018    [styles, colors, symbols, str] =  plotColors();
+0019     <span class="keyword">switch</span> lower(init_type)
+0020         <span class="keyword">case</span> <span class="string">'plot'</span>
+0021             <span class="keyword">for</span> i=1:x_size
+0022                 <span class="keyword">if</span> ~on_the_same; figure(i);plot(x(i,:));
+0023                 <span class="keyword">else</span>
+0024                 plot(x(i,:),str{i});
+0025                 <span class="keyword">end</span>;
+0026             <span class="keyword">end</span>
+0027         <span class="keyword">case</span> <span class="string">'acf'</span>
+0028             <span class="keyword">for</span> i=1:x_size
+0029                 <span class="keyword">if</span> ~on_the_same; figure(i);plot(acf(x(i,:),round(sizePMTK(x(i,:))/3)));
+0030                 <span class="keyword">else</span>
+0031                 plot(acf(x(i,:),round(sizePMTK(x(i,:))/3)),str{i});
+0032                 <span class="keyword">end</span>;
+0033             <span class="keyword">end</span>
+0034         <span class="keyword">case</span> <span class="string">'norm'</span>
+0035             <span class="keyword">for</span> i=1:x_size
+0036                 <span class="keyword">if</span> ~on_the_same; figure(i);<span class="keyword">end</span>;
+0037                 normplot(x(i,:));
+0038             <span class="keyword">end</span>
+0039         <span class="keyword">case</span> <span class="string">'hist'</span>
+0040             <span class="keyword">for</span> i=1:x_size
+0041                 <span class="keyword">if</span> ~on_the_same; figure(i);<span class="keyword">end</span>;
+0042                 hist(x(i,:),30);
+0043             <span class="keyword">end</span>
+0044         <span class="keyword">case</span> <span class="string">'cdf'</span>
+0045             <span class="keyword">for</span> i=1:x_size
+0046                 <span class="keyword">if</span> ~on_the_same; figure(i);<span class="keyword">end</span>;
+0047                 cdfplot(x(i,:));
+0048             <span class="keyword">end</span>
+0049         <span class="keyword">otherwise</span>
+0050             <span class="keyword">for</span> i=1:x_size
+0051                 <span class="keyword">if</span> ~on_the_same; figure(i);plot(x(i,:));
+0052                 <span class="keyword">else</span>
+0053                 plot(x(i,:),str{i});
+0054                 <span class="keyword">end</span>;
+0055             <span class="keyword">end</span>
+0056     <span class="keyword">end</span>
+0057     placeFigures;
+0058     hold off;
+0059 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

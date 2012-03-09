@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of fixed_lag_smoother_demo</title>
+  <meta name="keywords" content="fixed_lag_smoother_demo">
+  <meta name="description" content="Example of fixed lag smoothing">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>fixed_lag_smoother_demo
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>Example of fixed lag smoothing</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>This is a script file. </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> Example of fixed lag smoothing</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="fixed_lag_smoother.html" class="code" title="function [alpha, obslik, gamma, xi] = fixed_lag_smoother(d, alpha, obslik, obsvec, transmat, act)">fixed_lag_smoother</a>	FIXED_LAG_SMOOTHER Computed smoothed posterior estimates within a window given previous filtered window.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="testHMM.html" class="code" title="">testHMM</a>	Run all the demos, to check everything is "syntactically correct"</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <span class="comment">% Example of fixed lag smoothing</span>
+0002 
+0003 rand(<span class="string">'state'</span>, 1);
+0004 S = 2;
+0005 O = 2;
+0006 T = 7;
+0007 data = sampleDiscrete([0.5 0.5], 1, T);
+0008 transmat = mk_stochastic(rand(S,S));
+0009 obsmat = mk_stochastic(rand(S,O));
+0010 obslik = multinomial_prob(data, obsmat);
+0011 prior = [0.5 0.5]';
+0012 
+0013 
+0014 [alpha0, beta0, gamma0, ll0, xi0] = fwdback(prior, transmat, obslik);
+0015 
+0016 w = 3;
+0017 alpha1 = zeros(S, T);
+0018 gamma1 = zeros(S, T);
+0019 xi1 = zeros(S, S, T-1);
+0020 t = 1;
+0021 b = obsmat(:, data(t));
+0022 olik_win = b; <span class="comment">% window of conditional observation likelihoods</span>
+0023 alpha_win = normalise(prior .* b);
+0024 alpha1(:,t) = alpha_win;
+0025 <span class="keyword">for</span> t=2:T
+0026   [alpha_win, olik_win, gamma_win, xi_win] = <span class="keyword">...</span>
+0027       <a href="fixed_lag_smoother.html" class="code" title="function [alpha, obslik, gamma, xi] = fixed_lag_smoother(d, alpha, obslik, obsvec, transmat, act)">fixed_lag_smoother</a>(w, alpha_win, olik_win, obsmat(:, data(t)), transmat);
+0028   alpha1(:,max(1,t-w+1):t) = alpha_win;
+0029   gamma1(:,max(1,t-w+1):t) = gamma_win;
+0030   xi1(:,:,max(1,t-w+1):t-1) = xi_win;
+0031 <span class="keyword">end</span>
+0032 
+0033 e = 1e-1;
+0034 <span class="comment">%assert(approxeq(alpha0, alpha1, e));</span>
+0035 assert(approxeq(gamma0(:, T-w+1:end), gamma1(:, T-w+1:end), e));
+0036 <span class="comment">%assert(approxeq(xi0(:,:,T-w+1:end), xi1(:,:,T-w+1:end), e));</span>
+0037 
+0038</pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

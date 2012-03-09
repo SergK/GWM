@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mdp_sample</title>
+  <meta name="keywords" content="mdp_sample">
+  <meta name="description" content="SAMPLE_MDP Sample a sequence of states from a Markov Decision Process.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>mdp_sample
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>SAMPLE_MDP Sample a sequence of states from a Markov Decision Process.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function state = mdp_sample(prior, trans, act) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> SAMPLE_MDP Sample a sequence of states from a Markov Decision Process.
+ state = sample_mdp(prior, trans, act)
+
+ Inputs:
+ prior(i) = Pr(Q(1)=i)
+ trans{a}(i,j) = Pr(Q(t)=j | Q(t-1)=i, A(t)=a)
+ act(a) = A(t), so act(1) is ignored
+
+ Output:
+ state is a vector of length T=length(act)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="pomdp_sample.html" class="code" title="function [obs, hidden] = pomdp_sample(initial_prob, transmat, obsmat, act)">pomdp_sample</a>	SAMPLE_POMDP Generate a random sequence from a Partially Observed Markov Decision Process.</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function state = mdp_sample(prior, trans, act)</a>
+0002 <span class="comment">% SAMPLE_MDP Sample a sequence of states from a Markov Decision Process.</span>
+0003 <span class="comment">% state = sample_mdp(prior, trans, act)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Inputs:</span>
+0006 <span class="comment">% prior(i) = Pr(Q(1)=i)</span>
+0007 <span class="comment">% trans{a}(i,j) = Pr(Q(t)=j | Q(t-1)=i, A(t)=a)</span>
+0008 <span class="comment">% act(a) = A(t), so act(1) is ignored</span>
+0009 <span class="comment">%</span>
+0010 <span class="comment">% Output:</span>
+0011 <span class="comment">% state is a vector of length T=length(act)</span>
+0012 
+0013 len = length(act);
+0014 state = zeros(1,len);
+0015 <span class="comment">%state(1) = sample_discrete(prior);</span>
+0016 state(1) = sampleDiscrete(prior);
+0017 <span class="keyword">for</span> t=2:len
+0018   <span class="comment">%state(t) = sample_discrete(trans{act(t)}(state(t-1),:));</span>
+0019   state(t) = sampleDiscrete(trans{act(t)}(state(t-1),:));
+0020 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

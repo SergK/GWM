@@ -1,0 +1,130 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gwm_createStochasticMatrix</title>
+  <meta name="keywords" content="gwm_createStochasticMatrix">
+  <meta name="description" content="function [transmat, pi]=gwm_createStochasticMatrix(NStates, varargin)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- menu.html GridWM -->
+<h1>gwm_createStochasticMatrix
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [transmat, pi]=gwm_createStochasticMatrix(NStates, varargin)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="box"><strong>function [transmat, pi]=gwm_createStochasticMatrix(NStates, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre class="comment">function [transmat, pi]=gwm_createStochasticMatrix(NStates, varargin)
+   'MatrixType' (Transition matrix):
+       - 'uniform'         
+       - 'rand'            &lt;-default
+       - 'rand-zero-diag'  &lt;-random with zero diag
+       - 'unif-zero-diag'  &lt;-uniform with zero diag
+       - 'left-right'      &lt;-Bakis (full jump example)
+                     transmat =
+                         0.2025    0.1221    0.6754
+                              0    0.6427    0.3573
+                              0         0    1.0000
+       - 'jump_step'       &lt;-For left-right model [from 1 to (NStates-1)]: default (NStates-1)
+
+See also
+ mkStochastic</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [transmat, pi]=gwm_createStochasticMatrix(NStates, varargin)</a>
+0002 <span class="comment">%function [transmat, pi]=gwm_createStochasticMatrix(NStates, varargin)</span>
+0003 <span class="comment">%   'MatrixType' (Transition matrix):</span>
+0004 <span class="comment">%       - 'uniform'</span>
+0005 <span class="comment">%       - 'rand'            &lt;-default</span>
+0006 <span class="comment">%       - 'rand-zero-diag'  &lt;-random with zero diag</span>
+0007 <span class="comment">%       - 'unif-zero-diag'  &lt;-uniform with zero diag</span>
+0008 <span class="comment">%       - 'left-right'      &lt;-Bakis (full jump example)</span>
+0009 <span class="comment">%                     transmat =</span>
+0010 <span class="comment">%                         0.2025    0.1221    0.6754</span>
+0011 <span class="comment">%                              0    0.6427    0.3573</span>
+0012 <span class="comment">%                              0         0    1.0000</span>
+0013 <span class="comment">%       - 'jump_step'       &lt;-For left-right model [from 1 to (NStates-1)]: default (NStates-1)</span>
+0014 <span class="comment">%</span>
+0015 <span class="comment">%See also</span>
+0016 <span class="comment">% mkStochastic</span>
+0017 
+0018 [   MatrixType,           <span class="keyword">...</span>
+0019     jump_step           ] <span class="keyword">...</span>
+0020     = process_options(varargin  ,            <span class="keyword">...</span>
+0021     <span class="string">'MatrixType'</span>                , <span class="string">'rand'</span>,    <span class="keyword">...</span><span class="comment">     % using uniform init by default</span>
+0022     <span class="string">'jump_step'</span>                 , NStates-1  <span class="keyword">...</span><span class="comment">     % full jump (default)</span>
+0023     );
+0024 
+0025 <span class="keyword">switch</span> lower(MatrixType)
+0026     <span class="keyword">case</span> <span class="string">'uniform'</span>  
+0027         pi=ones(NStates,1);
+0028         pi=pi./sum(pi);           
+0029         transmat=ones(NStates);
+0030         transmat=transmat./(sum(transmat,2)*ones(1,NStates));
+0031     <span class="keyword">case</span> <span class="string">'rand'</span>
+0032         pi=mkStochastic(rand(NStates,1));
+0033         transmat=mkStochastic(rand(NStates,NStates));
+0034     <span class="keyword">case</span> <span class="string">'rand-zero-diag'</span>
+0035         pi = rand(NStates,1);
+0036         pi(1) = 0;         <span class="comment">% we cannot start from this place because of zero diag</span>
+0037         pi=mkStochastic(pi);
+0038         transmat=rand(NStates,NStates);
+0039         transmat(eye(size(transmat))==1)=0;
+0040         transmat=mkStochastic(transmat);
+0041     <span class="keyword">case</span> <span class="string">'unif-zero-diag'</span>
+0042         pi=ones(NStates,1);
+0043         pi(1)=0;           <span class="comment">% we cannot start from this place because of zero diag</span>
+0044         pi=pi./sum(pi);
+0045         transmat=ones(NStates);
+0046         transmat(eye(size(transmat))==1)=0;
+0047         transmat=transmat./(sum(transmat,2)*ones(1,NStates));      <span class="comment">%The Transition Probability Matrix of active states</span>
+0048     <span class="keyword">case</span> <span class="string">'left-right'</span>
+0049         <span class="keyword">if</span> jump_step &gt; (NStates-1)
+0050             warning(<span class="string">'Jump step could not be greater than NStates-1. Converting jump_step to NStates-1'</span>);
+0051             jump_step = NStates-1;
+0052         <span class="keyword">elseif</span> jump_step &lt; 1
+0053             warning(<span class="string">'Jump step could not be less than 1. Converting jump_step to 1'</span>);
+0054             jump_step = 1;
+0055         <span class="keyword">end</span>
+0056         pi = zeros(NStates,1);
+0057         pi(1) = 1;      <span class="comment">% we start from the FIRST state</span>
+0058         transmat = tril(triu(rand(NStates,NStates),0),jump_step);
+0059         transmat(NStates) = 1 - sum(transmat(NStates,:));   <span class="comment">%allow jump from last state to first</span>
+0060         transmat = mkStochastic(transmat);
+0061         <span class="comment">%transmat=mkStochastic(tril(triu(rand(NStates,NStates),0),jump_step));</span>
+0062     <span class="keyword">otherwise</span>
+0063         <span class="comment">%%we use uniform distribution init by deafault</span>
+0064         pi=ones(NStates,1);
+0065         pi=pi./sum(pi);           <span class="comment">%the initial probability</span>
+0066         transmat=ones(NStates);
+0067         transmat=transmat./(sum(transmat,2)*ones(1,NStates));      <span class="comment">%The Transition Probability Matrix of active states</span>
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

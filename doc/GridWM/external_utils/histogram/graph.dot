@@ -1,0 +1,13 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  histx -> calcnbins;
+  my_calcnbins -> calcnbins;
+
+  calcnbins [URL="calcnbins.html"];
+  histnorm [URL="histnorm.html"];
+  histx [URL="histx.html"];
+  lnbin [URL="lnbin.html"];
+  my_calcnbins [URL="my_calcnbins.html"];
+  pdfplot [URL="pdfplot.html"];
+  scott [URL="scott.html"];
+}

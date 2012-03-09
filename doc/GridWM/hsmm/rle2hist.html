@@ -1,0 +1,64 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of rle2hist</title>
+  <meta name="keywords" content="rle2hist">
+  <meta name="description" content="%function c=rle2hist(data)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html hsmm -->
+<h1>rle2hist
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>%function c=rle2hist(data)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function c=rle2hist(data) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">%function c=rle2hist(data)
+Convert rle2hist
+{value 1}--&gt;{1 2 3 3 1 1 6 4 5 6 4}
+{value 2}--&gt;{1 2 2 3 2 1 1 2 3 2 1 2 3 4 5 6 4}</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="hsmmSeqStat.html" class="code" title="function [mmax,mmedian,mmean]=hsmmSeqStat(data)">hsmmSeqStat</a>	function [mmax,mmedian,mmean]=hsmmSeqStat(data)</li></ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function c=rle2hist(data)</a>
+0002 <span class="comment">%%function c=rle2hist(data)</span>
+0003 <span class="comment">%Convert rle2hist</span>
+0004 <span class="comment">%{value 1}--&gt;{1 2 3 3 1 1 6 4 5 6 4}</span>
+0005 <span class="comment">%{value 2}--&gt;{1 2 2 3 2 1 1 2 3 2 1 2 3 4 5 6 4}</span>
+0006     values=data{1};
+0007     values_length=data{2};
+0008     uval=unique(values);
+0009     ll=size(uval,2);    <span class="comment">%number of unique values</span>
+0010     c=cell(ll,2);       <span class="comment">%cell for values</span>
+0011     <span class="keyword">for</span> i=1:ll
+0012         c{i,1}=uval(i);
+0013         c{i,2}=values_length((values==uval(i)));
+0014     <span class="keyword">end</span>
+0015 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

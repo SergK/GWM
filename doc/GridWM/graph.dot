@@ -1,0 +1,13 @@
+/* Created by mdot for Matlab */
+digraph m2html {
+  gwm_selectBestModels -> gwm_maxminnd;
+
+  gwm_Contents [URL="gwm_Contents.html"];
+  gwm_abic [URL="gwm_abic.html"];
+  gwm_createStochasticMatrix [URL="gwm_createStochasticMatrix.html"];
+  gwm_maxminnd [URL="gwm_maxminnd.html"];
+  gwm_prepareSequence [URL="gwm_prepareSequence.html"];
+  gwm_replaceValues [URL="gwm_replaceValues.html"];
+  gwm_selectBestModels [URL="gwm_selectBestModels.html"];
+  gwm_showExperimentResult [URL="gwm_showExperimentResult.html"];
+}

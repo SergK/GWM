@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of dhmm_logprob_brute_force</title>
+  <meta name="keywords" content="dhmm_logprob_brute_force">
+  <meta name="description" content="ENUMERATE_HMM_LOGLIK Compute the log likelihood of a sequence by exhaustive (O(Q^T)) enumeration.">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>dhmm_logprob_brute_force
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>ENUMERATE_HMM_LOGLIK Compute the log likelihood of a sequence by exhaustive (O(Q^T)) enumeration.</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function logp = enumerate_HMM_loglik(prior, transmat, obsmat) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> ENUMERATE_HMM_LOGLIK Compute the log likelihood of a sequence by exhaustive (O(Q^T)) enumeration.
+ logp = enumerate_HMM_loglik(prior, transmat, obsmat)
+
+ Inputs:
+ prior(i) = Pr(Q(1) = i)
+ transmat(i,j) = Pr(Q(t+1)=j | Q(t)=i)
+ obsmat(i,t) = Pr(y(t) | Q(t)=i)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function logp = enumerate_HMM_loglik(prior, transmat, obsmat)</a>
+0002 <span class="comment">% ENUMERATE_HMM_LOGLIK Compute the log likelihood of a sequence by exhaustive (O(Q^T)) enumeration.</span>
+0003 <span class="comment">% logp = enumerate_HMM_loglik(prior, transmat, obsmat)</span>
+0004 <span class="comment">%</span>
+0005 <span class="comment">% Inputs:</span>
+0006 <span class="comment">% prior(i) = Pr(Q(1) = i)</span>
+0007 <span class="comment">% transmat(i,j) = Pr(Q(t+1)=j | Q(t)=i)</span>
+0008 <span class="comment">% obsmat(i,t) = Pr(y(t) | Q(t)=i)</span>
+0009 
+0010 Q = length(prior);
+0011 T = size(obsmat, 2);
+0012 sizes = repmat(Q, 1, T);
+0013 
+0014 psum = 0;
+0015 <span class="keyword">for</span> i=1:Q^T
+0016   qs = ind2subv(sizes, i); <span class="comment">% make the state sequence</span>
+0017   psum = psum + prob_path(prior, transmat, obsmat, qs);
+0018 <span class="keyword">end</span>
+0019 logp = log(psum)
+0020 
+0021</pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of mhmmFit</title>
+  <meta name="keywords" content="mhmmFit">
+  <meta name="description" content="function [model, loglikHist] = mhmmFit(data, nstates, nmix, varargin)">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>mhmmFit
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [model, loglikHist] = mhmmFit(data, nstates, nmix, varargin)</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [model, loglikHist] = mhmmFit(data, nstates, nmix, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment">function [model, loglikHist] = mhmmFit(data, nstates, nmix, varargin)
+% Fit an hmm model with mixture of gaussian (MoG)
+   INPUT:
+           - data - data(i,:); data{ex}(:,t) or data(:,t,ex) if all sequences have the same length
+           - nstates - Number of states
+           - nmix - Number of mixtures per state (if nmix==1 we don't care about mixmat0)
+           varargin:
+               - 'pi0'
+               - 'trans0'
+               - 'mu0'
+               - 'Sigma0'
+               - 'mixmat0'
+               - 'cov_type'   'full'(default), 'diag' or 'spherical'
+               - 'init_type'  'random'(default), 'manual', 'auto'
+               - 'max_iter'   default=100;
+               - 'useBuiltInKmeans' - (1 - use built-in kmeans (default); 0 - use mixGaussFit PMTK) 
+               - 'verbose' - (1 - be verbose; 0 - silent mode (default)
+ data(O,T,nex):
+                   O = 8;          %Number of coefficients in a vector (data dimention)
+                   T = 420;        %Number of vectors in a sequence
+                   nex = 1;        %Number of sequences
+ See also hmmFit</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="mhmm_em.html" class="code" title="function [LL, prior, transmat, mu, Sigma, mixmat] =mhmm_em(data, prior, transmat, mu, Sigma, mixmat, varargin)">mhmm_em</a>	LEARN_MHMM Compute the ML parameters of an HMM with (mixtures of) Gaussians output using EM.</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [model, loglikHist] = mhmmFit(data, nstates, nmix, varargin)</a>
+0002 <span class="comment">%function [model, loglikHist] = mhmmFit(data, nstates, nmix, varargin)</span>
+0003 <span class="comment">%% Fit an hmm model with mixture of gaussian (MoG)</span>
+0004 <span class="comment">%   INPUT:</span>
+0005 <span class="comment">%           - data - data(i,:); data{ex}(:,t) or data(:,t,ex) if all sequences have the same length</span>
+0006 <span class="comment">%           - nstates - Number of states</span>
+0007 <span class="comment">%           - nmix - Number of mixtures per state (if nmix==1 we don't care about mixmat0)</span>
+0008 <span class="comment">%           varargin:</span>
+0009 <span class="comment">%               - 'pi0'</span>
+0010 <span class="comment">%               - 'trans0'</span>
+0011 <span class="comment">%               - 'mu0'</span>
+0012 <span class="comment">%               - 'Sigma0'</span>
+0013 <span class="comment">%               - 'mixmat0'</span>
+0014 <span class="comment">%               - 'cov_type'   'full'(default), 'diag' or 'spherical'</span>
+0015 <span class="comment">%               - 'init_type'  'random'(default), 'manual', 'auto'</span>
+0016 <span class="comment">%               - 'max_iter'   default=100;</span>
+0017 <span class="comment">%               - 'useBuiltInKmeans' - (1 - use built-in kmeans (default); 0 - use mixGaussFit PMTK)</span>
+0018 <span class="comment">%               - 'verbose' - (1 - be verbose; 0 - silent mode (default)</span>
+0019 <span class="comment">% data(O,T,nex):</span>
+0020 <span class="comment">%                   O = 8;          %Number of coefficients in a vector (data dimention)</span>
+0021 <span class="comment">%                   T = 420;        %Number of vectors in a sequence</span>
+0022 <span class="comment">%                   nex = 1;        %Number of sequences</span>
+0023 <span class="comment">% See also hmmFit</span>
+0024 
+0025 <span class="comment">% This file is based on the code from pmtk3.googlecode.com</span>
+0026 
+0027 <span class="keyword">if</span> ~iscell(data)
+0028     <span class="keyword">if</span> isvector(data) <span class="comment">% scalar time series</span>
+0029         data = rowvec(data);
+0030     <span class="keyword">end</span>
+0031     data = {data};
+0032 <span class="keyword">end</span>
+0033 
+0034 [   pi0                         , <span class="keyword">...</span>
+0035     trans0                      , <span class="keyword">...</span>
+0036     mu0                         , <span class="keyword">...</span>
+0037     Sigma0                      , <span class="keyword">...</span>
+0038     mixmat0                     , <span class="keyword">...</span>
+0039     model.cov_type              , <span class="keyword">...</span>
+0040     model.init_type             , <span class="keyword">...</span>
+0041     max_iter                    , <span class="keyword">...</span>
+0042     useBuiltInKmeans            , <span class="keyword">...</span>
+0043     verbose                     ] <span class="keyword">...</span>
+0044     = process_options(varargin  , <span class="keyword">...</span>
+0045     <span class="string">'pi0'</span>                       , []                        , <span class="keyword">...</span>
+0046     <span class="string">'trans0'</span>                    , []                        , <span class="keyword">...</span>
+0047     <span class="string">'mu0'</span>                       , []                        , <span class="keyword">...</span>
+0048     <span class="string">'Sigma0'</span>                    , []                        , <span class="keyword">...</span>
+0049     <span class="string">'mixmat0'</span>                   , []                        , <span class="keyword">...</span>
+0050     <span class="string">'cov_type'</span>                  , <span class="string">'full'</span>                    , <span class="keyword">...</span>
+0051     <span class="string">'init_type'</span>                 , <span class="string">'random'</span>                  , <span class="keyword">...</span>
+0052     <span class="string">'max_iter'</span>                  , 100                       , <span class="keyword">...</span>
+0053     <span class="string">'useBuiltInKmeans'</span>           , 1                         , <span class="keyword">...</span>
+0054     <span class="string">'verbose'</span>                   , true);
+0055 
+0056 model.nstates = nstates;
+0057 model.type = <span class="string">'mhmm'</span>;
+0058 model.nmix = nmix;
+0059 stackedData = cell2mat(data');
+0060 [d T] = size(stackedData);
+0061 model.d = d;    <span class="comment">%data dimension</span>
+0062 
+0063 <span class="comment">%% Mixture weight init</span>
+0064 <span class="keyword">if</span> nmix&gt;1
+0065     mixmat = mkStochastic(rand(nstates,nmix));
+0066 <span class="keyword">else</span>
+0067     mixmat = [];
+0068 <span class="keyword">end</span>
+0069 
+0070 <span class="comment">%% MixGaussInit. Helper for Initialization of starting values</span>
+0071 <span class="keyword">if</span> useBuiltInKmeans  <span class="comment">%mixModel is used in auto mode</span>
+0072     [mu, Sigma, ~, mixModel] = mixgauss_init(nstates*nmix, stackedData, model.cov_type);
+0073 <span class="keyword">else</span>
+0074     mixModel = mixGaussFit(stackedData', nstates*nmix,  <span class="string">'verbose'</span>, false, <span class="string">'maxIter'</span>, 200, <span class="string">'nrandomRestarts'</span>,1);
+0075     mu = mixModel.cpd.mu;
+0076     Sigma = mixModel.cpd.Sigma;
+0077 <span class="keyword">end</span>
+0078 mu = reshape(mu, [d nstates nmix]);
+0079 Sigma = reshape(Sigma, [d d nstates nmix]);
+0080 
+0081 <span class="comment">%% Different init_type</span>
+0082 <span class="keyword">switch</span> lower(model.init_type)
+0083     <span class="keyword">case</span> <span class="string">'random'</span>
+0084         pi = normalize(rand(nstates,1));
+0085         A = mkStochastic(rand(nstates,nstates));
+0086         
+0087     <span class="keyword">case</span> <span class="string">'auto'</span>
+0088         
+0089         <span class="comment">%% mixGaussInferLatent (model, stackedData);</span>
+0090         <span class="keyword">if</span> useBuiltInKmeans
+0091             post = gmmpost(mixModel,stackedData');
+0092         <span class="keyword">else</span>
+0093             post = mixGaussInferLatent(mixModel, stackedData');
+0094         <span class="keyword">end</span>
+0095         [~,z] = max(post,[],2);
+0096         z = colvec(z);
+0097         
+0098         <span class="comment">%% if we have nmix&gt;1 we have to compress more states wih less</span>
+0099         <span class="comment">% A =1 2 3 4 5 6  - (nstates*nmix)</span>
+0100         <span class="comment">% wrap in A to nstates</span>
+0101         <span class="keyword">if</span> nmix &gt; 1
+0102             rA = 1:nstates*nmix;
+0103             rA = reshape(rA, [nstates nmix]);
+0104             <span class="keyword">for</span> i=1:nstates
+0105                 z(ismember(z,rA(i,:)))=i;
+0106             <span class="keyword">end</span>
+0107         <span class="keyword">end</span>
+0108         <span class="comment">%%</span>
+0109         A = accumarray([z(1:end-1), z(2:end)], 1, [nstates, nstates]); <span class="comment">% count transitions</span>
+0110         A = normalize(A + ones(size(A)), 2);       <span class="comment">% regularize</span>
+0111         seqidx   = cumsum([1, cellfun(@(seq)size(seq, 2), {stackedData})]);
+0112         pi       = histc(z(seqidx(1:end-1)), 1:nstates);
+0113         pi = normalize(pi + ones(size(pi))); <span class="comment">% regularize</span>
+0114         
+0115     <span class="keyword">case</span> <span class="string">'manual'</span>
+0116         pi = pi0;
+0117         A = trans0;
+0118         
+0119         <span class="keyword">if</span> ~isempty(mixmat0)
+0120             mixmat = mixmat0;
+0121         <span class="keyword">end</span>     <span class="comment">% else we have already defined mixmat with random values</span>
+0122         
+0123         <span class="keyword">if</span> ~isempty(mu0) &amp;&amp; ~isempty(Sigma0)
+0124             mu = mu0;Sigma = Sigma0;
+0125         <span class="keyword">end</span>
+0126     <span class="keyword">otherwise</span>           , error(<span class="string">'%s is not a valid Init type of model'</span>,model.init_type);
+0127 <span class="keyword">end</span>
+0128 model.pi_Prior = pi;
+0129 model.A_Prior = A;
+0130 
+0131 <span class="comment">%% Begin learning</span>
+0132 [loglikHist, model.pi, model.A, model.mu, model.Sigma, model.mixmat] = <span class="keyword">...</span>
+0133     <a href="mhmm_em.html" class="code" title="function [LL, prior, transmat, mu, Sigma, mixmat] =mhmm_em(data, prior, transmat, mu, Sigma, mixmat, varargin)">mhmm_em</a>(data, pi, A, mu, Sigma, mixmat, <span class="string">'max_iter'</span>, max_iter,<span class="string">'verbose'</span>,verbose, <span class="string">'cov_type'</span>, model.cov_type);
+0134 model.loglike = loglikHist;
+0135 
+0136 <span class="comment">%% Calculating AIC,BIC,AICc, nParams</span>
+0137 [model.AIC, model.BIC, model.AICc, model.nParam] = gwm_abic(model, length(stackedData));
+0138 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

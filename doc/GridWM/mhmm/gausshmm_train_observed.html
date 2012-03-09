@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gausshmm_train_observed</title>
+  <meta name="keywords" content="gausshmm_train_observed">
+  <meta name="description" content="GAUSSHMM_TRAIN_OBSERVED  Estimate params of HMM with Gaussian output from fully observed sequences">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html mhmm -->
+<h1>gausshmm_train_observed
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>GAUSSHMM_TRAIN_OBSERVED  Estimate params of HMM with Gaussian output from fully observed sequences</strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function [initState, transmat, mu, Sigma] = gausshmm_train_observed(obsData, hiddenData,nstates, varargin) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"> GAUSSHMM_TRAIN_OBSERVED  Estimate params of HMM with Gaussian output from fully observed sequences
+ [initState, transmat, mu, Sigma] = gausshmm_train_observed(obsData, hiddenData, nstates,...)
+
+ INPUT
+ If all sequences have the same length
+ obsData(:,t,ex) 
+ hiddenData(ex,t)  - must be ROW vector if only one sequence
+ If sequences have different lengths, we use cell arrays
+ obsData{ex}(:,t) 
+ hiddenData{ex}(t)
+
+ Optional argumnets
+ dirichletPriorWeight - for smoothing transition matrix counts
+
+ Optional parameters from mixgauss_Mstep:
+ 'cov_type' - 'full', 'diag' or 'spherical' ['full']
+ 'tied_cov' - 1 (Sigma) or 0 (Sigma_i) [0]
+ 'clamped_cov' - pass in clamped value, or [] if unclamped [ [] ]
+ 'clamped_mean' - pass in clamped value, or [] if unclamped [ [] ]
+ 'cov_prior' - Lambda_i, added to YY(:,:,i) [0.01*eye(d,d,Q)]
+
+ Output
+ mu(:,q)
+ Sigma(:,:,q)</pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+<li><a href="transmat_train_observed.html" class="code" title="function [transmat, initState] = transmat_train_observed(labels,  nstates, varargin)">transmat_train_observed</a>	transmat_train_observed ML estimation from fully observed data</li></ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function [initState, transmat, mu, Sigma] = gausshmm_train_observed(obsData, hiddenData, </a><span class="keyword">...</span>
+0002                           nstates, varargin)
+0003 <span class="comment">% GAUSSHMM_TRAIN_OBSERVED  Estimate params of HMM with Gaussian output from fully observed sequences</span>
+0004 <span class="comment">% [initState, transmat, mu, Sigma] = gausshmm_train_observed(obsData, hiddenData, nstates,...)</span>
+0005 <span class="comment">%</span>
+0006 <span class="comment">% INPUT</span>
+0007 <span class="comment">% If all sequences have the same length</span>
+0008 <span class="comment">% obsData(:,t,ex)</span>
+0009 <span class="comment">% hiddenData(ex,t)  - must be ROW vector if only one sequence</span>
+0010 <span class="comment">% If sequences have different lengths, we use cell arrays</span>
+0011 <span class="comment">% obsData{ex}(:,t)</span>
+0012 <span class="comment">% hiddenData{ex}(t)</span>
+0013 <span class="comment">%</span>
+0014 <span class="comment">% Optional argumnets</span>
+0015 <span class="comment">% dirichletPriorWeight - for smoothing transition matrix counts</span>
+0016 <span class="comment">%</span>
+0017 <span class="comment">% Optional parameters from mixgauss_Mstep:</span>
+0018 <span class="comment">% 'cov_type' - 'full', 'diag' or 'spherical' ['full']</span>
+0019 <span class="comment">% 'tied_cov' - 1 (Sigma) or 0 (Sigma_i) [0]</span>
+0020 <span class="comment">% 'clamped_cov' - pass in clamped value, or [] if unclamped [ [] ]</span>
+0021 <span class="comment">% 'clamped_mean' - pass in clamped value, or [] if unclamped [ [] ]</span>
+0022 <span class="comment">% 'cov_prior' - Lambda_i, added to YY(:,:,i) [0.01*eye(d,d,Q)]</span>
+0023 <span class="comment">%</span>
+0024 <span class="comment">% Output</span>
+0025 <span class="comment">% mu(:,q)</span>
+0026 <span class="comment">% Sigma(:,:,q)</span>
+0027 
+0028 [dirichletPriorWeight, other] = process_options(<span class="keyword">...</span>
+0029     varargin, <span class="string">'dirichletPriorWeight'</span>, 0);
+0030 
+0031 [transmat, initState] = <a href="transmat_train_observed.html" class="code" title="function [transmat, initState] = transmat_train_observed(labels,  nstates, varargin)">transmat_train_observed</a>(hiddenData, nstates, <span class="keyword">...</span>
+0032                         <span class="string">'dirichletPriorWeight'</span>, dirichletPriorWeight);
+0033 
+0034 <span class="comment">% convert to obsData(:,t*nex)</span>
+0035 <span class="keyword">if</span> ~iscell(obsData)
+0036   [D T Nex] = size(obsData);
+0037   obsData = reshape(obsData, D, T*Nex);
+0038 <span class="keyword">else</span>
+0039   obsData = cat(2, obsData{:});
+0040   hiddenData = cat(2,hiddenData{:});
+0041 <span class="keyword">end</span>
+0042 [mu, Sigma] = condgaussTrainObserved(obsData, hiddenData(:), nstates, varargin{:});
+0043 <span class="keyword">end</span>
+0044 
+0045</pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>

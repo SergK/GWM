@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                "http://www.w3.org/TR/REC-html40/loose.dtd">
+<html>
+<head>
+  <title>Description of gwm_plotTransMatrix</title>
+  <meta name="keywords" content="gwm_plotTransMatrix">
+  <meta name="description" content="">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <meta name="generator" content="m2html &copy; 2005 Guillaume Flandin">
+  <meta name="robots" content="index, follow">
+  <link type="text/css" rel="stylesheet" href="../../m2html.css">
+  <script type="text/javascript">
+    if (top.frames.length == 0) { top.location = "../../index.html"; };
+  </script>
+</head>
+<body>
+<a name="_top"></a>
+<!-- ../menu.html GridWM --><!-- menu.html gwm_utils -->
+<h1>gwm_plotTransMatrix
+</h1>
+
+<h2><a name="_name"></a>PURPOSE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong></strong></div>
+
+<h2><a name="_synopsis"></a>SYNOPSIS <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="box"><strong>function gwm_plotTransMatrix(mat) </strong></div>
+
+<h2><a name="_description"></a>DESCRIPTION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre class="comment"></pre></div>
+
+<!-- crossreference -->
+<h2><a name="_cross"></a>CROSS-REFERENCE INFORMATION <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+This function calls:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+This function is called by:
+<ul style="list-style-image:url(../../matlabicon.gif)">
+</ul>
+<!-- crossreference -->
+
+
+
+<h2><a name="_source"></a>SOURCE CODE <a href="#_top"><img alt="^" border="0" src="../../up.png"></a></h2>
+<div class="fragment"><pre>0001 <a name="_sub0" href="#_subfunctions" class="code">function gwm_plotTransMatrix(mat)</a>
+0002 
+0003 nstates = size(mat,1);
+0004 imagesc(mat);            <span class="comment">%# Create a colored plot of the matrix values</span>
+0005 colormap(flipud(gray));  <span class="comment">%# Change the colormap to gray (so higher values are</span>
+0006                          <span class="comment">%#   black and lower values are white)</span>
+0007 
+0008 textStrings = num2str(mat(:),<span class="string">'%0.3f'</span>);  <span class="comment">%# Create strings from the matrix values</span>
+0009 textStrings = strtrim(cellstr(textStrings));  <span class="comment">%# Remove any space padding</span>
+0010 [x,y] = meshgrid(1:nstates);   <span class="comment">%# Create x and y coordinates for the strings</span>
+0011 hStrings = text(x(:),y(:),textStrings(:),<span class="keyword">...</span><span class="comment">      %# Plot the strings</span>
+0012                 <span class="string">'HorizontalAlignment'</span>,<span class="string">'center'</span>);
+0013 midValue = mean(get(gca,<span class="string">'CLim'</span>));  <span class="comment">%# Get the middle value of the color range</span>
+0014 textColors = repmat(mat(:) &gt; midValue,1,3);  <span class="comment">%# Choose white or black for the</span>
+0015                                              <span class="comment">%#   text color of the strings so</span>
+0016                                              <span class="comment">%#   they can be easily seen over</span>
+0017                                              <span class="comment">%#   the background color</span>
+0018 set(hStrings,{<span class="string">'Color'</span>},num2cell(textColors,2),<span class="string">'FontSize'</span>,14);  <span class="comment">%# Change the text colors</span>
+0019 set(gca,<span class="string">'XTick'</span>,1:nstates,<span class="string">'YTick'</span>,1:nstates,<span class="string">'TickLength'</span>,[0 0],<span class="string">'XAxisLocation'</span>,<span class="string">'top'</span>,<span class="string">'FontSize'</span>,18,<span class="string">'FontWeight'</span>,<span class="string">'bold'</span>);
+0020 <span class="keyword">end</span></pre></div>
+<hr><address>Generated on Sun 04-Sep-2011 11:01:44 by <strong><a href="http://www.artefact.tk/software/matlab/m2html/" target="_parent">m2html</a></strong> &copy; 2005</address>
+</body>
+</html>
