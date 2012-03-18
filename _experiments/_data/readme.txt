@@ -1,0 +1,1 @@
+This folder containes data for testing. Downloaded from Grid Workload Archive at http://gwa.ewi.tudelft.nl/pmwiki/
