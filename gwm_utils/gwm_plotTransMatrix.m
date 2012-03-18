@@ -1,4 +1,7 @@
 function gwm_plotTransMatrix(mat)
+%% function gwm_plotTransMatrix(mat)
+%   function plots Transition matrix
+%%
 
 nstates = size(mat,1);
 imagesc(mat);            %# Create a colored plot of the matrix values

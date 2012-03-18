@@ -1,6 +1,6 @@
 function [bestmodels best_models_idx best_models_vals]=gwm_selectBestModels(models,varargin)
-%function bestmodels=gwm_selectBestModels(models,varargin)
-%   Select best models with some 
+%function [bestmodels best_models_idx best_models_vals]=gwm_selectBestModels(models,varargin)
+%   Select the best models based on some criteria
 %
 %INPUT:
 %     models        - Matrix of experiments, where:
@@ -10,6 +10,11 @@ function [bestmodels best_models_idx best_models_vals]=gwm_selectBestModels(mode
 %    'criteria'     - best model criteria 'loglike' (default), 'aic', 'bic', 'aicc'
 %    'nBestModels'  - number of best models to return or [1,3,6] return 1st 3rd and 6th model: default (1)
 %    'in Groups'    - select best models by groups (in each column)[default]
+%
+%OUTPUT:
+%   bestmodels          - cell array with the best models
+%   best_models_idx     - best models idx in array
+%   best_models_vals    - best criteria values for the best models
 
 %%
 [   criteria                    , ...

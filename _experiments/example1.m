@@ -3,7 +3,7 @@
 %% we have to load data
 data = gwm_loadData('auver');
 % split data for test and train
-% [Train,Test] = gwm_splitData(data,[0.8,0.2]);
+[Train,Test] = gwm_splitData(data,[0.8,0.2]);
 
 
 %% define some parameters of the future models
@@ -33,7 +33,7 @@ end;
 %       see also: hsmmFit
 % Each model has different type of params please see also section
 
-%% Let's make some simple model
+%% Let's make some simple model with random init param initialization
 for j = 1:nModels
     fprintf('\n\t\t(%d of %d). Number of states = %d\n',j,nModels,(nStates+j)*nMix);
     % [trans0, pi0] = gwm_createStochasticMatrix(nStates+j,'MatrixType', 'uniform');
@@ -43,15 +43,26 @@ for j = 1:nModels
     end
 end
 %% The result
-% we have model{i,j} cell matrix where:
-%   j---> nStates ---->
+% we have model{i,j} cell matrix where and the same loglikes matrix:
+%   j---> nModels(nStates) ---->
 %   |
 %   |
 %  nRuns
 %   |
 % 
-% The best models with the highest Loglikes so lets take them
 
-%% we can plot transition matrix for the best model
-idx=maxidx(cellfun(@max,models_ll));
-figure;gwm_plotTransMatrix(models{idx}.A);
+%% Let's take the best models (based on some criteria, for exmpl. LogLike, AIC, BIC, AICc )
+% the default is loglike
+[bestmodels best_models_idx best_models_vals] = gwm_selectBestModels(models);
+
+%% Plotting results
+% we can plot transition matrix for the best models
+for i=1:nModels
+    figure;gwm_plotTransMatrix(bestmodels{i}.A);
+end
+placeFigures;
+% or even Loglikes
+figure;plot(best_models_vals,'ro-');
+
+%% or Just use show experimental result
+[logLikes, best_models_Loglike_val, best_models_BIC_val] = gwm_showExperimentResult(models);
