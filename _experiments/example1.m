@@ -62,7 +62,7 @@ for i=1:nModels
 end
 placeFigures;
 % or even Loglikes
-figure;plot(best_models_vals,'ro-');
+
 
 %% or Just use show experimental result
 [logLikes, best_models_Loglike_val, best_models_BIC_val] = gwm_showExperimentResult(models);
