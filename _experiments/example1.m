@@ -3,7 +3,7 @@
 %% we have to load data
 data = gwm_loadData('auver');
 % split data for test and train
-[Train,Test] = gwm_splitData(data,[0.8,0.2]);
+% [Train,Test] = gwm_splitData(data,[0.8,0.2]);
 
 
 %% define some parameters of the future models
@@ -12,8 +12,8 @@ nMix = 1;           % number of mixtures per states
 
 %% define some runtime options
 verbose = false;    % show additional information while running
-nRuns = 6;          % how 
-nModels = 8;        % number of models to generate
+nRuns = 6;          % Number of runs per model
+nModels = 10;        % number of models to generate
 models = cell(nRuns,nModels);       % cell matrix to store models
 models_ll = cell(nRuns,nModels);    % cell matrix to store loglikes
 
