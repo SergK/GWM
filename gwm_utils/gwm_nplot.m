@@ -1,13 +1,22 @@
 function gwm_nplot(x,varargin)
 %function gwm_nplot(x,'name of data')
-%   x - data to plot
-%   'name of data' - legend
+%   x               -   data to plot
+%   'leg'           -   legend
+%   'logY'          -   false (default)
+%   'style'         -   'b-' default
 
-figure;plot(x);
-if nargin>1
-    h = legend(varargin{:},1);
+[   leg                         , ...
+    logY                        , ...
+    style                       ] ...
+    = process_options(varargin  , ...
+    'leg'                       , 'data'    , ...
+    'logY'                      , false     , ...
+    'style'                     , 'b-');
+
+if logY
+    figure;semilogy(x,style);
 else
-    h = legend('data');
+    figure;plot(x,style);
 end
-set(h,'Interpreter','none');
+set(legend(leg),'Interpreter','none');
 end

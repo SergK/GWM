@@ -1,8 +1,30 @@
-function gwm_plot_acf(x,y,lag)
-%function y=plot_acf(x,y,lag)
+function gwm_plot_acf(x,y,varargin)
+%function y=gwm_plot_acf(x,y)
+%   x               -   data to plot
+%   y               -   data to plot
+%   OPTIONAL:
+%       lag             -   50
+%       'style1'        -   'b-' default
+%       'style2'        -   'r-' default
+%       'legend1'       -   'data 1'
+%       'legend2'       -   'data 2'
+
+[   lag                         , ...
+    style1                      , ...
+    style2                      , ...
+    legend1                     , ...
+    legend2                     ] ...
+    = process_options(varargin  , ...
+    'lag'                       , 50        , ...
+    'style1'                    , 'b-'      , ...
+    'style2'                    , 'r-'      , ...
+    'legend1'                   , 'data 1'  , ...
+    'legend2'                   , 'data 2');    
+
 %Plot Autocorr function for two sequences
 
-plot(acf(x,lag),'b-');hold on;
-plot(acf(y,lag),'r-');
+plot(acf(x,lag),style1);hold on;
+plot(acf(y,lag),style2);
 title('Autocorrelation Function');
+legend({legend1,legend2},'Location','SouthEast')
 end

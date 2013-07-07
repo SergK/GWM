@@ -28,7 +28,11 @@ group_plot = cell(1,nModels);
 mylegend = cell(1,nModels);
 for i=1:nModels
     group_plot{i} = logLikes(:,i);
-    mylegend{i} = sprintf('%d-states;%d-mix',models{1,i}.nstates,models{1,i}.nmix);
+    if isempty(models{1,i}.nmix)
+        mylegend{i} = sprintf('%d-states',models{1,i}.nstates);
+    else
+        mylegend{i} = sprintf('%d-states;%d-mix',models{1,i}.nstates,models{1,i}.nmix);
+    end
 end
 h = gwm_mplot(group_plot,'plot_type','group');title(sprintf('%s (%s)',title_text,'Plot by groups'));
 r = cellfun(@(x) x(1),h);                       %we get the first handle in each group
@@ -42,9 +46,14 @@ best_models_Loglike = cell(nModels,1);
 best_models_BIC_val = zeros(1,nModels);
 for i=1:nModels
     best_models_Loglike(i,1) = logLikes(best_models_idx(i),i);      %(row,col)
+    if isempty(models{best_models_idx(i),i}.nmix)
+        mylegend{i} = sprintf('%d-states;(LogLike=%d)',models{best_models_idx(i),i}.nstates,...
+                                                            models{best_models_idx(i),i}.loglike(end));
+    else
     mylegend{i} = sprintf('%d(%d)-states(mix);(LogLike=%d)',models{best_models_idx(i),i}.nstates,...
                                                             models{best_models_idx(i),i}.nmix,...
                                                             models{best_models_idx(i),i}.loglike(end));
+    end
     best_models_BIC_val(i) = models{best_models_idx(i),i}.BIC;                                                   
 end
 gwm_mplot(best_models_Loglike,'plot_type','mult');title(sprintf('%s (%s)',title_text,'The best (max Loglike) models for each groups'));

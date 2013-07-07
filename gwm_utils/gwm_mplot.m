@@ -21,15 +21,18 @@ function h = gwm_mplot(cell_to_plot, varargin)
 %                   - 'mult'        - ALL plot on ONE figure with MANY colors;
 %                   - 'group'       - plot like 'mult' but each group with the same color;
 %                   - 'groupiscol'  - plotting like 'group' where each group is in Columns
+%   'logY':         - false         - default false, use logarithm scale for Y
 %   'style':        - 'b-' the same styles as for plot
 %   'showLegend'    - true       - Show the legend; false (default)
 
 %%
 [   plot_type                    , ...
+    logY                         , ...
     showLegend                   , ...
     style                       ] ...
     = process_options(varargin  , ...
     'plot_type'                 , 'single'                        , ...
+    'logY'                      , false                           , ...
     'showLegend'                , false                           , ...
     'style'                     , 'b-');
 
@@ -56,7 +59,7 @@ switch lower(plot_type)
         h = cellfun(@(data)plot(data,style),cell_to_plot);
         hold off;
     case 'foreach'
-        h = cellfun(@(data)nplot(data,style),cell_to_plot);
+        h = cellfun(@(data)nplot(data,style,logY),cell_to_plot);
         hold off;
     case 'group'
         % we have the following format {{}{}{}{}}
@@ -80,9 +83,14 @@ end
 end
 
 %% helper for plotting multiple figures per plot
-function h = nplot(data,style)
+function h = nplot(data,style,logY)
 figure;
-h = plot(data,style);
+if logY
+    h = semilogy(data,style);
+else
+    h = plot(data,style);
+end
+%h = plot(data,style);
 end
 
 %% helper for plotting with different styles
